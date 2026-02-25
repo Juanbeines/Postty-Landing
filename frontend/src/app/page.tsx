@@ -436,7 +436,6 @@ export default function Home() {
           </a>
           <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
-            <a href="#funcionalidades" className="whitespace-nowrap transition hover:text-[#0D1522]">Funcionalidades</a>
             <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Testimonios</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
@@ -910,7 +909,7 @@ export default function Home() {
             <Image src="/mascot.png" alt="Postty mascot" width={100} height={100} className="relative z-10 mx-auto drop-shadow-lg" />
           </div>
           <h2 className="font-heading text-3xl font-black sm:text-5xl">
-            ¿Listo para crear contenido profesional?
+            ¿Listo para no estresarte más con tus ventas online?
           </h2>
           <p className="mt-3 text-lg text-white/80">(Sin pagar agencia)</p>
           <div className="mt-8">
