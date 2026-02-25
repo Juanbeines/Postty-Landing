@@ -911,7 +911,6 @@ export default function Home() {
           <h2 className="font-heading text-3xl font-black sm:text-5xl">
             ¿Listo para no estresarte más con tus ventas online?
           </h2>
-          <p className="mt-3 text-lg text-white/80">(Sin pagar agencia)</p>
           <div className="mt-8">
             <a
               href="#"
