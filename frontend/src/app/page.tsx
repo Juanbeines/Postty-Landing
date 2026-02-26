@@ -138,10 +138,9 @@ const businessTypes = [
 ];
 
 const stats = [
-  { value: "+300", label: "negocios generando contenido solos" },
-  { value: "1 min", label: "desde que subís tu foto hasta generar una campaña" },
-  { value: "0", label: "experiencia en marketing requerida" },
-  { value: "4", label: "Instagram, Meta, TikTok, YouTube" },
+  { value: "+300", label: "negocios generando contenido solos", color: "#022BB0" },
+  { value: "1 min", label: "desde que subís tu foto hasta generar una campaña", color: "#49D3F8" },
+  { value: "0", label: "experiencia en marketing requerida", color: "#D6F951" },
 ];
 
 
@@ -1052,7 +1051,7 @@ export default function Home() {
               Esto no es solo IA. Es inteligencia de contenido.
             </p>
           </motion.div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {stats.map((stat, i) => (
               <motion.article
                 key={stat.label}
@@ -1062,7 +1061,7 @@ export default function Home() {
                 transition={{ delay: i * 0.1, duration: 0.35 }}
                 className="rounded-2xl bg-[#F5F7FA] p-5 text-center"
               >
-                <p className="font-heading text-4xl font-black text-[#49D3F8]">{stat.value}</p>
+                <p className="font-heading text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
                 <p className="mt-2 text-sm text-[#0D1522]/60">{stat.label}</p>
               </motion.article>
             ))}
