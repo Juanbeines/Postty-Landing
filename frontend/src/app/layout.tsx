@@ -1,17 +1,5 @@
 import type { Metadata } from "next";
-import { Gabarito, Inter } from "next/font/google";
 import "./globals.css";
-
-const gabarito = Gabarito({
-  variable: "--font-gabarito",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Postty | AI Marketing Agent",
@@ -51,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head />
-      <body className={`${gabarito.variable} ${inter.variable} antialiased`}>
+      <body className="antialiased">
         {children}
       </body>
     </html>
