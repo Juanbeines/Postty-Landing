@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useMotionValue, useSpring, useScroll, useTransform } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const trustBadges = [
-  { label: "Potenciado por IA", value: "Última generación" },
-  { label: "Valoración", value: "4.8/5 de 312 usuarios" },
-  { label: "Tiempo promedio", value: "1 min por post" },
+const avatars = [
+  "https://i.pravatar.cc/80?img=12",
+  "https://i.pravatar.cc/80?img=32",
+  "https://i.pravatar.cc/80?img=57",
+  "https://i.pravatar.cc/80?img=47",
+  "https://i.pravatar.cc/80?img=68",
 ];
 
 const revealWords = [
@@ -37,33 +39,102 @@ const steps = [
   },
 ];
 
-const features = [
+const funcionalidades = [
   {
-    title: "Aprende tu estilo",
-    desc: "Entiende tu visión creativa. Cada pieza parece hecha por tu propio equipo.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="dna-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#022BB0"/><stop offset="1" stopColor="#1881F1"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#dna-g)" opacity="0.15"/>
+        <path d="M10 8c3 2 6 2 9 0M10 12c3 2 6 2 9 0M10 16c3 2 6 2 9 0M10 20c3 2 6 2 9 0M10 24c3 2 6 2 9 0" stroke="url(#dna-g)" strokeWidth="2" strokeLinecap="round"/>
+        <circle cx="10" cy="8" r="2" fill="#022BB0"/><circle cx="19" cy="8" r="2" fill="#1881F1"/>
+        <circle cx="10" cy="16" r="2" fill="#022BB0"/><circle cx="19" cy="16" r="2" fill="#1881F1"/>
+        <circle cx="10" cy="24" r="2" fill="#022BB0"/><circle cx="19" cy="24" r="2" fill="#1881F1"/>
+      </svg>
+    ),
+    title: "Genera contenido con tu ADN de marca",
+    desc: "Extrae tu estilo, colores y tono de tu Instagram. Cada ad parece hecho por tu equipo.",
+    color: "#022BB0",
+    gradient: "from-[#022BB0]/10 to-[#1881F1]/5",
+    borderColor: "border-[#022BB0]/15",
   },
   {
-    title: "Sabe qué vende",
-    desc: "Va más allá del tono. Aprende cómo piensan tus clientes cuando están listos para comprar.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="search-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#1881F1"/><stop offset="1" stopColor="#49D3F8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#search-g)" opacity="0.15"/>
+        <circle cx="14" cy="14" r="6" stroke="url(#search-g)" strokeWidth="2.5"/>
+        <path d="M19 19l5 5" stroke="#1881F1" strokeWidth="2.5" strokeLinecap="round"/>
+        <circle cx="14" cy="14" r="2.5" fill="#49D3F8" opacity="0.5"/>
+      </svg>
+    ),
+    title: "Investiga tu mercado por vos",
+    desc: "Analiza competidores, define tu audiencia y estudia qué ads funcionan en tu categoría.",
+    color: "#1881F1",
+    gradient: "from-[#1881F1]/10 to-[#49D3F8]/5",
+    borderColor: "border-[#1881F1]/15",
   },
   {
-    title: "Conoce a tus clientes",
-    desc: "Aprende la mentalidad, hábitos y necesidades de tu audiencia. Después crea contenido que les importa.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="rocket-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#49D3F8"/><stop offset="1" stopColor="#1881F1"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#rocket-g)" opacity="0.15"/>
+        <path d="M16 6c-2 4-3 8-3 12h6c0-4-1-8-3-12z" fill="url(#rocket-g)"/>
+        <path d="M13 18l-2 4h10l-2-4" fill="#1881F1" opacity="0.6"/>
+        <circle cx="16" cy="14" r="2" fill="white" opacity="0.8"/>
+        <path d="M14 22l2 4 2-4" fill="#49D3F8"/>
+      </svg>
+    ),
+    title: "Crea y publica la campaña completa",
+    desc: "10 ads en los formatos que mejor venden. Carousels, videos, fotos. Directo a Meta Ads.",
+    color: "#49D3F8",
+    gradient: "from-[#49D3F8]/10 to-[#D6F951]/5",
+    borderColor: "border-[#49D3F8]/20",
   },
   {
-    title: "Tus datos son privados",
-    desc: "La información de tu marca se mantiene privada. Nunca se comparte, ni se usa para entrenar otros modelos.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="chart-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#D6F951"/><stop offset="1" stopColor="#8DB800"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#chart-g)" opacity="0.15"/>
+        <rect x="7" y="18" width="4" height="8" rx="1.5" fill="#D6F951"/>
+        <rect x="14" y="12" width="4" height="14" rx="1.5" fill="#8DB800"/>
+        <rect x="21" y="8" width="4" height="18" rx="1.5" fill="url(#chart-g)"/>
+        <path d="M9 16l5-5 4 2 5-6" stroke="#8DB800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="24" cy="7" r="2" fill="#D6F951"/>
+      </svg>
+    ),
+    title: "Optimiza solo, vos descansás",
+    desc: "Sabe qué vende y qué no. Ajusta la campaña. Te avisa y sugiere la próxima.",
+    color: "#8DB800",
+    gradient: "from-[#D6F951]/15 to-[#8DB800]/5",
+    borderColor: "border-[#8DB800]/20",
   },
 ];
 
 const businessTypes = [
-  "Tiendas de ropa",
-  "Gastronomía",
-  "Artesanos",
-  "Servicios",
-  "Productos digitales",
-  "Belleza y cuidado",
-  "Fitness",
+  { name: "Agencias", emoji: "🏢", top: "8%", left: "4%", rotate: -6 },
+  { name: "Productos digitales", emoji: "🖥️", top: "2%", left: "30%", rotate: 4 },
+  { name: "Fitness", emoji: "💪", top: "4%", left: "62%", rotate: -2 },
+  { name: "Servicios", emoji: "💼", top: "14%", left: "80%", rotate: 5 },
+  { name: "SaaS", emoji: "🚀", top: "72%", left: "2%", rotate: -4 },
+  { name: "Gastronomía", emoji: "🍽️", top: "76%", left: "28%", rotate: -3 },
+  { name: "E-commerce", emoji: "🛍️", top: "74%", left: "56%", rotate: 3 },
+  { name: "Apps móviles", emoji: "📱", top: "70%", left: "80%", rotate: -5 },
 ];
 
 const stats = [
@@ -357,6 +428,108 @@ function WordSpan({
   );
 }
 
+function BusinessTypesSection() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }, []);
+  const handleMouseLeave = useCallback(() => {
+    setMousePos({ x: 0, y: 0 });
+  }, []);
+
+  return (
+    <section className="px-4 py-28" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+      <div className="relative mx-auto max-w-5xl">
+        <div className="relative mx-auto" style={{ minHeight: "420px" }}>
+          {businessTypes.map((biz, i) => (
+            <RepelPill key={biz.name} biz={biz} i={i} mousePos={mousePos} />
+          ))}
+
+          <div className="pointer-events-none relative z-10 flex min-h-[420px] items-center justify-center">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-heading text-center text-4xl font-black leading-tight sm:text-5xl md:text-6xl"
+            >
+              Funciona para cualquier
+              <br />
+              tipo de negocio
+            </motion.h2>
+          </div>
+
+          <div className="mt-8 flex flex-wrap justify-center gap-3 md:hidden">
+            {businessTypes.map((biz) => (
+              <div
+                key={biz.name}
+                className="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]"
+              >
+                <span className="text-lg">{biz.emoji}</span>
+                <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RepelPill({ biz, i, mousePos }: { biz: typeof businessTypes[0]; i: number; mousePos: { x: number; y: number } }) {
+  const pillRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 20 });
+  const springY = useSpring(y, { stiffness: 150, damping: 20 });
+
+  useEffect(() => {
+    if (!pillRef.current || mousePos.x === 0 && mousePos.y === 0) return;
+    const rect = pillRef.current.getBoundingClientRect();
+    const pillCenterX = rect.left + rect.width / 2;
+    const pillCenterY = rect.top + rect.height / 2;
+    const dx = pillCenterX - mousePos.x;
+    const dy = pillCenterY - mousePos.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const radius = 180;
+
+    if (dist < radius) {
+      const force = (1 - dist / radius) * 45;
+      const angle = Math.atan2(dy, dx);
+      x.set(Math.cos(angle) * force);
+      y.set(Math.sin(angle) * force);
+    } else {
+      x.set(0);
+      y.set(0);
+    }
+  }, [mousePos, x, y]);
+
+  return (
+    <motion.div
+      ref={pillRef}
+      initial={{ opacity: 0, scale: 0.7 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: i * 0.08, duration: 0.5 }}
+      className="absolute hidden md:flex"
+      style={{ top: biz.top, left: biz.left, x: springX, y: springY }}
+    >
+      <motion.div
+        animate={{ y: [0, -6, 0] }}
+        transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: "easeInOut" }}
+        className="cursor-default"
+      >
+        <div
+          className="flex items-center gap-2.5 rounded-2xl bg-white px-5 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)]"
+          style={{ transform: `rotate(${biz.rotate}deg)` }}
+        >
+          <span className="text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]">{biz.emoji}</span>
+          <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 function FAQItem({ item }: { item: (typeof faqItems)[0] }) {
   const [open, setOpen] = useState(false);
   return (
@@ -436,6 +609,7 @@ export default function Home() {
           </a>
           <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
+            <a href="#funcionalidades" className="whitespace-nowrap transition hover:text-[#0D1522]">Funcionalidades</a>
             <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Testimonios</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
@@ -550,17 +724,27 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mx-auto mt-10 flex max-w-3xl flex-wrap items-center justify-center gap-6 sm:gap-10"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="mx-auto mt-8 flex w-fit items-center gap-3 rounded-full border border-[#0D1522]/[0.06] bg-[#F5F7FA]/70 px-5 py-2.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
           >
-            {trustBadges.map((badge) => (
-              <div key={badge.label} className="text-center">
-                <p className="text-xs text-[#0D1522]/40">{badge.label}</p>
-                <p className="mt-1 text-sm font-bold text-[#0D1522]/80">{badge.value}</p>
-              </div>
-            ))}
+            <div className="flex -space-x-2.5">
+              {avatars.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover"
+                />
+              ))}
+            </div>
+            <p className="text-sm text-[#0D1522]/70">
+              <span className="font-bold text-[#0D1522]">4.99/5</span> de{" "}
+              <span className="font-bold text-[#0D1522]">4,268</span> clientes ⭐
+            </p>
           </motion.div>
         </div>
       </section>
@@ -636,33 +820,66 @@ export default function Home() {
       </section>
 
 
-      {/* ── Brand DNA / Features ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
+      {/* ── Funcionalidades ── */}
+      <section id="funcionalidades" className="px-4 py-24">
+        <div className="mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="font-heading text-3xl font-black sm:text-4xl">El ADN de tu marca</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-[#0D1522]/60">
-              Desde el tono de tu marca hasta lo que le importa a tus clientes.
-              Postty aprende qué te hace único. Y construye con eso.
+            <h2 className="font-heading text-3xl font-black sm:text-4xl md:text-5xl">
+              De la foto a las ventas.{" "}
+              <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">
+                Sin escalas.
+              </span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-[#0D1522]/55">
+              Postty maneja el ciclo completo de marketing para que vos te enfoques en tu negocio.
             </p>
           </motion.div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2">
-            {features.map((feat, i) => (
+
+          <div className="mt-16 grid gap-6 sm:grid-cols-2">
+            {funcionalidades.map((feat, i) => (
               <motion.article
                 key={feat.title}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-                className="rounded-2xl bg-[#F5F7FA] p-6 transition hover:shadow-md"
+                initial={{ opacity: 0, y: 30, rotateX: 8 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: i * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                whileHover={{
+                  y: -6,
+                  boxShadow: `0 20px 40px -12px ${feat.color}22, 0 8px 20px -8px rgba(0,0,0,0.08)`,
+                  transition: { duration: 0.3 },
+                }}
+                className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br ${feat.gradient} ${feat.borderColor} p-8 transition-all duration-300`}
+                style={{ perspective: "800px" }}
               >
-                <h3 className="font-heading text-lg font-bold">{feat.title}</h3>
-                <p className="mt-2 text-sm text-[#0D1522]/60">{feat.desc}</p>
+                <div
+                  className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl"
+                  style={{
+                    background: `linear-gradient(135deg, ${feat.color}18, ${feat.color}08)`,
+                    boxShadow: `0 4px 12px ${feat.color}15`,
+                  }}
+                >
+                  {feat.icon}
+                </div>
+
+                <h3
+                  className="font-heading text-xl font-black sm:text-2xl"
+                  style={{ color: feat.color }}
+                >
+                  {feat.title}
+                </h3>
+                <p className="mt-3 leading-relaxed text-[#0D1522]/60">
+                  {feat.desc}
+                </p>
+
+                <div
+                  className="absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-[0.07] blur-2xl transition-all duration-500 group-hover:opacity-[0.12] group-hover:blur-3xl"
+                  style={{ background: feat.color }}
+                />
               </motion.article>
             ))}
           </div>
@@ -670,122 +887,150 @@ export default function Home() {
       </section>
 
       {/* ── Business types ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="font-heading text-center text-3xl font-black sm:text-4xl">
-            Funciona para cualquier tipo de negocio
-          </h2>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {businessTypes.map((biz) => (
-              <span
-                key={biz}
-                className="rounded-full bg-[#F5F7FA] px-5 py-2.5 text-sm font-semibold transition hover:bg-[#1881F1]/10 hover:text-[#1881F1]"
-              >
-                {biz}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      <BusinessTypesSection />
 
       {/* ── Content calendar ── */}
       <section className="px-4 py-20">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 md:flex-row md:items-start md:gap-16">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 md:flex-row md:items-center md:gap-16">
           {/* Left column: text */}
-          <div className="flex-1 md:pt-8">
+          <div className="flex-1 text-center md:text-left">
             <p className="text-sm font-semibold text-[#0D1522]/40">Ads y contenido ilimitados</p>
             <h2 className="font-heading mt-3 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
               Llená tu calendario de contenido.
               <br />
-              <span className="text-[#1881F1]">3 meses de anticipación.</span>
+              <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">3 meses de anticipación.</span>
             </h2>
-            <p className="mt-5 max-w-md text-[#0D1522]/60 leading-relaxed">
+            <p className="mx-auto mt-5 max-w-md text-[#0D1522]/60 leading-relaxed md:mx-0">
               Vos descansás. Postty no. Trabaja en segundo plano generando contenido
               mientras dormís. Así a la mañana revisás, elegís y publicás antes del
               mediodía.
             </p>
-            {/* Tinder callout */}
-            <div className="mt-10 flex items-start gap-4">
-              <div className="relative shrink-0">
-                <div className="dragon-shadow-sm absolute bottom-0 left-1/2 h-1.5 w-10 -translate-x-1/2 rounded-[50%]" />
-                <Image src="/mascot.png" alt="Postty" width={52} height={52} className="relative z-10" />
-              </div>
-              <div>
-                <p className="font-heading text-sm font-bold text-[#8DB800]">Como Tinder, pero para contenido.</p>
-                <p className="mt-1 text-sm text-[#0D1522]/55">
-                  Deslizá para descartar, guardar, o generar más de lo que te gusta.
-                </p>
-              </div>
-            </div>
           </div>
 
-          {/* Right column: tilted phone with swipe cards */}
+          {/* Right column: iPhone */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative w-[280px] shrink-0 sm:w-[320px]"
+            className="relative w-[240px] shrink-0 sm:w-[250px]"
             style={{ perspective: "1200px" }}
           >
-            <div style={{ transform: "rotateY(-12deg) rotateX(4deg)" }} className="relative">
-              {/* Phone frame */}
-              <div className="rounded-[2.2rem] border-[6px] border-[#1a1a1a] bg-[#1a1a1a] p-1 shadow-2xl">
-                {/* Notch */}
-                <div className="absolute left-1/2 top-2 z-20 h-5 w-24 -translate-x-1/2 rounded-full bg-[#1a1a1a]" />
+            <div
+              className="relative"
+              style={{ transform: "rotateY(-10deg) rotateX(4deg)" }}
+            >
+              {/* iPhone frame */}
+              <div className="rounded-[2.4rem] border-[2.5px] border-[#1C1C1E] bg-[#1C1C1E] p-[2px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]" style={{ aspectRatio: "9 / 19.5" }}>
+                {/* Dynamic Island */}
+                <div className="absolute left-1/2 top-[8px] z-20 h-[14px] w-[56px] -translate-x-1/2 rounded-full bg-[#1C1C1E]" />
                 {/* Screen */}
-                <div className="relative overflow-hidden rounded-[1.8rem] bg-white px-4 pb-6 pt-8">
-                  {/* Swipeable post cards */}
-                  <div className="relative h-[240px]">
-                    {[
-                      { title: "Post Instagram", color: "from-[#1881F1] to-[#49D3F8]", delay: 0 },
-                      { title: "Historia", color: "from-[#022BB0] to-[#1881F1]", delay: 2.5 },
-                      { title: "Publicidad", color: "from-[#49D3F8] to-[#D6F951]", delay: 5 },
-                    ].map((card, idx) => (
-                      <motion.div
-                        key={card.title}
-                        animate={{
-                          x: [0, 0, idx % 2 === 0 ? 200 : -200],
-                          rotate: [0, 0, idx % 2 === 0 ? 15 : -15],
-                          opacity: [1, 1, 0],
-                        }}
-                        transition={{
-                          duration: 2.2,
-                          delay: card.delay,
-                          repeat: Infinity,
-                          repeatDelay: 5.3,
-                          ease: "easeInOut",
-                          times: [0, 0.6, 1],
-                        }}
-                        className="absolute inset-x-0 rounded-2xl border border-[#E8ECF0] bg-white p-3 shadow-md"
-                        style={{ zIndex: 3 - idx }}
-                      >
-                        <div className={`h-28 rounded-xl bg-gradient-to-br ${card.color} opacity-90`} />
-                        <div className="mt-3 h-2.5 w-3/4 rounded-full bg-[#E0E4EA]" />
-                        <div className="mt-1.5 h-2 w-1/2 rounded-full bg-[#E0E4EA]" />
-                        <p className="mt-2 text-[8px] font-bold text-[#0D1522]/40">{card.title}</p>
-                      </motion.div>
-                    ))}
+                <div className="relative flex h-full flex-col overflow-hidden rounded-[2.2rem] bg-white">
+                  {/* Status bar */}
+                  <div className="flex shrink-0 items-center justify-between px-5 pb-1 pt-8">
+                    <span className="text-[9px] font-semibold text-[#0D1522]">9:41</span>
+                    <div className="flex items-center gap-1 opacity-60">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="#0D1522"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                      <svg width="12" height="10" viewBox="0 0 24 16" fill="#0D1522"><rect x="0" y="2" width="20" height="12" rx="2" ry="2" stroke="#0D1522" strokeWidth="1.5" fill="none"/><rect x="2" y="4" width="14" height="8" rx="1" fill="#0D1522"/><path d="M22 6v4a2 2 0 000-4z"/></svg>
+                    </div>
                   </div>
-                  {/* Swipe buttons */}
-                  <div className="mt-3 flex justify-center gap-5">
-                    <motion.div
-                      animate={{ scale: [1, 0.85, 1] }}
-                      transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 5 }}
-                      className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-red-300/50 text-red-400/70"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </motion.div>
-                    <motion.div
-                      animate={{ scale: [1, 1.15, 1] }}
-                      transition={{ duration: 2.5, delay: 2.5, repeat: Infinity, repeatDelay: 5 }}
-                      className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-pink-300/50 text-pink-400/70"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    </motion.div>
+
+                  {/* Calendar content */}
+                  <div className="flex flex-1 flex-col justify-between gap-3 px-4 pb-5 pt-3">
+                    {/* Próximo post */}
+                    <div className="rounded-xl bg-[#F5F7FA] p-2.5">
+                      <p className="text-[8px] font-bold text-[#0D1522]/40">Próximo post</p>
+                      <div className="mt-1.5 flex gap-2">
+                        <div className="h-10 w-10 shrink-0 rounded-lg bg-gradient-to-br from-[#1881F1] to-[#49D3F8]" />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[9px] font-semibold text-[#0D1522]">Historia · Mañana 10:00</p>
+                          <p className="truncate text-[7px] text-[#0D1522]/50">Listo para publicar</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Calendar completo — 4 filas */}
+                    <div>
+                      <p className="text-[9px] font-bold text-[#0D1522]/35">Marzo 2026</p>
+                      <div className="mt-1.5 grid grid-cols-7 gap-1 text-center text-[7px] font-medium text-[#0D1522]/25">
+                        {["L","M","X","J","V","S","D"].map(d => <span key={d}>{d}</span>)}
+                      </div>
+                      <div className="mt-1 grid grid-cols-7 gap-1">
+                        {Array.from({ length: 28 }, (_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ scale: 0, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 + i * 0.015, duration: 0.25 }}
+                            className={`flex min-h-[28px] w-full items-center justify-center rounded-lg text-[8px] font-bold ${
+                              i < 24
+                                ? i % 4 === 0
+                                  ? "bg-[#022BB0] text-white"
+                                  : i % 4 === 1
+                                    ? "bg-[#1881F1] text-white"
+                                    : i % 4 === 2
+                                      ? "bg-[#49D3F8] text-white"
+                                      : "bg-[#D6F951] text-[#0D1522]"
+                                : "bg-[#F5F7FA] text-[#0D1522]/30"
+                            }`}
+                          >
+                            {i + 1}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Post con métricas */}
+                    <div className="rounded-xl border border-[#E8ECF0] bg-white p-2.5">
+                      <p className="text-[8px] font-bold text-[#0D1522]/40">Mejor post esta semana</p>
+                      <div className="mt-1.5 flex gap-2">
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg p-[2px]" style={{ background: "linear-gradient(135deg, #022BB0, #1881F1, #49D3F8, #D6F951)" }}>
+                          <div className="relative h-full w-full overflow-hidden rounded-[6px] bg-white">
+                            {/* Carrusel: 3 slides separados */}
+                            <div className="absolute inset-0 flex flex-col">
+                              <div className="flex flex-1 items-end justify-between px-1 pb-4">
+                                <div className="h-[70%] w-[26%] shrink-0 rounded-md bg-gradient-to-br from-[#022BB0]/40 to-[#1881F1]/25" />
+                                <div className="h-[75%] w-[28%] shrink-0 rounded-md bg-gradient-to-br from-[#1881F1]/50 to-[#49D3F8]/35 shadow-sm" />
+                                <div className="h-[70%] w-[26%] shrink-0 rounded-md bg-gradient-to-br from-[#49D3F8]/40 to-[#D6F951]/25" />
+                              </div>
+                            {/* Indicadores de slide */}
+                            <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 gap-1">
+                              <span className="h-1 w-1 rounded-full bg-[#0D1522]/25" />
+                              <span className="h-1 w-1 rounded-full bg-[#1881F1]" />
+                              <span className="h-1 w-1 rounded-full bg-[#0D1522]/25" />
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[9px] font-semibold text-[#0D1522]">Carrusel · 12 Mar</p>
+                          <div className="mt-1.5 flex gap-3 text-[7px]">
+                            <span className="font-bold text-[#8DB800]">4.2% CTR</span>
+                            <span className="font-bold text-[#1881F1]">2.1k alcance</span>
+                            <span className="font-bold text-[#49D3F8]">89 conv.</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex gap-2">
+                      <div className="flex-1 rounded-xl bg-[#F5F7FA] p-2.5 text-center">
+                        <p className="text-[10px] font-bold text-[#1881F1]">93 ads</p>
+                        <p className="text-[6px] text-[#0D1522]/35">programados</p>
+                      </div>
+                      <div className="flex-1 rounded-xl bg-[#F5F7FA] p-2.5 text-center">
+                        <p className="text-[10px] font-bold text-[#8DB800]">25 días</p>
+                        <p className="text-[6px] text-[#0D1522]/35">cubiertos</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Reflection */}
+              <div className="absolute -bottom-6 left-1/2 h-12 w-[80%] -translate-x-1/2 rounded-[50%] bg-gradient-to-r from-[#1881F1]/15 via-[#49D3F8]/10 to-[#D6F951]/8 blur-xl" />
             </div>
           </motion.div>
         </div>
@@ -832,8 +1077,8 @@ export default function Home() {
           <h2 className="font-heading text-3xl font-black sm:text-4xl md:text-5xl">
             Grandes poderes vienen con
           </h2>
-          <p className="mt-2 font-heading text-2xl font-black text-[#1881F1] sm:text-3xl md:text-4xl">
-            gran privacidad.
+          <p className="mt-2 font-heading text-2xl font-black sm:text-3xl md:text-4xl">
+            <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">gran privacidad.</span>
           </p>
           <p className="mx-auto mt-5 max-w-2xl text-[#0D1522]/60">
             Tu marca es tu mayor activo. La protegemos con encriptación completa,
