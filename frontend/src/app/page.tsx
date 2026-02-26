@@ -580,7 +580,7 @@ export default function Home() {
             Cómo funciona Postty
           </motion.h2>
 
-          <div className="mt-20">
+          <div className="mx-auto mt-20 max-w-4xl">
             {steps.map((step, i) => (
               <motion.div
                 key={step.num}
