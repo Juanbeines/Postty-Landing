@@ -672,7 +672,7 @@ export default function Home() {
             className="font-heading text-4xl font-black leading-[1.1] tracking-tight sm:text-6xl md:text-7xl"
           >
             Vender en redes sociales
-            <br className="hidden sm:block" />
+            <br />
             no debería ser difícil.
             <br />
             <span className="mt-2 inline-block">
