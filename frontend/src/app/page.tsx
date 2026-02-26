@@ -743,7 +743,7 @@ export default function Home() {
             </div>
             <p className="text-sm text-[#0D1522]/70">
               <span className="font-bold text-[#0D1522]">4.99/5</span> de{" "}
-              <span className="font-bold text-[#0D1522]">4,268</span> clientes ⭐
+              <span className="font-bold text-[#0D1522]">324</span> clientes ⭐
             </p>
           </motion.div>
         </div>
