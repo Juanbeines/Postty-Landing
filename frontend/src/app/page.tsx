@@ -431,8 +431,8 @@ export default function Home() {
             scrolled ? "pointer-events-none" : ""
           }`}
         >
-          <a href="#" className="font-logo text-lg font-black tracking-[-0.08em] text-[#1881F1]">
-            postty
+          <a href="#" className="font-heading text-lg font-extrabold tracking-[-0.08em] text-[#0D1522]">
+            Postty
           </a>
           <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
@@ -462,9 +462,9 @@ export default function Home() {
             }}
             transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
             href="#"
-            className="flex h-12 items-center justify-center rounded-full bg-white/80 px-4 shadow-[0_2px_12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] backdrop-blur-xl"
+            className="flex h-12 items-center justify-center px-2"
           >
-            <span className="font-logo text-base font-black tracking-[-0.08em] text-[#1881F1]">postty</span>
+            <span className="font-heading text-base font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</span>
           </motion.a>
           <motion.a
             animate={{
@@ -883,7 +883,7 @@ export default function Home() {
               </motion.blockquote>
             ))}
           </div>
-          <p className="mt-8 text-center text-sm font-bold text-[#1881F1]">
+          <p className="mt-8 text-center text-sm font-bold text-[#0D1522]">
             +300 dueños de negocio usan Postty
           </p>
         </div>
@@ -927,7 +927,7 @@ export default function Home() {
       <footer className="px-4 py-12">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 sm:flex-row sm:justify-between">
           <div>
-            <p className="font-logo text-xl font-black tracking-[-0.08em] text-[#1881F1]">postty</p>
+            <p className="font-heading text-xl font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</p>
             <p className="mt-2 text-sm text-[#0D1522]/50">support@postty.com</p>
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
