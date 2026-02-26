@@ -14,13 +14,13 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Postty | Inicio",
+  title: "Postty | AI Marketing Agent",
   description:
-    "Subí una foto de tu producto y Postty genera posts, historias y publicidad listos para publicar.",
+    "AI Marketing Agent that creates your professional ads and manages your campaigns.",
   openGraph: {
-    title: "Postty — Creá contenido con IA en 1 minuto",
+    title: "Postty | AI Marketing Agent",
     description:
-      "Subí una foto de tu producto y Postty genera posts, historias y publicidad listos para publicar.",
+      "AI Marketing Agent that creates your professional ads and manages your campaigns.",
     url: "https://www.posttyai.com",
     siteName: "Postty",
     images: [
@@ -28,17 +28,17 @@ export const metadata: Metadata = {
         url: "https://www.posttyai.com/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Postty — Contenido con IA para tu negocio",
+        alt: "Postty — AI Marketing Agent",
       },
     ],
-    locale: "es_AR",
+    locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Postty — Creá contenido con IA en 1 minuto",
+    title: "Postty | AI Marketing Agent",
     description:
-      "Subí una foto de tu producto y Postty genera posts, historias y publicidad listos para publicar.",
+      "AI Marketing Agent that creates your professional ads and manages your campaigns.",
     images: ["https://www.posttyai.com/og-image.png"],
   },
 };
