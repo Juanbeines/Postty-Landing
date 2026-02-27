@@ -457,15 +457,17 @@ function BusinessTypesSection() {
             </motion.h2>
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-3 md:hidden">
-            {businessTypes.map((biz) => (
-              <div
+          <div className="mt-8 flex flex-wrap justify-center gap-2 md:hidden">
+            {businessTypes.map((biz, i) => (
+              <motion.div
                 key={biz.name}
-                className="flex items-center gap-2 rounded-2xl bg-white px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.05)]"
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
+                className="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-[0_2px_12px_rgba(0,0,0,0.05)]"
               >
-                <span className="text-lg">{biz.emoji}</span>
+                <span className="text-base">{biz.emoji}</span>
                 <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -587,8 +589,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-white text-[#0D1522]">
-      {/* ── Header ── */}
+    <div className="flex min-h-screen flex-col bg-white text-[#0D1522] md:min-h-0">
       <div className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 sm:px-6">
         {/* Layer 1: Pill (visible when not scrolled) */}
         <motion.header
@@ -653,8 +654,9 @@ export default function Home() {
         </motion.div>
       </div>
 
+      <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden px-4 pb-24 pt-24 sm:pt-28">
+      <section className="relative overflow-hidden px-4 pb-24 pt-20 sm:pt-24 md:pt-28">
         <div className="relative mx-auto max-w-5xl text-center">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -671,11 +673,22 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-heading text-4xl font-black leading-[1.1] tracking-tight sm:text-6xl md:text-7xl"
           >
-            Vender en redes sociales
-            <br />
-            no debería ser difícil.
-            <br />
-            <span className="mt-2 inline-block">
+            {/* Mobile: 3 líneas */}
+            <span className="sm:hidden">
+              Vender en redes,
+              <br />
+              sociales no debería,
+              <br />
+              ser difícil.
+            </span>
+            {/* Web: 2 líneas */}
+            <span className="hidden sm:inline">
+              Vender en redes sociales
+              <br />
+              no debería ser difícil.
+            </span>
+            <br className="hidden sm:block" />
+            <span className="mt-2 inline-block hidden sm:inline">
               <span className="text-[#022BB0]">1 Foto.</span>{" "}
               <span className="text-[#49D3F8]">1 Campaña.</span>{" "}
               <span className="text-[#D6F951]">1 Minuto.</span>
@@ -686,7 +699,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-lg text-[#0D1522]/65"
+            className="mx-auto mt-6 max-w-2xl text-sm text-[#0D1522]/65 sm:text-lg"
           >
             Postty convierte fotos de tus productos en posts, historias y publicidad.
             Cientos de piezas de contenido generadas, mientras dormís.
@@ -709,7 +722,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.4 }}
-            className="relative mx-auto mt-12 w-[200px]"
+            className="relative mx-auto mt-12 w-[200px] md:mt-20"
           >
             <div className="dragon-shadow absolute bottom-0 left-1/2 h-4 w-32 -translate-x-1/2 rounded-[50%]" />
             <Image
@@ -912,7 +925,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative w-[240px] shrink-0 sm:w-[250px]"
+            className="relative w-[250px] shrink-0 sm:w-[250px]"
             style={{ perspective: "1200px" }}
           >
             <div
@@ -1112,7 +1125,14 @@ export default function Home() {
           <h2 className="font-heading text-center text-3xl font-black sm:text-4xl">
             Hecho por fundadores, para fundadores que quieren vender sin preocuparse por el marketing.
           </h2>
-          <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
+          <div className="relative mt-12">
+            <div
+              className="columns-1 gap-4 sm:columns-2 lg:columns-3"
+              style={{
+                maskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
+                WebkitMaskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
+              }}
+            >
             {testimonials.map((t) => (
               <motion.blockquote
                 key={t.name}
@@ -1126,6 +1146,7 @@ export default function Home() {
                 <p className="mt-3 text-xs text-[#0D1522]/40">{t.location}</p>
               </motion.blockquote>
             ))}
+            </div>
           </div>
           <p className="mt-8 text-center text-sm font-bold text-[#0D1522]">
             +300 dueños de negocio usan Postty
@@ -1166,6 +1187,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      </main>
 
       {/* ── Footer ── */}
       <footer className="px-4 py-12">
