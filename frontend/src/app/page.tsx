@@ -675,7 +675,7 @@ export default function Home() {
           >
             {/* Mobile: 3 líneas */}
             <span className="sm:hidden">
-              Vender en redes,
+              Vender en redes
               <br />
               sociales no debería
               <br />
