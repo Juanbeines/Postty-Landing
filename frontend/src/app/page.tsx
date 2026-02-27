@@ -439,12 +439,12 @@ function BusinessTypesSection() {
   return (
     <section className="px-4 py-28" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
       <div className="relative mx-auto max-w-5xl">
-        <div className="relative mx-auto" style={{ minHeight: "420px" }}>
+        <div className="relative mx-auto min-h-[200px] md:min-h-[420px]">
           {businessTypes.map((biz, i) => (
             <RepelPill key={biz.name} biz={biz} i={i} mousePos={mousePos} />
           ))}
 
-          <div className="pointer-events-none relative z-10 flex min-h-[420px] items-center justify-center">
+          <div className="pointer-events-none relative z-10 flex min-h-[200px] items-center justify-center md:min-h-[420px]">
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -457,7 +457,7 @@ function BusinessTypesSection() {
             </motion.h2>
           </div>
 
-          <div className="mt-8 flex flex-wrap justify-center gap-2 md:hidden">
+          <div className="mt-3 flex flex-wrap justify-center gap-2 md:hidden">
             {businessTypes.map((biz, i) => (
               <motion.div
                 key={biz.name}
@@ -677,7 +677,7 @@ export default function Home() {
             <span className="sm:hidden">
               Vender en redes,
               <br />
-              sociales no debería,
+              sociales no debería
               <br />
               ser difícil.
             </span>
@@ -694,6 +694,18 @@ export default function Home() {
               <span className="text-[#D6F951]">1 Minuto.</span>
             </span>
           </motion.h1>
+
+          {/* Mobile: métricas apiladas debajo del título */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-3 flex flex-col items-center gap-0.5 sm:hidden"
+          >
+            <span className="font-heading text-2xl font-black text-[#022BB0]">1 Foto.</span>
+            <span className="font-heading text-2xl font-black text-[#49D3F8]">1 Campaña.</span>
+            <span className="font-heading text-2xl font-black text-[#D6F951]">1 Minuto.</span>
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -919,17 +931,17 @@ export default function Home() {
             </p>
           </div>
 
-          {/* Right column: iPhone */}
+          {/* Right column: iPhone — mismo tamaño y aspecto en mobile y web */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative w-[250px] shrink-0 sm:w-[250px]"
+            className="relative w-[250px] min-w-[250px] shrink-0"
             style={{ perspective: "1200px" }}
           >
             <div
-              className="relative"
+              className="relative w-[250px]"
               style={{ transform: "rotateY(-10deg) rotateX(4deg)" }}
             >
               {/* iPhone frame */}
