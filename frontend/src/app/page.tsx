@@ -656,7 +656,7 @@ export default function Home() {
 
       <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden px-4 pb-24 pt-20 sm:pt-24 md:pt-28">
+      <section className="relative overflow-hidden px-4 pb-24 pt-24 sm:pt-24 md:pt-28">
         <div className="relative mx-auto max-w-5xl text-center">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -687,24 +687,28 @@ export default function Home() {
               <br />
               no debería ser difícil.
             </span>
-            <br className="hidden sm:block" />
-            <span className="mt-2 inline-block hidden sm:inline">
-              <span className="text-[#022BB0]">1 Foto.</span>{" "}
-              <span className="text-[#49D3F8]">1 Campaña.</span>{" "}
-              <span className="text-[#D6F951]">1 Minuto.</span>
-            </span>
           </motion.h1>
 
-          {/* Mobile: métricas apiladas debajo del título */}
+          {/* Métricas: mobile 2 líneas, web inline — solo una vez */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-3 flex flex-col items-center gap-0.5 sm:hidden"
+            className="mt-3 text-center"
           >
-            <span className="font-heading text-2xl font-black text-[#022BB0]">1 Foto.</span>
-            <span className="font-heading text-2xl font-black text-[#49D3F8]">1 Campaña.</span>
-            <span className="font-heading text-2xl font-black text-[#D6F951]">1 Minuto.</span>
+            {/* Mobile: línea 1 "1 Foto. 1 Campaña." / línea 2 "1 Minuto." */}
+            <div className="font-heading text-2xl font-black sm:hidden">
+              <span className="text-[#022BB0]">1 Foto.</span>{" "}
+              <span className="text-[#49D3F8]">1 Campaña.</span>
+              <br />
+              <span className="text-[#D6F951]">1 Minuto.</span>
+            </div>
+            {/* Web: todo en una línea */}
+            <div className="hidden font-heading text-2xl font-black sm:block sm:text-3xl md:text-4xl">
+              <span className="text-[#022BB0]">1 Foto.</span>{" "}
+              <span className="text-[#49D3F8]">1 Campaña.</span>{" "}
+              <span className="text-[#D6F951]">1 Minuto.</span>
+            </div>
           </motion.div>
 
           <motion.p
