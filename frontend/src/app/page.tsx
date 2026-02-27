@@ -697,14 +697,14 @@ export default function Home() {
             className="mt-3 text-center"
           >
             {/* Mobile: línea 1 "1 Foto. 1 Campaña." / línea 2 "1 Minuto." */}
-            <div className="font-heading text-2xl font-black sm:hidden">
+            <div className="font-heading text-4xl font-black sm:hidden">
               <span className="text-[#022BB0]">1 Foto.</span>{" "}
               <span className="text-[#49D3F8]">1 Campaña.</span>
               <br />
               <span className="text-[#D6F951]">1 Minuto.</span>
             </div>
             {/* Web: todo en una línea */}
-            <div className="hidden font-heading text-2xl font-black sm:block sm:text-3xl md:text-4xl">
+            <div className="hidden font-heading font-black sm:block sm:text-6xl md:text-7xl">
               <span className="text-[#022BB0]">1 Foto.</span>{" "}
               <span className="text-[#49D3F8]">1 Campaña.</span>{" "}
               <span className="text-[#D6F951]">1 Minuto.</span>
