@@ -439,7 +439,7 @@ function StackingCards() {
 
               <div className="relative z-10 flex-1 md:max-w-[65%]">
                 <h3 className="font-heading text-[2.7rem] font-black leading-[1.05] sm:text-[3.1rem] md:text-[3.6rem]">
-                  ¿Cansad@ de gastar horas y horas en creando contenido para tu marca?
+                  ¿Cansad@ de gastar horas y horas creando contenido para tu marca?
                 </h3>
                 <div className="mt-[100px]">
                   <p className="text-sm font-medium" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>10 Ads y una campaña creada desde 0 en tan solo</p>
