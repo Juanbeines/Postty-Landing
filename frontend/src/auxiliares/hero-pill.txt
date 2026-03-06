@@ -1,0 +1,11 @@
+Pill "Tu Agente de marketing" — removido del Hero.
+Para reutilizar, colocar este bloque justo antes del <motion.h1> en la sección Hero de page.tsx.
+
+<motion.p
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+  className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#1881F1]/10 px-4 py-2 text-xs font-semibold text-[#1881F1]"
+>
+  Tu Agente de marketing
+</motion.p>

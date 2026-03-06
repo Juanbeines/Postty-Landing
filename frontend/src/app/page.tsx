@@ -1,13 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion, useMotionValue, useSpring, useScroll, useTransform, useInView } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-const trustBadges = [
-  { label: "Potenciado por IA", value: "Última generación" },
-  { label: "Valoración", value: "4.8/5 de 312 usuarios" },
-  { label: "Tiempo promedio", value: "1 min por post" },
+const avatars = [
+  "https://i.pravatar.cc/80?img=12",
+  "https://i.pravatar.cc/80?img=32",
+  "https://i.pravatar.cc/80?img=57",
+  "https://i.pravatar.cc/80?img=47",
+  "https://i.pravatar.cc/80?img=68",
 ];
 
 const revealWords = [
@@ -22,8 +24,8 @@ const revealWords = [
 const steps = [
   {
     num: "1",
-    title: "Subís una foto de tu producto",
-    desc: "Sacá una foto con tu celular y subila a Postty. Sin edición, sin preparación previa.",
+    title: "Agregás el link de tu tienda o subís una foto de tu producto",
+    desc: "Sin preparación previa, Postty escanea todo por vos.",
   },
   {
     num: "2",
@@ -37,40 +39,108 @@ const steps = [
   },
 ];
 
-const features = [
+const funcionalidades = [
   {
-    title: "Aprende tu estilo",
-    desc: "Entiende tu visión creativa. Cada pieza parece hecha por tu propio equipo.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="dna-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#022BB0"/><stop offset="1" stopColor="#1881F1"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#dna-g)" opacity="0.15"/>
+        <path d="M10 8c3 2 6 2 9 0M10 12c3 2 6 2 9 0M10 16c3 2 6 2 9 0M10 20c3 2 6 2 9 0M10 24c3 2 6 2 9 0" stroke="url(#dna-g)" strokeWidth="2" strokeLinecap="round"/>
+        <circle cx="10" cy="8" r="2" fill="#022BB0"/><circle cx="19" cy="8" r="2" fill="#1881F1"/>
+        <circle cx="10" cy="16" r="2" fill="#022BB0"/><circle cx="19" cy="16" r="2" fill="#1881F1"/>
+        <circle cx="10" cy="24" r="2" fill="#022BB0"/><circle cx="19" cy="24" r="2" fill="#1881F1"/>
+      </svg>
+    ),
+    title: "Genera contenido con tu ADN de marca",
+    desc: "Extrae tu estilo, colores y tono de tu Instagram. Cada ad parece hecho por tu equipo.",
+    color: "#022BB0",
+    gradient: "from-[#022BB0]/10 to-[#1881F1]/5",
+    borderColor: "border-[#022BB0]/15",
   },
   {
-    title: "Sabe qué vende",
-    desc: "Va más allá del tono. Aprende cómo piensan tus clientes cuando están listos para comprar.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="search-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#1881F1"/><stop offset="1" stopColor="#49D3F8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#search-g)" opacity="0.15"/>
+        <circle cx="14" cy="14" r="6" stroke="url(#search-g)" strokeWidth="2.5"/>
+        <path d="M19 19l5 5" stroke="#1881F1" strokeWidth="2.5" strokeLinecap="round"/>
+        <circle cx="14" cy="14" r="2.5" fill="#49D3F8" opacity="0.5"/>
+      </svg>
+    ),
+    title: "Investiga tu mercado por vos",
+    desc: "Analiza competidores, define tu audiencia y estudia qué ads funcionan en tu categoría.",
+    color: "#1881F1",
+    gradient: "from-[#1881F1]/10 to-[#49D3F8]/5",
+    borderColor: "border-[#1881F1]/15",
   },
   {
-    title: "Conoce a tus clientes",
-    desc: "Aprende la mentalidad, hábitos y necesidades de tu audiencia. Después crea contenido que les importa.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="rocket-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#49D3F8"/><stop offset="1" stopColor="#1881F1"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#rocket-g)" opacity="0.15"/>
+        <path d="M16 6c-2 4-3 8-3 12h6c0-4-1-8-3-12z" fill="url(#rocket-g)"/>
+        <path d="M13 18l-2 4h10l-2-4" fill="#1881F1" opacity="0.6"/>
+        <circle cx="16" cy="14" r="2" fill="white" opacity="0.8"/>
+        <path d="M14 22l2 4 2-4" fill="#49D3F8"/>
+      </svg>
+    ),
+    title: "Crea y publica la campaña completa",
+    desc: "10 ads en los formatos que mejor venden. Carousels, videos, fotos. Directo a Meta Ads.",
+    color: "#49D3F8",
+    gradient: "from-[#49D3F8]/10 to-[#D6F951]/5",
+    borderColor: "border-[#49D3F8]/20",
   },
   {
-    title: "Tus datos son privados",
-    desc: "La información de tu marca se mantiene privada. Nunca se comparte, ni se usa para entrenar otros modelos.",
+    icon: (
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <defs>
+          <linearGradient id="chart-g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
+            <stop stopColor="#D6F951"/><stop offset="1" stopColor="#8DB800"/>
+          </linearGradient>
+        </defs>
+        <circle cx="16" cy="16" r="14" fill="url(#chart-g)" opacity="0.15"/>
+        <rect x="7" y="18" width="4" height="8" rx="1.5" fill="#D6F951"/>
+        <rect x="14" y="12" width="4" height="14" rx="1.5" fill="#8DB800"/>
+        <rect x="21" y="8" width="4" height="18" rx="1.5" fill="url(#chart-g)"/>
+        <path d="M9 16l5-5 4 2 5-6" stroke="#8DB800" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <circle cx="24" cy="7" r="2" fill="#D6F951"/>
+      </svg>
+    ),
+    title: "Optimiza solo, vos descansás",
+    desc: "Sabe qué vende y qué no. Ajusta la campaña. Te avisa y sugiere la próxima.",
+    color: "#8DB800",
+    gradient: "from-[#D6F951]/15 to-[#8DB800]/5",
+    borderColor: "border-[#8DB800]/20",
   },
 ];
 
 const businessTypes = [
-  "Tiendas de ropa",
-  "Gastronomía",
-  "Artesanos",
-  "Servicios",
-  "Productos digitales",
-  "Belleza y cuidado",
-  "Fitness",
+  { name: "Agencias", emoji: "🏢", top: "8%", left: "4%", rotate: -6 },
+  { name: "Productos digitales", emoji: "🖥️", top: "2%", left: "30%", rotate: 4 },
+  { name: "Fitness", emoji: "💪", top: "4%", left: "62%", rotate: -2 },
+  { name: "Servicios", emoji: "💼", top: "14%", left: "80%", rotate: 5 },
+  { name: "SaaS", emoji: "🚀", top: "72%", left: "2%", rotate: -4 },
+  { name: "Gastronomía", emoji: "🍽️", top: "76%", left: "28%", rotate: -3 },
+  { name: "E-commerce", emoji: "🛍️", top: "74%", left: "56%", rotate: 3 },
+  { name: "Apps móviles", emoji: "📱", top: "70%", left: "80%", rotate: -5 },
 ];
 
 const stats = [
-  { value: "+300", label: "negocios generando contenido solos" },
-  { value: "1 min", label: "desde que subís tu foto hasta generar una campaña" },
-  { value: "0", label: "experiencia en marketing requerida" },
-  { value: "4", label: "Instagram, Meta, TikTok, YouTube" },
+  { value: "+300", label: "negocios generando contenido solos", color: "#022BB0" },
+  { value: "5 min", label: "desde que subís tu foto hasta generar una campaña", color: "#49D3F8" },
+  { value: "0", label: "experiencia en marketing requerida", color: "#D6F951" },
 ];
 
 
@@ -151,51 +221,88 @@ const faqItems = [
 /* ── Subcomponents ── */
 
 function StepMockup1() {
+  const url = "www.mitienda.com/productos";
+  const [charCount, setCharCount] = useState(0);
+  const [sent, setSent] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true });
+
+  useEffect(() => {
+    if (!inView) return;
+    const delay = setTimeout(() => {
+      let i = 0;
+      const interval = setInterval(() => {
+        i++;
+        setCharCount(i);
+        if (i >= url.length) {
+          clearInterval(interval);
+          setTimeout(() => setSent(true), 400);
+        }
+      }, 70);
+      return () => clearInterval(interval);
+    }, 500);
+    return () => clearTimeout(delay);
+  }, [inView]);
+
   return (
-    <div className="relative h-full w-full overflow-hidden rounded-2xl bg-[#F5F7FA] p-5">
-      {/* Phone frame */}
+    <div ref={ref} className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden rounded-2xl bg-[#F5F7FA] p-5">
       <motion.div
-        initial={{ y: 30, opacity: 0 }}
+        initial={{ y: 20, opacity: 0 }}
         whileInView={{ y: 0, opacity: 1 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="mx-auto w-[140px] rounded-2xl border border-[#E0E4EA] bg-white p-2 shadow-lg"
+        transition={{ duration: 0.4, delay: 0.2 }}
+        className="w-full max-w-[220px]"
       >
-        <div className="flex items-center justify-between px-1 pb-1.5">
-          <div className="h-1.5 w-8 rounded-full bg-[#E0E4EA]" />
-          <div className="h-3 w-3 rounded-full border border-[#E0E4EA]" />
-        </div>
-        <div className="aspect-square overflow-hidden rounded-lg bg-gradient-to-br from-[#49D3F8]/20 to-[#1881F1]/20">
-          <motion.div
-            initial={{ scale: 1.3, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex h-full items-center justify-center"
+        <p className="mb-2 text-center text-[9px] font-bold text-[#0D1522]/40">Pegá el link de tu tienda</p>
+        <div className="flex items-center gap-2 rounded-full border border-[#E0E4EA] bg-white px-3 py-2 shadow-md">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1881F1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span className="flex-1 truncate text-[11px] font-medium text-[#0D1522]/70">
+            {url.slice(0, charCount)}
+            {charCount < url.length && (
+              <motion.span
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity, repeatType: "reverse" }}
+                className="inline-block h-3 w-[1px] align-middle bg-[#1881F1]"
+              />
+            )}
+          </span>
+          <motion.button
+            animate={charCount >= url.length ? { scale: [1, 1.15, 1] } : {}}
+            transition={{ duration: 0.3 }}
+            className={`flex h-6 w-6 items-center justify-center rounded-full ${charCount >= url.length ? "bg-[#1881F1]" : "bg-[#E0E4EA]"} transition-colors`}
           >
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1881F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
-          </motion.div>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </motion.button>
         </div>
+      </motion.div>
+
+      {sent && (
         <motion.div
-          initial={{ width: 0 }}
-          whileInView={{ width: "100%" }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.8, ease: "easeOut" }}
-          className="mt-2 h-1.5 rounded-full bg-gradient-to-r from-[#1881F1] to-[#49D3F8]"
-        />
-        <p className="mt-1.5 text-center text-[7px] font-semibold text-[#0D1522]/40">Subiendo foto...</p>
-      </motion.div>
-      {/* Floating badge */}
-      <motion.div
-        initial={{ scale: 0, opacity: 0 }}
-        whileInView={{ scale: 1, opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ type: "spring", stiffness: 300, damping: 20, delay: 1.2 }}
-        className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[8px] font-bold text-[#1881F1] shadow-md"
-      >
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-        Listo
-      </motion.div>
+          initial={{ y: 10, opacity: 0, scale: 0.9 }}
+          animate={{ y: 0, opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          className="mt-4 flex items-center gap-2 rounded-xl bg-white px-3 py-2 shadow-md"
+        >
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: 1, ease: "linear" }}
+            className="h-4 w-4 rounded-full border-2 border-[#1881F1] border-t-transparent"
+          />
+          <span className="text-[9px] font-bold text-[#0D1522]/60">Escaneando tu tienda...</span>
+        </motion.div>
+      )}
+
+      {sent && (
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20, delay: 1.5 }}
+          className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-white px-2.5 py-1 text-[8px] font-bold text-[#1881F1] shadow-md"
+        >
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          12 productos encontrados
+        </motion.div>
+      )}
     </div>
   );
 }
@@ -299,6 +406,153 @@ function StepMockup3() {
 
 const stepMockups = [StepMockup1, StepMockup2, StepMockup3];
 
+function StackingCards() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+
+  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.82]);
+  const card1Y = useTransform(scrollYProgress, [0.3, 0.55], [0, -50]);
+  const card2Y = useTransform(scrollYProgress, [0.3, 0.65], [700, 14]);
+  const card2Opacity = useTransform(scrollYProgress, [0.3, 0.45], [0, 1]);
+
+  return (
+    <section ref={containerRef} style={{ height: "220vh" }} className="relative">
+      <div className="sticky top-0 flex h-screen items-center px-4 sm:px-6 md:px-10">
+        <div className="relative mx-auto w-full max-w-6xl">
+          {/* Card 1 */}
+          <motion.div
+            style={{ scale: card1Scale, y: card1Y }}
+            className="relative z-10 overflow-hidden rounded-[2rem]"
+          >
+            <div
+              className="relative flex min-h-[420px] flex-col justify-center overflow-hidden p-10 text-white sm:min-h-[480px] md:flex-row md:items-center md:p-14 lg:p-16"
+              style={{ background: "linear-gradient(135deg, #004aad, #1881f1)" }}
+            >
+              {/* Lime accent — aligned with "5 minutos" text, cut by bottom edge */}
+              <div
+                className="absolute -bottom-[50px] h-20 w-[290px] rounded-[3rem] sm:h-24 sm:w-[330px] md:w-[360px]"
+                style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", left: "calc(2.5rem + 70px)", }}
+              />
+
+              <div className="relative z-10 flex-1 md:max-w-[65%]">
+                <h3 className="font-heading text-[2.7rem] font-black leading-[1.05] sm:text-[3.1rem] md:text-[3.6rem]">
+                  ¿Cansad@ de gastar horas y horas en creando contenido para tu marca?
+                </h3>
+                <div className="mt-[100px]">
+                  <p className="text-sm font-medium" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>10 Ads y una campaña creada desde 0 en tan solo</p>
+                  <p className="font-heading mt-2 text-[3.8rem] font-black leading-none md:text-[4.5rem]" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>5 minutos</p>
+                </div>
+              </div>
+
+              {/* 3D Clock image */}
+              <div className="relative mt-8 flex shrink-0 items-center justify-end md:mt-0 md:-mr-36 md:w-[400px]">
+                <motion.div
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                >
+        <Image
+                    src="/stat-clock.png"
+                    alt="Clock"
+                    width={380}
+                    height={380}
+                    className="drop-shadow-[0_20px_40px_rgba(0,74,173,0.4)]"
+                  />
+                </motion.div>
+                {[
+                  { top: "0%", right: "5%", size: 7, color: "#D6F951", delay: 0 },
+                  { top: "15%", right: "-5%", size: 5, color: "#fff", delay: 0.5 },
+                  { top: "-5%", right: "25%", size: 6, color: "#49D3F8", delay: 1 },
+                  { top: "75%", right: "-3%", size: 4, color: "#D6F951", delay: 0.8 },
+                  { top: "82%", right: "15%", size: 5, color: "#fff", delay: 0.3 },
+                  { top: "5%", right: "42%", size: 4, color: "#fff", delay: 1.2 },
+                ].map((p, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ y: [0, -10, 0], opacity: [0.3, 0.8, 0.3] }}
+                    transition={{ duration: 2 + p.delay, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
+                    className="absolute rounded-full"
+                    style={{ top: p.top, right: p.right, width: p.size, height: p.size, background: p.color }}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Card 2 — stacks on top, offset so card 1 top edge peeks */}
+          <motion.div
+            style={{ y: card2Y, opacity: card2Opacity }}
+            className="absolute inset-x-0 top-0 z-20 overflow-hidden rounded-[2rem]"
+          >
+            <div
+              className="relative flex min-h-[270px] flex-col justify-center overflow-hidden p-8 pl-6 sm:min-h-[310px] md:flex-row md:items-center md:p-12 md:pl-8 lg:p-14 lg:pl-10"
+              style={{ background: "linear-gradient(135deg, #1f79ff, #aefff8)" }}
+            >
+              {/* Lime accent — same style as card 1 */}
+              <div
+                className="absolute -bottom-[50px] h-20 w-[440px] rounded-[3rem] sm:h-24 sm:w-[480px] md:w-[510px]"
+                style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", left: "calc(2.5rem + 50px)" }}
+              />
+
+              <div className="relative z-10 flex-1 md:max-w-[65%]">
+                <h3 className="font-heading text-[2.7rem] font-black leading-[1.05] text-white sm:text-[3.1rem] md:text-[3.6rem]">
+                  ¿Cansad@ de no saber<br />que Ad convierte?
+                </h3>
+                <div className="mt-[100px]">
+                  <p className="text-sm font-medium" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Postty mide tus metricas y optimiza tus campañas</p>
+                  <p className="font-heading mt-2 text-[3.2rem] font-black leading-none md:text-[3.8rem]" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Automaticamente</p>
+                </div>
+              </div>
+
+              {/* Piggy bank image */}
+              <div className="relative mt-8 flex shrink-0 items-center justify-end md:mt-0 md:-mr-[150px] md:w-[400px]">
+                <motion.div
+                  animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Image
+                    src="/stat-pig.png"
+                    alt="Piggy bank"
+                    width={380}
+                    height={380}
+                    className="drop-shadow-[0_20px_40px_rgba(65,179,236,0.4)]"
+                  />
+                </motion.div>
+                {[
+                  { top: "0%", right: "8%", size: 7, color: "#1ea9ee", delay: 0 },
+                  { top: "15%", right: "-3%", size: 5, color: "#fff", delay: 0.5 },
+                  { top: "-5%", right: "28%", size: 6, color: "#b3efff", delay: 1 },
+                  { top: "78%", right: "-3%", size: 4, color: "#1ea9ee", delay: 0.8 },
+                  { top: "85%", right: "15%", size: 5, color: "#fff", delay: 0.3 },
+                ].map((p, i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ y: [0, -10, 0], opacity: [0.3, 0.8, 0.3] }}
+                    transition={{ duration: 2 + p.delay, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
+                    className="absolute rounded-full"
+                    style={{ top: p.top, right: p.right, width: p.size, height: p.size, background: p.color }}
+                  />
+                ))}
+              </div>
+
+              {/* Sparkle top right */}
+              <motion.div
+                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute right-8 top-6 text-lg text-white/70"
+              >
+                ✦
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function WordReveal() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -354,6 +608,110 @@ function WordSpan({
     >
       {word}
     </motion.span>
+  );
+}
+
+function BusinessTypesSection() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+  }, []);
+  const handleMouseLeave = useCallback(() => {
+    setMousePos({ x: 0, y: 0 });
+  }, []);
+
+  return (
+    <section className="px-4 py-28" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
+      <div className="relative mx-auto max-w-5xl">
+        <div className="relative mx-auto min-h-[200px] md:min-h-[420px]">
+          {businessTypes.map((biz, i) => (
+            <RepelPill key={biz.name} biz={biz} i={i} mousePos={mousePos} />
+          ))}
+
+          <div className="pointer-events-none relative z-10 flex min-h-[200px] items-center justify-center md:min-h-[420px]">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="font-heading text-center text-4xl font-black leading-tight sm:text-5xl md:text-6xl"
+            >
+              Funciona para cualquier
+              <br />
+              tipo de negocio
+            </motion.h2>
+          </div>
+
+          <div className="mt-3 flex flex-wrap justify-center gap-2 md:hidden">
+            {businessTypes.map((biz, i) => (
+              <motion.div
+                key={biz.name}
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
+                className="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-[0_2px_12px_rgba(0,0,0,0.05)]"
+              >
+                <span className="text-base">{biz.emoji}</span>
+                <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RepelPill({ biz, i, mousePos }: { biz: typeof businessTypes[0]; i: number; mousePos: { x: number; y: number } }) {
+  const pillRef = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 150, damping: 20 });
+  const springY = useSpring(y, { stiffness: 150, damping: 20 });
+
+  useEffect(() => {
+    if (!pillRef.current || mousePos.x === 0 && mousePos.y === 0) return;
+    const rect = pillRef.current.getBoundingClientRect();
+    const pillCenterX = rect.left + rect.width / 2;
+    const pillCenterY = rect.top + rect.height / 2;
+    const dx = pillCenterX - mousePos.x;
+    const dy = pillCenterY - mousePos.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    const radius = 180;
+
+    if (dist < radius) {
+      const force = (1 - dist / radius) * 45;
+      const angle = Math.atan2(dy, dx);
+      x.set(Math.cos(angle) * force);
+      y.set(Math.sin(angle) * force);
+    } else {
+      x.set(0);
+      y.set(0);
+    }
+  }, [mousePos, x, y]);
+
+  return (
+    <motion.div
+      ref={pillRef}
+      initial={{ opacity: 0, scale: 0.7 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: i * 0.08, duration: 0.5 }}
+      className="absolute hidden md:flex"
+      style={{ top: biz.top, left: biz.left, x: springX, y: springY }}
+    >
+      <motion.div
+        animate={{ y: [0, -6, 0] }}
+        transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: "easeInOut" }}
+        className="cursor-default"
+      >
+        <div
+          className="flex items-center gap-2.5 rounded-2xl bg-white px-5 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)]"
+          style={{ transform: `rotate(${biz.rotate}deg)` }}
+        >
+          <span className="text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]">{biz.emoji}</span>
+          <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -415,8 +773,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="bg-white text-[#0D1522]">
-      {/* ── Header ── */}
+    <div className="flex min-h-screen flex-col bg-white text-[#0D1522] md:min-h-0">
       <div className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 sm:px-6">
         {/* Layer 1: Pill (visible when not scrolled) */}
         <motion.header
@@ -431,11 +788,12 @@ export default function Home() {
             scrolled ? "pointer-events-none" : ""
           }`}
         >
-          <a href="#" className="font-logo text-lg font-black tracking-[-0.08em] text-[#1881F1]">
-            postty
+          <a href="#" className="font-heading text-lg font-extrabold tracking-[-0.08em] text-[#0D1522]">
+            Postty
           </a>
           <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
+            <a href="#funcionalidades" className="whitespace-nowrap transition hover:text-[#0D1522]">Funcionalidades</a>
             <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Testimonios</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
@@ -462,9 +820,9 @@ export default function Home() {
             }}
             transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
             href="#"
-            className="flex h-12 items-center justify-center rounded-full bg-white/80 px-4 shadow-[0_2px_12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] backdrop-blur-xl"
+            className="flex h-12 items-center justify-center px-2"
           >
-            <span className="font-logo text-base font-black tracking-[-0.08em] text-[#1881F1]">postty</span>
+            <span className="font-heading text-base font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</span>
           </motion.a>
           <motion.a
             animate={{
@@ -480,8 +838,9 @@ export default function Home() {
         </motion.div>
       </div>
 
+      <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden px-4 pb-24 pt-24 sm:pt-28">
+      <section className="relative overflow-hidden px-4 pb-24 pt-24 sm:pt-24 md:pt-28">
         <div className="relative mx-auto max-w-5xl text-center">
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -491,29 +850,50 @@ export default function Home() {
           >
             Tu Agente de marketing
           </motion.p>
-
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
             className="font-heading text-4xl font-black leading-[1.1] tracking-tight sm:text-6xl md:text-7xl"
           >
-            Vender en redes sociales
-            <br className="hidden sm:block" />
-            no debería ser difícil.
-            <br />
-            <span className="mt-2 inline-block">
-              <span className="text-[#022BB0]">1 Foto.</span>{" "}
-              <span className="text-[#49D3F8]">1 Campaña.</span>{" "}
-              <span className="text-[#D6F951]">1 Minuto.</span>
+            {/* Mobile: 3 líneas */}
+            <span className="sm:hidden">
+              Vender en redes
+              <br />
+              sociales no debería
+              <br />
+              ser difícil.
+            </span>
+            {/* Web: 2 líneas */}
+            <span className="hidden sm:inline">
+              Vender en redes sociales
+              <br />
+              no debería ser difícil.
             </span>
           </motion.h1>
+
+          {/* Métricas: mobile 2 líneas, web inline — solo una vez */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="mt-3 text-center"
+          >
+            <div className="font-heading text-4xl font-black sm:hidden">
+              <span className="text-[#022BB0]">1 Campaña.</span>{" "}
+              <span className="text-[#49D3F8]">5 Minutos.</span>
+            </div>
+            <div className="hidden font-heading font-black sm:block sm:text-6xl md:text-7xl">
+              <span className="text-[#022BB0]">1 Campaña.</span>{" "}
+              <span className="text-[#49D3F8]">5 Minutos.</span>
+            </div>
+          </motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-lg text-[#0D1522]/65"
+            className="mx-auto mt-6 max-w-2xl text-sm text-[#0D1522]/65 sm:text-lg"
           >
             Postty convierte fotos de tus productos en posts, historias y publicidad.
             Cientos de piezas de contenido generadas, mientras dormís.
@@ -536,7 +916,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.4 }}
-            className="relative mx-auto mt-12 w-[200px]"
+            className="relative mx-auto mt-12 w-[200px] md:mt-20"
           >
             <div className="dragon-shadow absolute bottom-0 left-1/2 h-4 w-32 -translate-x-1/2 rounded-[50%]" />
             <Image
@@ -550,20 +930,33 @@ export default function Home() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            className="mx-auto mt-10 flex max-w-3xl flex-wrap items-center justify-center gap-6 sm:gap-10"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+            className="mx-auto mt-8 flex w-fit items-center gap-3 rounded-full border border-[#0D1522]/[0.06] bg-[#F5F7FA]/70 px-5 py-2.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
           >
-            {trustBadges.map((badge) => (
-              <div key={badge.label} className="text-center">
-                <p className="text-xs text-[#0D1522]/40">{badge.label}</p>
-                <p className="mt-1 text-sm font-bold text-[#0D1522]/80">{badge.value}</p>
-              </div>
-            ))}
+            <div className="flex -space-x-2.5">
+              {avatars.map((src, i) => (
+                <img
+                  key={i}
+                  src={src}
+                  alt=""
+                  width={32}
+                  height={32}
+                  className="h-8 w-8 rounded-full border-2 border-white object-cover"
+                />
+              ))}
+            </div>
+            <p className="text-sm text-[#0D1522]/70">
+              <span className="font-bold text-[#0D1522]">4.99/5</span> de{" "}
+              <span className="font-bold text-[#0D1522]">324</span> clientes ⭐
+            </p>
           </motion.div>
         </div>
       </section>
+
+      {/* ── Stacking Cards ── */}
+      <StackingCards />
 
       {/* ── Word-by-word reveal ── */}
       <WordReveal />
@@ -580,7 +973,7 @@ export default function Home() {
             Cómo funciona Postty
           </motion.h2>
 
-          <div className="mt-20">
+          <div className="mx-auto mt-20 max-w-4xl">
             {steps.map((step, i) => (
               <motion.div
                 key={step.num}
@@ -636,33 +1029,66 @@ export default function Home() {
       </section>
 
 
-      {/* ── Brand DNA / Features ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
+      {/* ── Funcionalidades ── */}
+      <section id="funcionalidades" className="px-4 py-24">
+        <div className="mx-auto max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="font-heading text-3xl font-black sm:text-4xl">El ADN de tu marca</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-[#0D1522]/60">
-              Desde el tono de tu marca hasta lo que le importa a tus clientes.
-              Postty aprende qué te hace único. Y construye con eso.
+            <h2 className="font-heading text-3xl font-black sm:text-4xl md:text-5xl">
+              De la foto a las ventas.{" "}
+              <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">
+                Sin escalas.
+              </span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-[#0D1522]/55">
+              Postty maneja el ciclo completo de marketing para que vos te enfoques en tu negocio.
             </p>
           </motion.div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2">
-            {features.map((feat, i) => (
+
+          <div className="mt-16 grid gap-6 sm:grid-cols-2">
+            {funcionalidades.map((feat, i) => (
               <motion.article
                 key={feat.title}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.4 }}
-                className="rounded-2xl bg-[#F5F7FA] p-6 transition hover:shadow-md"
+                initial={{ opacity: 0, y: 30, rotateX: 8 }}
+                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
+                transition={{ delay: i * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+                whileHover={{
+                  y: -6,
+                  boxShadow: `0 20px 40px -12px ${feat.color}22, 0 8px 20px -8px rgba(0,0,0,0.08)`,
+                  transition: { duration: 0.3 },
+                }}
+                className={`group relative overflow-hidden rounded-3xl border bg-gradient-to-br ${feat.gradient} ${feat.borderColor} p-8 transition-all duration-300`}
+                style={{ perspective: "800px" }}
               >
-                <h3 className="font-heading text-lg font-bold">{feat.title}</h3>
-                <p className="mt-2 text-sm text-[#0D1522]/60">{feat.desc}</p>
+                <div
+                  className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl"
+                  style={{
+                    background: `linear-gradient(135deg, ${feat.color}18, ${feat.color}08)`,
+                    boxShadow: `0 4px 12px ${feat.color}15`,
+                  }}
+                >
+                  {feat.icon}
+                </div>
+
+                <h3
+                  className="font-heading text-xl font-black sm:text-2xl"
+                  style={{ color: feat.color }}
+                >
+                  {feat.title}
+                </h3>
+                <p className="mt-3 leading-relaxed text-[#0D1522]/60">
+                  {feat.desc}
+                </p>
+
+                <div
+                  className="absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-[0.07] blur-2xl transition-all duration-500 group-hover:opacity-[0.12] group-hover:blur-3xl"
+                  style={{ background: feat.color }}
+                />
               </motion.article>
             ))}
           </div>
@@ -670,122 +1096,150 @@ export default function Home() {
       </section>
 
       {/* ── Business types ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="font-heading text-center text-3xl font-black sm:text-4xl">
-            Funciona para cualquier tipo de negocio
-          </h2>
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {businessTypes.map((biz) => (
-              <span
-                key={biz}
-                className="rounded-full bg-[#F5F7FA] px-5 py-2.5 text-sm font-semibold transition hover:bg-[#1881F1]/10 hover:text-[#1881F1]"
-              >
-                {biz}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      <BusinessTypesSection />
 
       {/* ── Content calendar ── */}
       <section className="px-4 py-20">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 md:flex-row md:items-start md:gap-16">
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-12 md:flex-row md:items-center md:gap-16">
           {/* Left column: text */}
-          <div className="flex-1 md:pt-8">
+          <div className="flex-1 text-center md:text-left">
             <p className="text-sm font-semibold text-[#0D1522]/40">Ads y contenido ilimitados</p>
             <h2 className="font-heading mt-3 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
               Llená tu calendario de contenido.
               <br />
-              <span className="text-[#1881F1]">3 meses de anticipación.</span>
+              <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">3 meses de anticipación.</span>
             </h2>
-            <p className="mt-5 max-w-md text-[#0D1522]/60 leading-relaxed">
+            <p className="mx-auto mt-5 max-w-md text-[#0D1522]/60 leading-relaxed md:mx-0">
               Vos descansás. Postty no. Trabaja en segundo plano generando contenido
               mientras dormís. Así a la mañana revisás, elegís y publicás antes del
               mediodía.
             </p>
-            {/* Tinder callout */}
-            <div className="mt-10 flex items-start gap-4">
-              <div className="relative shrink-0">
-                <div className="dragon-shadow-sm absolute bottom-0 left-1/2 h-1.5 w-10 -translate-x-1/2 rounded-[50%]" />
-                <Image src="/mascot.png" alt="Postty" width={52} height={52} className="relative z-10" />
-              </div>
-              <div>
-                <p className="font-heading text-sm font-bold text-[#8DB800]">Como Tinder, pero para contenido.</p>
-                <p className="mt-1 text-sm text-[#0D1522]/55">
-                  Deslizá para descartar, guardar, o generar más de lo que te gusta.
-                </p>
-              </div>
-            </div>
           </div>
 
-          {/* Right column: tilted phone with swipe cards */}
+          {/* Right column: iPhone — mismo tamaño y aspecto en mobile y web */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="relative w-[280px] shrink-0 sm:w-[320px]"
+            className="relative w-[250px] min-w-[250px] shrink-0"
             style={{ perspective: "1200px" }}
           >
-            <div style={{ transform: "rotateY(-12deg) rotateX(4deg)" }} className="relative">
-              {/* Phone frame */}
-              <div className="rounded-[2.2rem] border-[6px] border-[#1a1a1a] bg-[#1a1a1a] p-1 shadow-2xl">
-                {/* Notch */}
-                <div className="absolute left-1/2 top-2 z-20 h-5 w-24 -translate-x-1/2 rounded-full bg-[#1a1a1a]" />
+            <div
+              className="relative w-[250px]"
+              style={{ transform: "rotateY(-10deg) rotateX(4deg)" }}
+            >
+              {/* iPhone frame */}
+              <div className="rounded-[2.4rem] border-[2.5px] border-[#1C1C1E] bg-[#1C1C1E] p-[2px] shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)]" style={{ aspectRatio: "9 / 19.5" }}>
+                {/* Dynamic Island */}
+                <div className="absolute left-1/2 top-[8px] z-20 h-[14px] w-[56px] -translate-x-1/2 rounded-full bg-[#1C1C1E]" />
                 {/* Screen */}
-                <div className="relative overflow-hidden rounded-[1.8rem] bg-white px-4 pb-6 pt-8">
-                  {/* Swipeable post cards */}
-                  <div className="relative h-[240px]">
-                    {[
-                      { title: "Post Instagram", color: "from-[#1881F1] to-[#49D3F8]", delay: 0 },
-                      { title: "Historia", color: "from-[#022BB0] to-[#1881F1]", delay: 2.5 },
-                      { title: "Publicidad", color: "from-[#49D3F8] to-[#D6F951]", delay: 5 },
-                    ].map((card, idx) => (
-                      <motion.div
-                        key={card.title}
-                        animate={{
-                          x: [0, 0, idx % 2 === 0 ? 200 : -200],
-                          rotate: [0, 0, idx % 2 === 0 ? 15 : -15],
-                          opacity: [1, 1, 0],
-                        }}
-                        transition={{
-                          duration: 2.2,
-                          delay: card.delay,
-                          repeat: Infinity,
-                          repeatDelay: 5.3,
-                          ease: "easeInOut",
-                          times: [0, 0.6, 1],
-                        }}
-                        className="absolute inset-x-0 rounded-2xl border border-[#E8ECF0] bg-white p-3 shadow-md"
-                        style={{ zIndex: 3 - idx }}
-                      >
-                        <div className={`h-28 rounded-xl bg-gradient-to-br ${card.color} opacity-90`} />
-                        <div className="mt-3 h-2.5 w-3/4 rounded-full bg-[#E0E4EA]" />
-                        <div className="mt-1.5 h-2 w-1/2 rounded-full bg-[#E0E4EA]" />
-                        <p className="mt-2 text-[8px] font-bold text-[#0D1522]/40">{card.title}</p>
-                      </motion.div>
-                    ))}
+                <div className="relative flex h-full flex-col overflow-hidden rounded-[2.2rem] bg-white">
+                  {/* Status bar */}
+                  <div className="flex shrink-0 items-center justify-between px-5 pb-1 pt-8">
+                    <span className="text-[9px] font-semibold text-[#0D1522]">9:41</span>
+                    <div className="flex items-center gap-1 opacity-60">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="#0D1522"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3a4.237 4.237 0 00-6 0zm-4-4l2 2a7.074 7.074 0 0110 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+                      <svg width="12" height="10" viewBox="0 0 24 16" fill="#0D1522"><rect x="0" y="2" width="20" height="12" rx="2" ry="2" stroke="#0D1522" strokeWidth="1.5" fill="none"/><rect x="2" y="4" width="14" height="8" rx="1" fill="#0D1522"/><path d="M22 6v4a2 2 0 000-4z"/></svg>
+                    </div>
                   </div>
-                  {/* Swipe buttons */}
-                  <div className="mt-3 flex justify-center gap-5">
-                    <motion.div
-                      animate={{ scale: [1, 0.85, 1] }}
-                      transition={{ duration: 2.5, repeat: Infinity, repeatDelay: 5 }}
-                      className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-red-300/50 text-red-400/70"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                    </motion.div>
-                    <motion.div
-                      animate={{ scale: [1, 1.15, 1] }}
-                      transition={{ duration: 2.5, delay: 2.5, repeat: Infinity, repeatDelay: 5 }}
-                      className="flex h-11 w-11 items-center justify-center rounded-full border-2 border-pink-300/50 text-pink-400/70"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                    </motion.div>
+
+                  {/* Calendar content */}
+                  <div className="flex flex-1 flex-col justify-between gap-3 px-4 pb-5 pt-3">
+                    {/* Próximo post */}
+                    <div className="rounded-xl bg-[#F5F7FA] p-2.5">
+                      <p className="text-[8px] font-bold text-[#0D1522]/40">Próximo post</p>
+                      <div className="mt-1.5 flex gap-2">
+                        <div className="h-10 w-10 shrink-0 rounded-lg bg-gradient-to-br from-[#1881F1] to-[#49D3F8]" />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[9px] font-semibold text-[#0D1522]">Historia · Mañana 10:00</p>
+                          <p className="truncate text-[7px] text-[#0D1522]/50">Listo para publicar</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Calendar completo — 4 filas */}
+                    <div>
+                      <p className="text-[9px] font-bold text-[#0D1522]/35">Marzo 2026</p>
+                      <div className="mt-1.5 grid grid-cols-7 gap-1 text-center text-[7px] font-medium text-[#0D1522]/25">
+                        {["L","M","X","J","V","S","D"].map(d => <span key={d}>{d}</span>)}
+                      </div>
+                      <div className="mt-1 grid grid-cols-7 gap-1">
+                        {Array.from({ length: 28 }, (_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ scale: 0, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 + i * 0.015, duration: 0.25 }}
+                            className={`flex min-h-[28px] w-full items-center justify-center rounded-lg text-[8px] font-bold ${
+                              i < 24
+                                ? i % 4 === 0
+                                  ? "bg-[#022BB0] text-white"
+                                  : i % 4 === 1
+                                    ? "bg-[#1881F1] text-white"
+                                    : i % 4 === 2
+                                      ? "bg-[#49D3F8] text-white"
+                                      : "bg-[#D6F951] text-[#0D1522]"
+                                : "bg-[#F5F7FA] text-[#0D1522]/30"
+                            }`}
+                          >
+                            {i + 1}
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Post con métricas */}
+                    <div className="rounded-xl border border-[#E8ECF0] bg-white p-2.5">
+                      <p className="text-[8px] font-bold text-[#0D1522]/40">Mejor post esta semana</p>
+                      <div className="mt-1.5 flex gap-2">
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg p-[2px]" style={{ background: "linear-gradient(135deg, #022BB0, #1881F1, #49D3F8, #D6F951)" }}>
+                          <div className="relative h-full w-full overflow-hidden rounded-[6px] bg-white">
+                            {/* Carrusel: 3 slides separados */}
+                            <div className="absolute inset-0 flex flex-col">
+                              <div className="flex flex-1 items-end justify-between px-1 pb-4">
+                                <div className="h-[70%] w-[26%] shrink-0 rounded-md bg-gradient-to-br from-[#022BB0]/40 to-[#1881F1]/25" />
+                                <div className="h-[75%] w-[28%] shrink-0 rounded-md bg-gradient-to-br from-[#1881F1]/50 to-[#49D3F8]/35 shadow-sm" />
+                                <div className="h-[70%] w-[26%] shrink-0 rounded-md bg-gradient-to-br from-[#49D3F8]/40 to-[#D6F951]/25" />
+                              </div>
+                            {/* Indicadores de slide */}
+                            <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 gap-1">
+                              <span className="h-1 w-1 rounded-full bg-[#0D1522]/25" />
+                              <span className="h-1 w-1 rounded-full bg-[#1881F1]" />
+                              <span className="h-1 w-1 rounded-full bg-[#0D1522]/25" />
+                            </div>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[9px] font-semibold text-[#0D1522]">Carrusel · 12 Mar</p>
+                          <div className="mt-1.5 flex gap-3 text-[7px]">
+                            <span className="font-bold text-[#8DB800]">4.2% CTR</span>
+                            <span className="font-bold text-[#1881F1]">2.1k alcance</span>
+                            <span className="font-bold text-[#49D3F8]">89 conv.</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div className="flex gap-2">
+                      <div className="flex-1 rounded-xl bg-[#F5F7FA] p-2.5 text-center">
+                        <p className="text-[10px] font-bold text-[#1881F1]">93 ads</p>
+                        <p className="text-[6px] text-[#0D1522]/35">programados</p>
+                      </div>
+                      <div className="flex-1 rounded-xl bg-[#F5F7FA] p-2.5 text-center">
+                        <p className="text-[10px] font-bold text-[#8DB800]">25 días</p>
+                        <p className="text-[6px] text-[#0D1522]/35">cubiertos</p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
+
+              {/* Reflection */}
+              <div className="absolute -bottom-6 left-1/2 h-12 w-[80%] -translate-x-1/2 rounded-[50%] bg-gradient-to-r from-[#1881F1]/15 via-[#49D3F8]/10 to-[#D6F951]/8 blur-xl" />
             </div>
           </motion.div>
         </div>
@@ -807,7 +1261,7 @@ export default function Home() {
               Esto no es solo IA. Es inteligencia de contenido.
             </p>
           </motion.div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {stats.map((stat, i) => (
               <motion.article
                 key={stat.label}
@@ -817,7 +1271,7 @@ export default function Home() {
                 transition={{ delay: i * 0.1, duration: 0.35 }}
                 className="rounded-2xl bg-[#F5F7FA] p-5 text-center"
               >
-                <p className="font-heading text-4xl font-black text-[#49D3F8]">{stat.value}</p>
+                <p className="font-heading text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
                 <p className="mt-2 text-sm text-[#0D1522]/60">{stat.label}</p>
               </motion.article>
             ))}
@@ -832,8 +1286,8 @@ export default function Home() {
           <h2 className="font-heading text-3xl font-black sm:text-4xl md:text-5xl">
             Grandes poderes vienen con
           </h2>
-          <p className="mt-2 font-heading text-2xl font-black text-[#1881F1] sm:text-3xl md:text-4xl">
-            gran privacidad.
+          <p className="mt-2 font-heading text-2xl font-black sm:text-3xl md:text-4xl">
+            <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">gran privacidad.</span>
           </p>
           <p className="mx-auto mt-5 max-w-2xl text-[#0D1522]/60">
             Tu marca es tu mayor activo. La protegemos con encriptación completa,
@@ -868,7 +1322,14 @@ export default function Home() {
           <h2 className="font-heading text-center text-3xl font-black sm:text-4xl">
             Hecho por fundadores, para fundadores que quieren vender sin preocuparse por el marketing.
           </h2>
-          <div className="mt-12 columns-1 gap-4 sm:columns-2 lg:columns-3">
+          <div className="relative mt-12">
+            <div
+              className="columns-1 gap-4 sm:columns-2 lg:columns-3"
+              style={{
+                maskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
+                WebkitMaskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
+              }}
+            >
             {testimonials.map((t) => (
               <motion.blockquote
                 key={t.name}
@@ -882,8 +1343,9 @@ export default function Home() {
                 <p className="mt-3 text-xs text-[#0D1522]/40">{t.location}</p>
               </motion.blockquote>
             ))}
+            </div>
           </div>
-          <p className="mt-8 text-center text-sm font-bold text-[#1881F1]">
+          <p className="mt-8 text-center text-sm font-bold text-[#0D1522]">
             +300 dueños de negocio usan Postty
           </p>
         </div>
@@ -923,11 +1385,13 @@ export default function Home() {
         </div>
       </section>
 
+      </main>
+
       {/* ── Footer ── */}
       <footer className="px-4 py-12">
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 sm:flex-row sm:justify-between">
           <div>
-            <p className="font-logo text-xl font-black tracking-[-0.08em] text-[#1881F1]">postty</p>
+            <p className="font-heading text-xl font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</p>
             <p className="mt-2 text-sm text-[#0D1522]/50">support@postty.com</p>
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
