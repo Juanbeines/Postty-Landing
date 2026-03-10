@@ -197,11 +197,11 @@ const faqItems = [
   },
   {
     q: "¿Puedo manejar múltiples marcas en una cuenta?",
-    a: "Sí. Podés gestionar hasta 5 marcas en una sola cuenta de Postty. Cada una con su propio estilo, espacio de trabajo y configuración.",
+    a: "Sí. Podés gestionar hasta 4 marcas en una sola cuenta de Postty. Cada una con su propio estilo, espacio de trabajo y configuración.",
   },
   {
     q: "¿Tienen prueba gratuita?",
-    a: "Sí. Postty tiene un plan gratuito con 30 posts por mes para que lo pruebes sin riesgo y sin poner tarjeta de crédito.",
+    a: "Sí. Postty te genera 4 ads gratis para que pruebes la herramienta sin compromiso. Después de esa prueba, podés elegir un plan y seguir creando tus campañas.",
   },
   {
     q: "¿Es adecuado para mi tipo de negocio?",
