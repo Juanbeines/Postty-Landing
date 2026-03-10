@@ -549,8 +549,8 @@ function PricingSection() {
 
   const basicFeatures = [
     "Hasta 1 marca",
-    "Máximo de 5 campañas",
-    "Hasta 100 Ads generados",
+    "Máximo de 3 campañas",
+    "Hasta 60 Ads generados",
   ];
 
   const proFeatures = [
