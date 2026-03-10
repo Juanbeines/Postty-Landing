@@ -12,15 +12,6 @@ const avatars = [
   "https://i.pravatar.cc/80?img=68",
 ];
 
-const revealWords = [
-  "En", "Postty", "transformamos", "cómo", "los", "dueños", "de", "negocios",
-  "crean", "contenido.", "Usando", "los", "últimos", "modelos", "de", "IA",
-  "capturamos", "la", "esencia", "de", "tu", "marca", "para", "generar",
-  "contenido", "profesional", "en", "todas", "las", "plataformas.",
-  "Para", "que", "hagas", "el", "trabajo", "de", "un", "equipo", "completo",
-  "sin", "contratar", "uno.",
-];
-
 const steps = [
   {
     num: "1",
@@ -553,61 +544,167 @@ function StackingCards() {
   );
 }
 
-function WordReveal() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start 0.8", "end 0.65"],
-  });
+function PricingSection() {
+  const [hoveredCard, setHoveredCard] = useState<"basic" | "pro" | null>("pro");
+
+  const basicFeatures = [
+    "Hasta 1 marca",
+    "Máximo de 5 campañas",
+    "Hasta 100 Ads generados",
+  ];
+
+  const proFeatures = [
+    "Hasta 4 marcas",
+    "Campañas ilimitadas",
+    "Ads infinitos",
+    "Acceso a mejores modelos de IA",
+  ];
+
+  const activeCard = hoveredCard ?? "pro";
 
   return (
-    <div ref={containerRef} className="mx-auto max-w-4xl px-6 pb-32 pt-6 sm:px-10 sm:pb-40 sm:pt-8 md:pb-48 md:pt-10">
-      <p className="font-heading flex flex-wrap gap-x-[0.4em] gap-y-2 text-3xl font-medium leading-[1.4] text-[#0D1522]/20 sm:text-4xl md:text-[2.75rem] md:leading-[1.45]">
-        {revealWords.map((word, i) => {
-          const start = (i / revealWords.length) * 0.85;
-          const end = start + (1 / revealWords.length) * 0.85;
-          return (
-            <WordSpan key={`${word}-${i}`} word={word} range={[start, end]} progress={scrollYProgress} />
-          );
-        })}
-      </p>
-    </div>
-  );
-}
+    <section className="px-4 py-24">
+      <div className="mx-auto max-w-4xl">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="font-heading text-center text-3xl font-black sm:text-4xl md:text-5xl"
+        >
+          Precios simples
+        </motion.h2>
 
-const highlightColorMap: Record<string, string> = {
-  "Postty": "#1881F1",
-  "contenido.": "#022BB0",
-  "marca": "#49D3F8",
-  "plataformas.": "#D6F951",
-  "uno.": "#70ADD4",
-};
+        <div className="relative mt-16 grid items-start gap-8 sm:grid-cols-2">
+          {/* Basic Card */}
+          <div
+            className="relative self-start"
+            onMouseEnter={() => setHoveredCard("basic")}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            {/* Mascot for Basic — hides/shows vertically */}
+            <motion.div
+              animate={{ y: activeCard === "basic" ? 0 : 50, opacity: activeCard === "basic" ? 1 : 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
+              style={{ width: 120, height: 120, marginTop: -55 }}
+            >
+              <Image src="/mascot.png" alt="Postty mascot" width={120} height={120} className="drop-shadow-xl" />
+            </motion.div>
 
-function WordSpan({
-  word,
-  range,
-  progress,
-}: {
-  word: string;
-  range: [number, number];
-  progress: ReturnType<typeof useScroll>["scrollYProgress"];
-}) {
-  const targetColor = highlightColorMap[word];
-  const opacity = useTransform(progress, range, [0.15, 1]);
-  const normalColor = useTransform(progress, range, ["#0D1522", "#0D1522"]);
-  const highlightColor = useTransform(
-    progress,
-    range,
-    [targetColor ? `${targetColor}25` : "#0D1522", targetColor ?? "#0D1522"],
-  );
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="relative z-10 rounded-3xl bg-white p-8 shadow-[0_4px_32px_rgba(0,0,0,0.08)]"
+            >
+            <h3
+              className="font-heading text-center text-5xl font-black sm:text-6xl"
+              style={{
+                background: "linear-gradient(135deg, #1881F1, #49D3F8)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Basic
+            </h3>
 
-  return (
-    <motion.span
-      style={{ opacity, color: targetColor ? highlightColor : normalColor }}
-      className={targetColor ? "font-bold" : ""}
-    >
-      {word}
-    </motion.span>
+            <div className="mt-4 flex items-baseline justify-center gap-2">
+              <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
+              <span className="font-heading text-4xl font-black text-[#0D1522]">$29,999</span>
+              <span className="text-sm font-medium text-[#0D1522]/50">x mes</span>
+            </div>
+
+            <div className="mt-8 rounded-2xl bg-[#F8F9FB] p-5">
+              {basicFeatures.map((feat, i) => (
+                <div
+                  key={feat}
+                  className={`flex items-center justify-between py-3.5 ${
+                    i < basicFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                  }`}
+                >
+                  <span className="text-sm font-medium text-[#0D1522]/70">{feat}</span>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="mt-8 w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]">
+              Empezar ahora
+            </button>
+            </motion.div>
+          </div>
+
+          {/* Pro Card */}
+          <div
+            className="relative"
+            onMouseEnter={() => setHoveredCard("pro")}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            {/* Mascot for Pro — hides/shows vertically */}
+            <motion.div
+              animate={{ y: activeCard === "pro" ? 0 : 50, opacity: activeCard === "pro" ? 1 : 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
+              style={{ width: 120, height: 120, marginTop: -55 }}
+            >
+              <Image src="/mascot.png" alt="Postty mascot" width={120} height={120} className="drop-shadow-xl" />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="relative z-10 overflow-hidden rounded-3xl p-8 text-white"
+              style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
+            >
+            <h3
+              className="font-heading text-center text-5xl font-black sm:text-6xl"
+              style={{
+                background: "linear-gradient(135deg, #b5ff00, #eeff64)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Pro
+            </h3>
+
+            <div className="mt-4 flex items-baseline justify-center gap-2">
+              <span className="text-xs font-semibold text-white/50">ARS</span>
+              <span className="font-heading text-4xl font-black text-white">$84,999</span>
+              <span className="text-sm font-medium text-white/60">x mes</span>
+            </div>
+
+            <div className="mt-8 rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
+              {proFeatures.map((feat, i) => (
+                <div
+                  key={feat}
+                  className={`flex items-center justify-between py-3.5 ${
+                    i < proFeatures.length - 1 ? "border-b border-white/10" : ""
+                  }`}
+                >
+                  <span className="text-sm font-medium text-white/90">{feat}</span>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              className="mt-8 w-full rounded-full py-3.5 text-sm font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
+              style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
+            >
+              Convertirme en Pro
+            </button>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -958,9 +1055,6 @@ export default function Home() {
       {/* ── Stacking Cards ── */}
       <StackingCards />
 
-      {/* ── Word-by-word reveal ── */}
-      <WordReveal />
-
       {/* ── How it works ── */}
       <section id="como-funciona" className="px-4 py-20">
         <div className="mx-auto max-w-6xl">
@@ -1028,6 +1122,9 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* ── Pricing ── */}
+      <PricingSection />
 
       {/* ── Funcionalidades ── */}
       <section id="funcionalidades" className="px-4 py-24">

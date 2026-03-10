@@ -1,0 +1,74 @@
+/* ── WordReveal Section (saved from page.tsx) ── */
+
+/* --- Data --- */
+const revealWords = [
+  "En", "Postty", "transformamos", "cómo", "los", "dueños", "de", "negocios",
+  "crean", "contenido.", "Usando", "los", "últimos", "modelos", "de", "IA",
+  "capturamos", "la", "esencia", "de", "tu", "marca", "para", "generar",
+  "contenido", "profesional", "en", "todas", "las", "plataformas.",
+  "Para", "que", "hagas", "el", "trabajo", "de", "un", "equipo", "completo",
+  "sin", "contratar", "uno.",
+];
+
+const highlightColorMap: Record<string, string> = {
+  "Postty": "#1881F1",
+  "contenido.": "#022BB0",
+  "marca": "#49D3F8",
+  "plataformas.": "#D6F951",
+  "uno.": "#70ADD4",
+};
+
+/* --- Components --- */
+
+function WordReveal() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start 0.8", "end 0.65"],
+  });
+
+  return (
+    <div ref={containerRef} className="mx-auto max-w-4xl px-6 pb-32 pt-6 sm:px-10 sm:pb-40 sm:pt-8 md:pb-48 md:pt-10">
+      <p className="font-heading flex flex-wrap gap-x-[0.4em] gap-y-2 text-3xl font-medium leading-[1.4] text-[#0D1522]/20 sm:text-4xl md:text-[2.75rem] md:leading-[1.45]">
+        {revealWords.map((word, i) => {
+          const start = (i / revealWords.length) * 0.85;
+          const end = start + (1 / revealWords.length) * 0.85;
+          return (
+            <WordSpan key={`${word}-${i}`} word={word} range={[start, end]} progress={scrollYProgress} />
+          );
+        })}
+      </p>
+    </div>
+  );
+}
+
+function WordSpan({
+  word,
+  range,
+  progress,
+}: {
+  word: string;
+  range: [number, number];
+  progress: ReturnType<typeof useScroll>["scrollYProgress"];
+}) {
+  const targetColor = highlightColorMap[word];
+  const opacity = useTransform(progress, range, [0.15, 1]);
+  const normalColor = useTransform(progress, range, ["#0D1522", "#0D1522"]);
+  const highlightColor = useTransform(
+    progress,
+    range,
+    [targetColor ? `${targetColor}25` : "#0D1522", targetColor ?? "#0D1522"],
+  );
+
+  return (
+    <motion.span
+      style={{ opacity, color: targetColor ? highlightColor : normalColor }}
+      className={targetColor ? "font-bold" : ""}
+    >
+      {word}
+    </motion.span>
+  );
+}
+
+/* --- Usage in JSX --- */
+{/* <WordReveal /> */}
