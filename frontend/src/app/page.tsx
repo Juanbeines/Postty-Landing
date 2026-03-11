@@ -207,6 +207,10 @@ const faqItems = [
     q: "¿Es adecuado para mi tipo de negocio?",
     a: "Sí. Postty funciona para cualquier negocio. Es especialmente efectivo para marcas con productos físicos que quieren crear contenido de calidad de forma rápida y consistente.",
   },
+  {
+    q: "¿Puedo editar mis Ads generados?",
+    a: "Sí. Cada Ad que genera Postty se puede editar. En el plan Basic tenés 1 edit por Ad para ajustar lo que necesites. En el plan Pro, los edits son ilimitados: podés modificar tus Ads todas las veces que quieras hasta que queden perfectos.",
+  },
 ];
 
 /* ── Subcomponents ── */
@@ -551,6 +555,7 @@ function PricingSection() {
     "Hasta 1 marca",
     "Máximo de 3 campañas",
     "Hasta 60 Ads generados",
+    "1 Edit por Ad",
   ];
 
   const proFeatures = [
@@ -558,6 +563,7 @@ function PricingSection() {
     "Campañas ilimitadas",
     "Ads infinitos",
     "Acceso a mejores modelos de IA",
+    "Edits ilimitados por Ad",
   ];
 
   const activeCard = hoveredCard ?? "pro";
