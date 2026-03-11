@@ -617,7 +617,7 @@ function PricingSection() {
 
             <div className="mt-4 flex items-baseline justify-center gap-2">
               <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
-              <span className="font-heading text-4xl font-black text-[#0D1522]">$29,999</span>
+              <span className="font-heading text-4xl font-black text-[#0D1522]">$39,999</span>
               <span className="text-sm font-medium text-[#0D1522]/50">x mes</span>
             </div>
 
