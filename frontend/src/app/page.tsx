@@ -901,7 +901,7 @@ export default function Home() {
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
           <a href="#empezar" className="btn-outline-gradient shrink-0 rounded-full px-5 py-2 text-sm font-bold">
-            Empezar gratis
+            Iniciar sesión
           </a>
         </motion.header>
 
