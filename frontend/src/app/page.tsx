@@ -936,7 +936,7 @@ export default function Home() {
             href="#empezar"
             className="btn-outline-gradient rounded-full bg-white/80 px-5 py-2.5 text-sm font-bold shadow-[0_2px_12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] backdrop-blur-xl"
           >
-            Empezar gratis
+            Iniciar sesión
           </motion.a>
         </motion.div>
       </div>
