@@ -1495,7 +1495,7 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 sm:flex-row sm:justify-between">
           <div>
             <p className="font-heading text-xl font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</p>
-            <p className="mt-2 text-sm text-[#0D1522]/50">support@postty.com</p>
+            <p className="mt-2 text-sm text-[#0D1522]/50">sales@fitpic-ai.com</p>
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
             <div>
