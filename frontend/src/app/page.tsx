@@ -637,9 +637,9 @@ function PricingSection() {
               ))}
             </div>
 
-            <button className="mt-8 w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]">
+            <a href="https://app.posttyai.com" className="mt-8 block w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]">
               Empezar ahora
-            </button>
+            </a>
             </motion.div>
           </div>
 
@@ -700,12 +700,13 @@ function PricingSection() {
               ))}
             </div>
 
-            <button
-              className="mt-8 w-full rounded-full py-3.5 text-sm font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
+            <a
+              href="https://app.posttyai.com"
+              className="mt-8 block w-full rounded-full py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
               style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
             >
               Convertirme en Pro
-            </button>
+            </a>
             </motion.div>
           </div>
         </div>
@@ -945,7 +946,7 @@ export default function Home() {
             <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Testimonios</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
-          <a href="#empezar" className="btn-outline-gradient shrink-0 rounded-full px-5 py-2 text-sm font-bold">
+          <a href="https://app.posttyai.com" className="btn-outline-gradient shrink-0 rounded-full px-5 py-2 text-sm font-bold">
             Iniciar sesión
           </a>
         </motion.header>
@@ -978,7 +979,7 @@ export default function Home() {
               scale: scrolled ? 1 : 0.7,
             }}
             transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-            href="#empezar"
+            href="https://app.posttyai.com"
             className="btn-outline-gradient rounded-full bg-white/80 px-5 py-2.5 text-sm font-bold shadow-[0_2px_12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] backdrop-blur-xl"
           >
             Iniciar sesión
@@ -1053,7 +1054,7 @@ export default function Home() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="mt-10"
           >
-            <a href="#empezar" className="btn-primary inline-flex items-center gap-2 rounded-full px-9 py-4 text-base font-black text-white">
+            <a href="https://app.posttyai.com" className="btn-primary inline-flex items-center gap-2 rounded-full px-9 py-4 text-base font-black text-white">
               Empezar gratis
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
             </a>
@@ -1523,7 +1524,7 @@ export default function Home() {
           </h2>
           <div className="mt-8">
             <a
-              href="#"
+              href="https://app.posttyai.com"
               className="inline-flex items-center gap-2 rounded-full bg-[#D6F951] px-8 py-4 text-base font-black text-[#0D1522] shadow-[0_4px_14px_rgba(214,249,81,0.4)] transition hover:shadow-[0_6px_20px_rgba(214,249,81,0.5)] hover:brightness-105"
             >
               Empezar gratis
