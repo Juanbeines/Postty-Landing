@@ -1541,7 +1541,7 @@ export default function Home() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 sm:flex-row sm:justify-between">
           <div>
             <p className="font-heading text-xl font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</p>
-            <p className="mt-2 text-sm text-[#0D1522]/50">sales@fitpic-ai.com</p>
+            <p className="mt-2 text-sm text-[#0D1522]/50">soporte@posttyai.com</p>
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
             <div>
@@ -1571,7 +1571,7 @@ export default function Home() {
 
         <h2>Responsable del tratamiento</h2>
         <p>Juan Martin Beines Furcada, con domicilio en Echeverria 1200, CP 1617, Buenos Aires, Argentina.</p>
-        <p>Correo electrónico: <a href="mailto:sales@fitpic-ai.com">sales@fitpic-ai.com</a></p>
+        <p>Correo electrónico: <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a></p>
 
         <h2>Datos que recopilamos</h2>
         <ul>
@@ -1648,7 +1648,7 @@ export default function Home() {
 
         <h3>Cómo ejercer tus derechos</h3>
         <ol>
-          <li>Enviá un email a <a href="mailto:sales@fitpic-ai.com">sales@fitpic-ai.com</a> con asunto &quot;Solicitud ARCO&quot;</li>
+          <li>Enviá un email a <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a> con asunto &quot;Solicitud ARCO&quot;</li>
           <li>Indicá: tu nombre, email de la cuenta, y qué derecho querés ejercer</li>
           <li>Te responderemos en un plazo máximo de 10 días hábiles</li>
           <li>Podemos pedirte verificación de identidad</li>
@@ -1658,7 +1658,7 @@ export default function Home() {
         <p>Notificaremos cambios por email o en la plataforma. El uso continuado implica aceptación.</p>
 
         <h2>Contacto</h2>
-        <p>Correo electrónico: <a href="mailto:sales@fitpic-ai.com">sales@fitpic-ai.com</a></p>
+        <p>Correo electrónico: <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a></p>
         <p>Sitio web: <a href="https://posttyai.com">https://posttyai.com</a></p>
 
         <p className="mt-6 text-xs text-[#0D1522]/40">Autoridad de control: Si considerás que tus derechos no fueron respetados, podés reclamar ante la Agencia de Acceso a la Información Pública (AAIP) — <a href="https://www.argentina.gob.ar/aaip">https://www.argentina.gob.ar/aaip</a></p>
@@ -1778,7 +1778,7 @@ export default function Home() {
         <h3>7.4. Almacenamiento</h3>
         <p>Los datos se almacenan en bases de datos PostgreSQL. Postty implementa medidas de seguridad razonables para proteger los datos, pero no puede garantizar una seguridad absoluta.</p>
         <h3>7.5. Retención de datos</h3>
-        <p>Los datos del Usuario se conservan mientras la cuenta esté activa. El Usuario puede solicitar la eliminación de su cuenta y datos enviando un correo electrónico a <a href="mailto:sales@fitpic-ai.com">sales@fitpic-ai.com</a>.</p>
+        <p>Los datos del Usuario se conservan mientras la cuenta esté activa. El Usuario puede solicitar la eliminación de su cuenta y datos enviando un correo electrónico a <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a>.</p>
 
         <h2>8. Limitaciones del Servicio y Descargo de Responsabilidad</h2>
         <h3>8.1. Servicio &quot;tal cual&quot;</h3>
@@ -1837,7 +1837,7 @@ export default function Home() {
         <h2>13. Contacto</h2>
         <p>Para cualquier consulta, reclamo o solicitud relacionada con estos Términos o el Servicio, el Usuario puede comunicarse a:</p>
         <ul>
-          <li>Correo electrónico: <a href="mailto:sales@fitpic-ai.com">sales@fitpic-ai.com</a></li>
+          <li>Correo electrónico: <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a></li>
           <li>Sitio web: <a href="https://posttyai.com">https://posttyai.com</a></li>
         </ul>
 
