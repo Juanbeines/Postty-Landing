@@ -1,0 +1,7 @@
+# https://www.posttyai.com
+
+User-agent: *
+Allow: /
+Disallow:
+
+Sitemap: https://www.posttyai.com/sitemap.xml
