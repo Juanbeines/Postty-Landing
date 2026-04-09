@@ -414,7 +414,7 @@ function StackingCards() {
   const card2Opacity = useTransform(scrollYProgress, [0.3, 0.45], [0, 1]);
 
   return (
-    <section ref={containerRef} style={{ height: "220vh" }} className="relative">
+    <section ref={containerRef} style={{ height: "220vh" }} className="relative mt-24 md:mt-0">
       <div className="sticky top-0 flex h-screen items-center px-4 sm:px-6 md:px-10">
         <div className="relative mx-auto w-full max-w-6xl">
           {/* Card 1 */}
@@ -895,6 +895,16 @@ function LegalModal({ open, onClose, title, children }: { open: boolean; onClose
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [legalModal, setLegalModal] = useState<"tyc" | "privacy" | null>(null);
+  const [showHeroCTA, setShowHeroCTA] = useState(false);
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     let lastY = window.scrollY;
@@ -933,7 +943,7 @@ export default function Home() {
             filter: scrolled ? "blur(6px)" : "blur(0px)",
           }}
           transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
-          className={`mx-auto flex w-fit items-center gap-3 rounded-full bg-white/80 px-4 py-2.5 shadow-[0_2px_12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] backdrop-blur-xl ${
+          className={`mx-auto flex w-fit items-center gap-3 rounded-full bg-white/10 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-2xl backdrop-saturate-150 ${
             scrolled ? "pointer-events-none" : ""
           }`}
         >
@@ -946,7 +956,7 @@ export default function Home() {
             <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Testimonios</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
-          <a href="https://app.posttyai.com" className="btn-outline-gradient shrink-0 rounded-full px-5 py-2 text-sm font-bold">
+          <a href="https://app.posttyai.com" className="shrink-0 rounded-full bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
             Iniciar sesión
           </a>
         </motion.header>
@@ -989,119 +999,44 @@ export default function Home() {
 
       <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden px-4 pb-24 pt-24 sm:pt-24 md:pt-28">
-        <div className="relative mx-auto max-w-5xl text-center">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#1881F1]/10 px-4 py-2 text-xs font-semibold text-[#1881F1]"
-          >
-            Tu Agente de marketing
-          </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-heading text-4xl font-black leading-[1.1] tracking-tight sm:text-6xl md:text-7xl"
-          >
-            {/* Mobile: 3 líneas */}
-            <span className="sm:hidden">
-              Vender en redes
-              <br />
-              sociales no debería
-              <br />
-              ser difícil.
-            </span>
-            {/* Web: 2 líneas */}
-            <span className="hidden sm:inline">
-              Vender en redes sociales
-              <br />
-              no debería ser difícil.
-            </span>
-          </motion.h1>
-
-          {/* Métricas: mobile 2 líneas, web inline — solo una vez */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="mt-3 text-center"
-          >
-            <div className="font-heading text-4xl font-black sm:hidden">
-              <span className="text-[#022BB0]">1 Campaña.</span>{" "}
-              <span className="text-[#49D3F8]">5 Minutos.</span>
-            </div>
-            <div className="hidden font-heading font-black sm:block sm:text-6xl md:text-7xl">
-              <span className="text-[#022BB0]">1 Campaña.</span>{" "}
-              <span className="text-[#49D3F8]">5 Minutos.</span>
-            </div>
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-sm text-[#0D1522]/65 sm:text-lg"
-          >
-            Postty convierte fotos de tus productos en posts, historias y publicidad.
-            Cientos de piezas de contenido generadas, mientras dormís.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="mt-10"
-          >
-            <a href="https://app.posttyai.com" className="btn-primary inline-flex items-center gap-2 rounded-full px-9 py-4 text-base font-black text-white">
-              Empezar gratis
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-          </motion.div>
-
-          {/* Dragon on canvas */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.4 }}
-            className="relative mx-auto mt-12 w-[200px] md:mt-20"
-          >
-            <div className="dragon-shadow absolute bottom-0 left-1/2 h-4 w-32 -translate-x-1/2 rounded-[50%]" />
-            <Image
-              src="/mascot.png"
-              alt="Postty mascot"
-              width={200}
-              height={200}
-              className="relative z-10 mx-auto drop-shadow-2xl"
-              priority
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-            className="mx-auto mt-8 flex w-fit items-center gap-3 rounded-full border border-[#0D1522]/[0.06] bg-[#F5F7FA]/70 px-5 py-2.5 shadow-[0_1px_4px_rgba(0,0,0,0.04)]"
-          >
-            <div className="flex -space-x-2.5">
-              {avatars.map((src, i) => (
-                <img
-                  key={i}
-                  src={src}
-                  alt=""
-                  width={32}
-                  height={32}
-                  className="h-8 w-8 rounded-full border-2 border-white object-cover"
-                />
-              ))}
-            </div>
-            <p className="text-sm text-[#0D1522]/70">
-              <span className="font-bold text-[#0D1522]">4.99/5</span> de{" "}
-              <span className="font-bold text-[#0D1522]">324</span> clientes ⭐
-            </p>
-          </motion.div>
-        </div>
+      <section className="relative overflow-hidden">
+        {isMobile !== null && (
+          <video
+            key={isMobile ? "mobile" : "desktop"}
+            src={isMobile ? "/hero-mobile.mp4" : "/hero.mp4"}
+            autoPlay
+            muted
+            playsInline
+            onTimeUpdate={(e) => {
+              if (e.currentTarget.currentTime >= 11 && !showHeroCTA) {
+                setShowHeroCTA(true);
+              }
+            }}
+            className="h-screen w-full object-cover"
+          />
+        )}
+        <AnimatePresence>
+          {showHeroCTA && (
+            <motion.div
+              initial={{ y: 40, scale: 0.9 }}
+              animate={{ y: 0, scale: 1 }}
+              exit={{ y: 40, scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 280, damping: 26 }}
+              className="pointer-events-none absolute inset-x-0 bottom-[22%] flex justify-center md:bottom-[36%]"
+            >
+              <motion.a
+                href="https://app.posttyai.com"
+                className="group pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-9 py-4 text-base font-black text-[#0D1522] shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
+                whileHover={{ y: -2, scale: 1.015 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 340, damping: 22 }}
+              >
+                Empezar gratis
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+              </motion.a>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
       {/* ── Stacking Cards ── */}
