@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useMotionValue, useSpring, useScroll, useTransform, useInView } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform, useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const avatars = [
@@ -401,148 +401,214 @@ function StepMockup3() {
 
 const stepMockups = [StepMockup1, StepMockup2, StepMockup3];
 
-function StackingCards() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
+/**
+ * Two problem cards stacked with scroll-linked animation:
+ * - The section is 200vh tall with a sticky inner that pins for the whole scroll.
+ * - Card 1 (Canva) sits in place, then scales down + shifts up at 0.3→0.55.
+ * - Card 2 (agencia) starts below, slides up at 0.3→0.65 and fades in at 0.3→0.45,
+ *   landing on top so card 1's top edge peeks behind it.
+ *
+ * Uses a manual scroll tracker rather than framer's useScroll-with-target since
+ * that hook was silently failing to track in this layout (sticky child + inline
+ * height style).
+ */
+function ProblemCardsStack() {
+  const containerRef = useRef<HTMLElement>(null);
+  const scrollYProgress = useMotionValue(0);
 
-  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.82]);
-  const card1Y = useTransform(scrollYProgress, [0.3, 0.55], [0, -50]);
+  useEffect(() => {
+    const update = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      if (scrollable <= 0) {
+        scrollYProgress.set(0);
+        return;
+      }
+      const raw = -rect.top / scrollable;
+      scrollYProgress.set(Math.max(0, Math.min(1, raw)));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [scrollYProgress]);
+
+  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.88]);
+  const card1Y = useTransform(scrollYProgress, [0.3, 0.55], [0, -40]);
   const card2Y = useTransform(scrollYProgress, [0.3, 0.65], [700, 14]);
   const card2Opacity = useTransform(scrollYProgress, [0.3, 0.45], [0, 1]);
 
   return (
-    <section ref={containerRef} style={{ height: "220vh" }} className="relative mt-24 md:mt-0">
-      <div className="sticky top-0 flex h-screen items-center px-4 sm:px-6 md:px-10">
-        <div className="relative mx-auto w-full max-w-6xl">
-          {/* Card 1 */}
+    <section
+      ref={containerRef}
+      className="-mt-12 md:-mt-24"
+      style={{ height: "200vh" }}
+    >
+      <div className="sticky top-0 flex h-screen items-center px-4 sm:px-6 md:px-3">
+        <div className="relative mx-auto w-full max-w-[1800px]">
+          {/* ── Card 1 (Canva) ── */}
           <motion.div
             style={{ scale: card1Scale, y: card1Y }}
-            className="relative z-10 overflow-hidden rounded-[2rem]"
+            className="relative z-10 aspect-square overflow-hidden rounded-[2rem] md:aspect-[16/9]"
           >
-            <div
-              className="relative flex min-h-[420px] flex-col justify-center overflow-hidden p-10 text-white sm:min-h-[480px] md:flex-row md:items-center md:p-14 lg:p-16"
-              style={{ background: "linear-gradient(135deg, #004aad, #1881f1)" }}
-            >
-              {/* Lime accent — aligned with "5 minutos" text, cut by bottom edge */}
-              <div
-                className="absolute -bottom-[50px] h-20 w-[290px] rounded-[3rem] sm:h-24 sm:w-[330px] md:w-[360px]"
-                style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", left: "calc(2.5rem + 70px)", }}
-              />
-
-              <div className="relative z-10 flex-1 md:max-w-[65%]">
-                <h3 className="font-heading text-[2.7rem] font-black leading-[1.05] sm:text-[3.1rem] md:text-[3.6rem]">
-                  ¿Cansad@ de gastar horas y horas creando contenido para tu marca?
-                </h3>
-                <div className="mt-[100px]">
-                  <p className="text-sm font-medium" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>20 Ads y una campaña creada desde 0 en tan sólo</p>
-                  <p className="font-heading mt-2 text-[3.8rem] font-black leading-none md:text-[4.5rem]" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>5 minutos</p>
-                </div>
-              </div>
-
-              {/* 3D Clock image */}
-              <div className="relative mt-8 flex shrink-0 items-center justify-end md:mt-0 md:-mr-36 md:w-[400px]">
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-        <Image
-                    src="/stat-clock.png"
-                    alt="Clock"
-                    width={380}
-                    height={380}
-                    className="drop-shadow-[0_20px_40px_rgba(0,74,173,0.4)]"
-                  />
-                </motion.div>
-                {[
-                  { top: "0%", right: "5%", size: 7, color: "#D6F951", delay: 0 },
-                  { top: "15%", right: "-5%", size: 5, color: "#fff", delay: 0.5 },
-                  { top: "-5%", right: "25%", size: 6, color: "#49D3F8", delay: 1 },
-                  { top: "75%", right: "-3%", size: 4, color: "#D6F951", delay: 0.8 },
-                  { top: "82%", right: "15%", size: 5, color: "#fff", delay: 0.3 },
-                  { top: "5%", right: "42%", size: 4, color: "#fff", delay: 1.2 },
-                ].map((p, i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ y: [0, -10, 0], opacity: [0.3, 0.8, 0.3] }}
-                    transition={{ duration: 2 + p.delay, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
-                    className="absolute rounded-full"
-                    style={{ top: p.top, right: p.right, width: p.size, height: p.size, background: p.color }}
-                  />
-                ))}
-              </div>
+            <Image
+              src="/card-canva.png"
+              alt="Cansado de gastar mil horas en Canva haciendo contenido para tu marca"
+              fill
+              sizes="(max-width: 1800px) 100vw, 1800px"
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-6 text-center sm:gap-8 md:gap-10">
+              <div className="h-[22px] shrink-0" aria-hidden="true" />
+              <h3 className="font-heading max-w-3xl translate-y-[5px] text-lg font-bold leading-[1.2] tracking-tight text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
+                ¿Cansado de gastar mil horas en Canva
+                <br className="hidden sm:block" />
+                {" "}haciendo contenido para tu marca?
+              </h3>
+              <svg
+                width="44"
+                height="22"
+                viewBox="0 0 48 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="translate-y-5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
+              >
+                <path d="M4 4l20 16L44 4" />
+              </svg>
             </div>
           </motion.div>
 
-          {/* Card 2 — stacks on top, offset so card 1 top edge peeks */}
+          {/* ── Card 2 (Agencia) — stacks on top, offset so card 1 peeks ── */}
           <motion.div
             style={{ y: card2Y, opacity: card2Opacity }}
-            className="absolute inset-x-0 top-0 z-20 overflow-hidden rounded-[2rem]"
+            className="absolute inset-x-0 top-0 z-20 aspect-square overflow-hidden rounded-[2rem] md:aspect-[16/9]"
           >
-            <div
-              className="relative flex min-h-[270px] flex-col justify-center overflow-hidden p-8 pl-6 sm:min-h-[310px] md:flex-row md:items-center md:p-12 md:pl-8 lg:p-14 lg:pl-10"
-              style={{ background: "linear-gradient(135deg, #1f79ff, #aefff8)" }}
-            >
-              {/* Lime accent — same style as card 1 */}
-              <div
-                className="absolute -bottom-[50px] h-20 w-[440px] rounded-[3rem] sm:h-24 sm:w-[480px] md:w-[510px]"
-                style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", left: "calc(2.5rem + 50px)" }}
-              />
-
-              <div className="relative z-10 flex-1 md:max-w-[65%]">
-                <h3 className="font-heading text-[2.7rem] font-black leading-[1.05] text-white sm:text-[3.1rem] md:text-[3.6rem]">
-                  ¿Cansad@ de no saber<br />que Ad convierte?
-                </h3>
-                <div className="mt-[100px]">
-                  <p className="text-sm font-medium" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Postty mide tus metricas y optimiza tus campañas</p>
-                  <p className="font-heading mt-2 text-[3.2rem] font-black leading-none md:text-[3.8rem]" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Automaticamente</p>
-                </div>
-              </div>
-
-              {/* Piggy bank image */}
-              <div className="relative mt-8 flex shrink-0 items-center justify-end md:mt-0 md:-mr-[150px] md:w-[400px]">
-                <motion.div
-                  animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Image
-                    src="/stat-pig.png"
-                    alt="Piggy bank"
-                    width={380}
-                    height={380}
-                    className="drop-shadow-[0_20px_40px_rgba(65,179,236,0.4)]"
-                  />
-                </motion.div>
-                {[
-                  { top: "0%", right: "8%", size: 7, color: "#1ea9ee", delay: 0 },
-                  { top: "15%", right: "-3%", size: 5, color: "#fff", delay: 0.5 },
-                  { top: "-5%", right: "28%", size: 6, color: "#b3efff", delay: 1 },
-                  { top: "78%", right: "-3%", size: 4, color: "#1ea9ee", delay: 0.8 },
-                  { top: "85%", right: "15%", size: 5, color: "#fff", delay: 0.3 },
-                ].map((p, i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ y: [0, -10, 0], opacity: [0.3, 0.8, 0.3] }}
-                    transition={{ duration: 2 + p.delay, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
-                    className="absolute rounded-full"
-                    style={{ top: p.top, right: p.right, width: p.size, height: p.size, background: p.color }}
-                  />
-                ))}
-              </div>
-
-              {/* Sparkle top right */}
-              <motion.div
-                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute right-8 top-6 text-lg text-white/70"
-              >
-                ✦
-              </motion.div>
+            <Image
+              src="/card-agencia.png"
+              alt="Seguís pagando una agencia de marketing que no te da resultados"
+              fill
+              sizes="(max-width: 1800px) 100vw, 1800px"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+              <h3 className="font-heading max-w-3xl text-lg font-bold leading-[1.2] tracking-tight text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
+                ¿Seguís pagando una agencia de
+                <br className="hidden sm:block" />
+                {" "}marketing que no te da resultados?
+              </h3>
             </div>
           </motion.div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Starts playing the video once it scrolls into view, and then loops
+ * infinitely. Muted + playsInline so mobile browsers allow autoplay.
+ */
+function ScrollTriggeredVideo({ src, className }: { src: string; className?: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || started) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+          setStarted(true);
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [started]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      className={className}
+    />
+  );
+}
+
+const whatPosttyDoesItems = [
+  {
+    title: ["Contenido para", "Instagram y Facebook"],
+    video: "/videos/feed.mp4",
+    caption: ["Para que te olvides de", "Canva para siempre"],
+    widthClass: "max-w-[280px]",
+  },
+  {
+    title: ["Campañas en Meta", "con Ads profesionales"],
+    video: "/videos/campagin.mp4",
+    caption: ["Para que no gastes dinero en", "Agencias de marketing"],
+    widthClass: "max-w-[280px]",
+  },
+  {
+    title: ["Photoshoot", "para tu tienda virtual"],
+    video: "/videos/product.mp4",
+    caption: ["Para que no gastes dinero en", "fotografía y edición"],
+    widthClass: "max-w-[290px]",
+  },
+] as const;
+
+function WhatPosttyDoesSection() {
+  return (
+    <section className="px-4 py-20 sm:px-6 sm:py-24 md:px-10 md:py-28">
+      <h2 className="font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
+        Qué hace Postty
+      </h2>
+
+      <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-16 md:mt-20 md:grid-cols-3 md:gap-10">
+        {whatPosttyDoesItems.map((item) => (
+          <div key={item.title.join(" ")} className="flex flex-col items-center">
+            {/* Title */}
+            <h3 className="font-heading text-center text-lg font-bold leading-tight sm:text-xl">
+              {item.title[0]}
+              <br />
+              {item.title[1]}
+            </h3>
+
+            {/* Video — no frame, no shadow, no background. Sits directly on
+                the page. Product is sized slightly wider via widthClass. */}
+            <div className={`relative mt-8 aspect-[9/16] w-full overflow-hidden rounded-[2rem] ${item.widthClass}`}>
+              <ScrollTriggeredVideo
+                src={item.video}
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            {/* Caption — rectangular rounded card, white, no border, soft shadow */}
+            <div className="mt-10 rounded-2xl bg-white px-7 py-4 shadow-[0_10px_30px_rgba(13,21,34,0.1)]">
+              <p className="text-center text-sm font-semibold leading-snug text-[#0D1522]">
+                {item.caption[0]}
+                <br />
+                {item.caption[1]}
+              </p>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -999,7 +1065,7 @@ export default function Home() {
 
       <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden">
+      <section className="relative h-screen overflow-hidden bg-black">
         {isMobile !== null && (
           <video
             key={isMobile ? "mobile" : "desktop"}
@@ -1007,12 +1073,13 @@ export default function Home() {
             autoPlay
             muted
             playsInline
+            preload="auto"
             onTimeUpdate={(e) => {
               if (e.currentTarget.currentTime >= 11 && !showHeroCTA) {
                 setShowHeroCTA(true);
               }
             }}
-            className="h-screen w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         )}
         <AnimatePresence>
@@ -1039,8 +1106,87 @@ export default function Home() {
         </AnimatePresence>
       </section>
 
-      {/* ── Stacking Cards ── */}
-      <StackingCards />
+      {/* ── Problem cards (Canva + Agencia) with scroll-linked stacking ── */}
+      <ProblemCardsStack />
+
+      {/* ── Qué hace Postty ── */}
+      <WhatPosttyDoesSection />
+
+      {/* ── StarConcept testimonial ── */}
+      <section className="py-20 sm:py-28">
+        <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-[50%_1fr] md:gap-12">
+          {/* Left: product image — flush to the left edge */}
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            className="relative overflow-hidden rounded-r-[2rem] bg-[#F5F7FA]"
+          >
+            <Image
+              src="/starconcept.png"
+              alt="StarConcept — peluche pulpo con gorra"
+              width={1000}
+              height={1000}
+              className="h-auto w-full object-cover"
+            />
+          </motion.div>
+
+          {/* Right: title + stats */}
+          <div className="flex flex-col gap-10 px-4 sm:px-6 md:gap-12 md:pr-10 md:pl-0">
+            <motion.h2
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5 }}
+              className="font-heading text-2xl font-black leading-[1.1] tracking-tight sm:text-3xl"
+            >
+              StarConcept
+              <br />
+              confió en Postty
+            </motion.h2>
+
+            <div className="flex flex-wrap gap-x-14 gap-y-8 sm:gap-x-16">
+              {/* Stat 1 */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                <p className="font-heading text-6xl font-black leading-none tracking-tight sm:text-7xl md:text-8xl">
+                  +30
+                </p>
+                <p className="mt-3 text-sm text-[#0D1522]/70 sm:text-base">
+                  Horas mensuales
+                  <br />
+                  ahorradas en Canva
+                </p>
+              </motion.div>
+
+              {/* Stat 2 */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <p className="font-heading flex items-end text-6xl font-black leading-none tracking-tight sm:text-7xl md:text-8xl">
+                  3x
+                  <span className="font-heading ml-2 text-sm font-bold tracking-normal text-[#0D1522]/60 sm:text-base md:text-lg">
+                    roas
+                  </span>
+                </p>
+                <p className="mt-3 text-sm text-[#0D1522]/70 sm:text-base">
+                  Más conversión de Ads
+                  <br />
+                  en las campañas de meta
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ── How it works ── */}
       <section id="como-funciona" className="px-4 py-20">
