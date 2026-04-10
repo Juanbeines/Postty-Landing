@@ -613,7 +613,7 @@ function WhatPosttyDoesSection() {
                 style={item.captionStyle}
                 className="absolute z-10 max-w-[80%] rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-xl backdrop-saturate-150"
               >
-                <p className="whitespace-nowrap text-center text-[13px] font-semibold leading-snug text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
+                <p className="whitespace-nowrap text-center text-[13px] font-semibold leading-snug text-[#0D1522]">
                   {item.caption[0]}
                   <br />
                   {item.caption[1]}
