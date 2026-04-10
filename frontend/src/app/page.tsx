@@ -971,20 +971,7 @@ export default function Home() {
 
       <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section
-        className="relative h-screen overflow-hidden bg-black"
-        onMouseMove={(e) => {
-          const r = e.currentTarget.getBoundingClientRect();
-          const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-          const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
-          e.currentTarget.style.setProperty("--hx", `${nx * 5}px`);
-          e.currentTarget.style.setProperty("--hy", `${ny * 3}px`);
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.setProperty("--hx", "0px");
-          e.currentTarget.style.setProperty("--hy", "0px");
-        }}
-      >
+      <section className="relative h-screen overflow-hidden bg-black">
         {isMobile !== null && (
           <video
             key={isMobile ? "mobile" : "desktop"}
@@ -1033,7 +1020,7 @@ export default function Home() {
               {/* Sofía — above the title, left side */}
               <div
                 className="pointer-events-none absolute z-20 hidden md:block"
-                style={{ left: "calc(5% + 20px)", top: "calc(28% + 40px)", transform: "translate(var(--hx, 0px), var(--hy, 0px))", transition: "transform 0.3s ease-out" }}
+                style={{ left: "calc(5% + 20px)", top: "calc(28% + 40px)" }}
               >
                 <motion.div
                   initial={{ opacity: 0, x: -30, y: 10 }}
@@ -1055,10 +1042,9 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              {/* Juan — top-right, moves opposite direction */}
+              {/* Juan — top-right */}
               <div
                 className="pointer-events-none absolute right-[5%] top-[22%] z-20 hidden md:block"
-                style={{ transform: "translate(calc(var(--hx, 0px) * -1), calc(var(--hy, 0px) * -1))", transition: "transform 0.3s ease-out" }}
               >
                 <motion.div
                   initial={{ opacity: 0, x: 30, y: -10 }}
