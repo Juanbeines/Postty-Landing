@@ -398,25 +398,36 @@ function ProblemCardsStack() {
       className="-mt-12 md:-mt-24"
       style={{ height: "200vh" }}
     >
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center px-4 sm:px-6 md:px-3">
-        <div
-          className="relative w-full max-w-[1800px]"
-          style={{ transform: "translateX(40px)" }}
-        >
-          {/* ── Card 1 (Canva) ── */}
+      <div className="sticky top-0 flex h-screen w-full items-center justify-center px-0 sm:px-6 md:px-3">
+        <div className="relative w-full max-w-[1800px] md:translate-x-10">
+          {/* ── Card 1 (Canva) ──
+              Mobile uses a pre-baked image (title already rendered in the PNG);
+              desktop uses the clean photo + a text overlay. Both fill the same
+              motion.div so the scroll-linked scale still applies uniformly. */}
           <motion.div
             style={{ scale: card1Scale }}
-            className="relative z-10 aspect-square overflow-hidden rounded-[2rem] md:aspect-[16/9]"
+            className="relative z-10 aspect-[2/3] overflow-hidden rounded-[2rem] md:aspect-[16/9]"
           >
+            {/* Mobile (< md): title baked into the image, no overlay needed */}
+            <Image
+              src="/card-1-mobile.png"
+              alt="Cansado de gastar mil horas en Canva haciendo contenido para tu marca"
+              fill
+              sizes="100vw"
+              className="object-cover md:hidden"
+              priority
+            />
+            {/* Desktop (md+): clean photo, title rendered as an overlay */}
             <Image
               src="/card-canva.png"
               alt="Cansado de gastar mil horas en Canva haciendo contenido para tu marca"
               fill
               sizes="(max-width: 1800px) 100vw, 1800px"
-              className="object-cover"
+              className="hidden object-cover md:block"
               priority
             />
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-6 text-center sm:gap-8 md:gap-10">
+            {/* Text overlay — desktop only (mobile has it baked in) */}
+            <div className="absolute inset-0 hidden flex-col items-center justify-center gap-6 px-6 text-center sm:gap-8 md:flex md:gap-10">
               <div className="h-[22px] shrink-0" aria-hidden="true" />
               <h3 className="font-heading max-w-3xl translate-y-[5px] text-lg font-bold leading-[1.2] tracking-tight text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
                 ¿Cansado de gastar mil horas en Canva
@@ -439,17 +450,29 @@ function ProblemCardsStack() {
             </div>
           </motion.div>
 
-          {/* ── Card 2 — fully covers card 1, centered in screen ── */}
+          {/* ── Card 2 — fully covers card 1, centered in screen.
+              Mobile + desktop use different pre-baked images so the title
+              reads properly at each aspect ratio. */}
           <motion.div
             style={{ y: card2Y, opacity: card2Opacity }}
             className="absolute inset-0 z-20 overflow-hidden rounded-[2rem]"
           >
+            {/* Mobile (< md): taller 2/3 aspect, image sized for it */}
+            <Image
+              src="/card-2-mobile.png"
+              alt="Seguís pagando una agencia de marketing que no te da resultados"
+              fill
+              sizes="100vw"
+              className="object-cover md:hidden"
+              priority
+            />
+            {/* Desktop (md+): 16/9 aspect with the widescreen image */}
             <Image
               src="/card-2.png"
               alt="Seguís pagando una agencia de marketing que no te da resultados"
               fill
               sizes="(max-width: 1800px) 100vw, 1800px"
-              className="object-cover"
+              className="hidden object-cover md:block"
               priority
             />
           </motion.div>
@@ -1087,8 +1110,18 @@ export default function Home() {
             playsInline
             preload="auto"
             onTimeUpdate={(e) => {
-              if (e.currentTarget.currentTime >= 11 && !showHeroCTA) {
+              const video = e.currentTarget;
+              if (video.currentTime >= 11 && !showHeroCTA) {
                 setShowHeroCTA(true);
+              }
+              // On mobile, pause 0.5s before the natural end so the final
+              // text frame stays visible (otherwise it fades out).
+              if (
+                isMobile &&
+                video.duration &&
+                video.currentTime >= video.duration - 0.5
+              ) {
+                video.pause();
               }
             }}
             className="absolute inset-0 h-full w-full object-cover"
