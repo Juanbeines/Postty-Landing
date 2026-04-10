@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform, useInView } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const avatars = [
@@ -351,136 +351,6 @@ function StepMockup3() {
 
 const stepMockups = [StepMockup1, StepMockup2, StepMockup3];
 
-/**
- * Two problem cards stacked with scroll-linked animation:
- * - The section is 200vh tall with a sticky inner that pins for the whole scroll.
- * - Card 1 (Canva) sits in place, then scales down + shifts up at 0.3→0.55.
- * - Card 2 (agencia) starts below, slides up at 0.3→0.65 and fades in at 0.3→0.45,
- *   landing on top so card 1's top edge peeks behind it.
- *
- * Uses a manual scroll tracker rather than framer's useScroll-with-target since
- * that hook was silently failing to track in this layout (sticky child + inline
- * height style).
- */
-function ProblemCardsStack() {
-  const containerRef = useRef<HTMLElement>(null);
-  const scrollYProgress = useMotionValue(0);
-
-  useEffect(() => {
-    const update = () => {
-      const el = containerRef.current;
-      if (!el) return;
-      const rect = el.getBoundingClientRect();
-      const scrollable = rect.height - window.innerHeight;
-      if (scrollable <= 0) {
-        scrollYProgress.set(0);
-        return;
-      }
-      const raw = -rect.top / scrollable;
-      scrollYProgress.set(Math.max(0, Math.min(1, raw)));
-    };
-    update();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", update);
-    return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", update);
-    };
-  }, [scrollYProgress]);
-
-  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.92]);
-  const card2Y = useTransform(scrollYProgress, [0.3, 0.65], [700, 0]);
-  const card2Opacity = useTransform(scrollYProgress, [0.3, 0.45], [0, 1]);
-
-  return (
-    <section
-      ref={containerRef}
-      className="-mt-12 md:-mt-24"
-      style={{ height: "200vh" }}
-    >
-      <div className="sticky top-0 flex h-screen w-full items-center justify-center px-0 sm:px-6 md:px-3">
-        <div className="relative w-full max-w-[1800px] md:translate-x-10">
-          {/* ── Card 1 (Canva) ──
-              Mobile uses a pre-baked image (title already rendered in the PNG);
-              desktop uses the clean photo + a text overlay. Both fill the same
-              motion.div so the scroll-linked scale still applies uniformly. */}
-          <motion.div
-            style={{ scale: card1Scale }}
-            className="relative z-10 aspect-[2/3] overflow-hidden rounded-[2rem] md:aspect-[16/9]"
-          >
-            {/* Mobile (< md): title baked into the image, no overlay needed */}
-            <Image
-              src="/card-1-mobile.png"
-              alt="Cansado de gastar mil horas en Canva haciendo contenido para tu marca"
-              fill
-              sizes="100vw"
-              className="object-cover md:hidden"
-              priority
-            />
-            {/* Desktop (md+): clean photo, title rendered as an overlay */}
-            <Image
-              src="/card-canva.png"
-              alt="Cansado de gastar mil horas en Canva haciendo contenido para tu marca"
-              fill
-              sizes="(max-width: 1800px) 100vw, 1800px"
-              className="hidden object-cover md:block"
-              priority
-            />
-            {/* Text overlay — desktop only (mobile has it baked in) */}
-            <div className="absolute inset-0 hidden flex-col items-center justify-center gap-6 px-6 text-center sm:gap-8 md:flex md:gap-10">
-              <div className="h-[22px] shrink-0" aria-hidden="true" />
-              <h3 className="font-heading max-w-3xl translate-y-[5px] text-lg font-bold leading-[1.2] tracking-tight text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
-                ¿Cansado de gastar mil horas en Canva
-                <br className="hidden sm:block" />
-                {" "}haciendo contenido para tu marca?
-              </h3>
-              <svg
-                width="44"
-                height="22"
-                viewBox="0 0 48 24"
-                fill="none"
-                stroke="white"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="translate-y-5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
-              >
-                <path d="M4 4l20 16L44 4" />
-              </svg>
-            </div>
-          </motion.div>
-
-          {/* ── Card 2 — fully covers card 1, centered in screen.
-              Mobile + desktop use different pre-baked images so the title
-              reads properly at each aspect ratio. */}
-          <motion.div
-            style={{ y: card2Y, opacity: card2Opacity }}
-            className="absolute inset-0 z-20 overflow-hidden rounded-[2rem]"
-          >
-            {/* Mobile (< md): taller 2/3 aspect, image sized for it */}
-            <Image
-              src="/card-2-mobile.png"
-              alt="Seguís pagando una agencia de marketing que no te da resultados"
-              fill
-              sizes="100vw"
-              className="object-cover md:hidden"
-              priority
-            />
-            {/* Desktop (md+): 16/9 aspect with the widescreen image */}
-            <Image
-              src="/card-2.png"
-              alt="Seguís pagando una agencia de marketing que no te da resultados"
-              fill
-              sizes="(max-width: 1800px) 100vw, 1800px"
-              className="hidden object-cover md:block"
-              priority
-            />
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /**
  * Starts playing the video once it scrolls into view, and then loops
@@ -998,6 +868,7 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [legalModal, setLegalModal] = useState<"tyc" | "privacy" | null>(null);
   const [showHeroCTA, setShowHeroCTA] = useState(false);
+  const [showHeroPopups, setShowHeroPopups] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -1100,7 +971,20 @@ export default function Home() {
 
       <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section className="relative h-screen overflow-hidden bg-black">
+      <section
+        className="relative h-screen overflow-hidden bg-black"
+        onMouseMove={(e) => {
+          const r = e.currentTarget.getBoundingClientRect();
+          const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+          const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+          e.currentTarget.style.setProperty("--hx", `${nx * 5}px`);
+          e.currentTarget.style.setProperty("--hy", `${ny * 3}px`);
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.setProperty("--hx", "0px");
+          e.currentTarget.style.setProperty("--hy", "0px");
+        }}
+      >
         {isMobile !== null && (
           <video
             key={isMobile ? "mobile" : "desktop"}
@@ -1113,6 +997,15 @@ export default function Home() {
               const video = e.currentTarget;
               if (video.currentTime >= 11 && !showHeroCTA) {
                 setShowHeroCTA(true);
+              }
+              // Desktop: show notification popups in the last 2 seconds
+              if (
+                !isMobile &&
+                video.duration &&
+                video.currentTime >= video.duration - 2 &&
+                !showHeroPopups
+              ) {
+                setShowHeroPopups(true);
               }
               // On mobile, pause 0.5s before the natural end so the final
               // text frame stays visible (otherwise it fades out).
@@ -1127,6 +1020,69 @@ export default function Home() {
             className="absolute inset-0 h-full w-full object-cover"
           />
         )}
+        {/* ── Hero notification popups — desktop only.
+            Glass pills with circular avatar + quoted pain point.
+            Triggered by video time (last 2 seconds), staggered, then stay static. ── */}
+        {/* ── Hero notification popups — desktop only.
+            Outer div = absolute position + mouse parallax via CSS vars.
+            Inner motion.div = entrance animation + glass styling.
+            María above the title, Juan top-right. ── */}
+        <AnimatePresence>
+          {showHeroPopups && !isMobile && (
+            <>
+              {/* Sofía — above the title, left side */}
+              <div
+                className="pointer-events-none absolute z-20 hidden md:block"
+                style={{ left: "calc(5% + 20px)", top: "calc(28% + 40px)", transform: "translate(var(--hx, 0px), var(--hy, 0px))", transition: "transform 0.3s ease-out" }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: -30, y: 10 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+                  className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
+                >
+                  <Image
+                    src="https://i.pravatar.cc/80?img=47"
+                    alt="Sofía"
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 shrink-0 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-xs font-bold text-white">Sofía, 27 años</p>
+                    <p className="text-[11px] text-white/80">&ldquo;Cansada de gastar mil horas en Canva&rdquo;</p>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Juan — top-right, moves opposite direction */}
+              <div
+                className="pointer-events-none absolute right-[5%] top-[22%] z-20 hidden md:block"
+                style={{ transform: "translate(calc(var(--hx, 0px) * -1), calc(var(--hy, 0px) * -1))", transition: "transform 0.3s ease-out" }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: 30, y: -10 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ delay: 0.5, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+                  className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
+                >
+                  <Image
+                    src="https://i.pravatar.cc/80?img=12"
+                    alt="Juan"
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 shrink-0 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-xs font-bold text-white">Juan, 32 años</p>
+                    <p className="text-[11px] text-white/80">&ldquo;Cansado de pagar agencias de marketing que no rinden&rdquo;</p>
+                  </div>
+                </motion.div>
+              </div>
+            </>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence>
           {showHeroCTA && (
             <motion.div
@@ -1138,21 +1094,20 @@ export default function Home() {
             >
               <motion.a
                 href="https://app.posttyai.com"
-                className="group pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-9 py-4 text-base font-black text-[#0D1522] shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
+                className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-black text-[#0D1522] shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
               >
                 Empezar gratis
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </motion.a>
             </motion.div>
           )}
         </AnimatePresence>
       </section>
 
-      {/* ── Problem cards (Canva + Agencia) with scroll-linked stacking ── */}
-      <ProblemCardsStack />
+      {/* Problem cards removed — archived in src/components/_extras/ProblemCardsStack.tsx */}
 
       {/* ── Qué hace Postty ── */}
       <WhatPosttyDoesSection />
@@ -1184,6 +1139,17 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
                 className="relative aspect-[5/4] overflow-hidden rounded-[2rem]"
+                onMouseMove={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+                  const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+                  e.currentTarget.style.setProperty("--cx", `${nx * 4}px`);
+                  e.currentTarget.style.setProperty("--cy", `${ny * 3}px`);
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.setProperty("--cx", "0px");
+                  e.currentTarget.style.setProperty("--cy", "0px");
+                }}
               >
                 {/* Plush hero image — fills the entire card, rounded via parent overflow-hidden */}
                 <Image
@@ -1194,8 +1160,11 @@ export default function Home() {
                   className="object-cover"
                 />
 
-                {/* Brand name — glass pill, top-left */}
-                <div className="absolute left-6 top-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                {/* Brand name — glass pill, top-left + parallax */}
+                <div
+                  className="absolute left-6 top-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
+                  style={{ transform: "translate(var(--cx, 0px), var(--cy, 0px))", transition: "transform 0.3s ease-out" }}
+                >
                   <p className="font-heading text-base font-bold leading-tight text-[#0D1522] sm:text-lg">
                     {brand.name}
                   </p>
@@ -1204,8 +1173,11 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Stat 1 — glass pill, bottom-left */}
-                <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                {/* Stat 1 — glass pill, bottom-left + parallax (opposite direction) */}
+                <div
+                  className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
+                  style={{ transform: "translate(calc(var(--cx, 0px) * -0.8), calc(var(--cy, 0px) * -0.6))", transition: "transform 0.3s ease-out" }}
+                >
                   <p className="font-heading flex items-end text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
                     {brand.stat1.value}
                     {brand.stat1.suffix && (
@@ -1221,8 +1193,11 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Stat 2 — glass pill, bottom-right */}
-                <div className="absolute bottom-6 right-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                {/* Stat 2 — glass pill, bottom-right + parallax (different direction) */}
+                <div
+                  className="absolute bottom-6 right-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
+                  style={{ transform: "translate(calc(var(--cx, 0px) * 0.6), calc(var(--cy, 0px) * -1))", transition: "transform 0.3s ease-out" }}
+                >
                   <p className="font-heading text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
                     {brand.stat2.value}
                   </p>
