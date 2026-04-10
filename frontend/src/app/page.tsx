@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useMotionValue, useSpring, useScroll, useTransform, useInView } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform, useInView } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const avatars = [
@@ -126,56 +126,6 @@ const businessTypes = [
   { name: "Gastronomía", emoji: "🍽️", top: "76%", left: "28%", rotate: -3 },
   { name: "E-commerce", emoji: "🛍️", top: "74%", left: "56%", rotate: 3 },
   { name: "Apps móviles", emoji: "📱", top: "70%", left: "80%", rotate: -5 },
-];
-
-const stats = [
-  { value: "+300", label: "negocios generando contenido solos", color: "#022BB0" },
-  { value: "5 min", label: "desde que subís tu foto hasta generar una campaña", color: "#49D3F8" },
-  { value: "0", label: "experiencia en marketing requerida", color: "#D6F951" },
-];
-
-
-const testimonials = [
-  {
-    name: "María González",
-    text: "Manejo todo sola y Postty básicamente me salvó la vida. Posts, historias, todo listo sin tener que supervisar nada. 10/10.",
-    location: "AR - Feb 2026",
-  },
-  {
-    name: "Carlos Medina",
-    text: "Tenía miedo de que fuera como otras herramientas de IA pero esto realmente suena como mi marca. Genial para dueños de negocio ocupados.",
-    location: "MX - Ene 2026",
-  },
-  {
-    name: "Lucía Fernández",
-    text: "Tenía expectativas bajas porque todas las herramientas de IA que probé se sentían super robóticas. Postty fue diferente. Capturó cómo hablamos con nuestros clientes. Funcionando el mismo día.",
-    location: "AR - Feb 2026",
-  },
-  {
-    name: "Diego Ruiz",
-    text: "Nos ahorró una fortuna en freelancers. El tono coincide bastante bien entre posts y publicidad.",
-    location: "CO - Ene 2026",
-  },
-  {
-    name: "Ana Torres",
-    text: "¿Contenido completo listo en minutos en vez de semanas? No lo creía hasta que lo vi pasar. Me encanta que no sean templates genéricos.",
-    location: "CL - Mar 2026",
-  },
-  {
-    name: "Valentina López",
-    text: "Empezar fue facilísimo, mucho más de lo que pensaba. En 10 minutos el contenido de mi marca estaba listo.",
-    location: "MX - Ene 2026",
-  },
-  {
-    name: "Roberto Díaz",
-    text: "Publicar es simple ahora. Los posts de redes sociales me llevaban HORAS. Ahora son 10 minutos por día. Increíble.",
-    location: "AR - Mar 2026",
-  },
-  {
-    name: "Elena Rossi",
-    text: "Tengo una tienda chica y Postty hizo que pareciera una agencia de marketing profesional.",
-    location: "AR - Ene 2026",
-  },
 ];
 
 const faqItems = [
@@ -401,148 +351,277 @@ function StepMockup3() {
 
 const stepMockups = [StepMockup1, StepMockup2, StepMockup3];
 
-function StackingCards() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
+/**
+ * Two problem cards stacked with scroll-linked animation:
+ * - The section is 200vh tall with a sticky inner that pins for the whole scroll.
+ * - Card 1 (Canva) sits in place, then scales down + shifts up at 0.3→0.55.
+ * - Card 2 (agencia) starts below, slides up at 0.3→0.65 and fades in at 0.3→0.45,
+ *   landing on top so card 1's top edge peeks behind it.
+ *
+ * Uses a manual scroll tracker rather than framer's useScroll-with-target since
+ * that hook was silently failing to track in this layout (sticky child + inline
+ * height style).
+ */
+function ProblemCardsStack() {
+  const containerRef = useRef<HTMLElement>(null);
+  const scrollYProgress = useMotionValue(0);
 
-  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.82]);
-  const card1Y = useTransform(scrollYProgress, [0.3, 0.55], [0, -50]);
-  const card2Y = useTransform(scrollYProgress, [0.3, 0.65], [700, 14]);
+  useEffect(() => {
+    const update = () => {
+      const el = containerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      if (scrollable <= 0) {
+        scrollYProgress.set(0);
+        return;
+      }
+      const raw = -rect.top / scrollable;
+      scrollYProgress.set(Math.max(0, Math.min(1, raw)));
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update);
+      window.removeEventListener("resize", update);
+    };
+  }, [scrollYProgress]);
+
+  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.92]);
+  const card2Y = useTransform(scrollYProgress, [0.3, 0.65], [700, 0]);
   const card2Opacity = useTransform(scrollYProgress, [0.3, 0.45], [0, 1]);
 
   return (
-    <section ref={containerRef} style={{ height: "220vh" }} className="relative mt-24 md:mt-0">
-      <div className="sticky top-0 flex h-screen items-center px-4 sm:px-6 md:px-10">
-        <div className="relative mx-auto w-full max-w-6xl">
-          {/* Card 1 */}
+    <section
+      ref={containerRef}
+      className="-mt-12 md:-mt-24"
+      style={{ height: "200vh" }}
+    >
+      <div className="sticky top-0 flex h-screen w-full items-center justify-center px-4 sm:px-6 md:px-3">
+        <div
+          className="relative w-full max-w-[1800px]"
+          style={{ transform: "translateX(40px)" }}
+        >
+          {/* ── Card 1 (Canva) ── */}
           <motion.div
-            style={{ scale: card1Scale, y: card1Y }}
-            className="relative z-10 overflow-hidden rounded-[2rem]"
+            style={{ scale: card1Scale }}
+            className="relative z-10 aspect-square overflow-hidden rounded-[2rem] md:aspect-[16/9]"
           >
-            <div
-              className="relative flex min-h-[420px] flex-col justify-center overflow-hidden p-10 text-white sm:min-h-[480px] md:flex-row md:items-center md:p-14 lg:p-16"
-              style={{ background: "linear-gradient(135deg, #004aad, #1881f1)" }}
-            >
-              {/* Lime accent — aligned with "5 minutos" text, cut by bottom edge */}
-              <div
-                className="absolute -bottom-[50px] h-20 w-[290px] rounded-[3rem] sm:h-24 sm:w-[330px] md:w-[360px]"
-                style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", left: "calc(2.5rem + 70px)", }}
-              />
-
-              <div className="relative z-10 flex-1 md:max-w-[65%]">
-                <h3 className="font-heading text-[2.7rem] font-black leading-[1.05] sm:text-[3.1rem] md:text-[3.6rem]">
-                  ¿Cansad@ de gastar horas y horas creando contenido para tu marca?
-                </h3>
-                <div className="mt-[100px]">
-                  <p className="text-sm font-medium" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>20 Ads y una campaña creada desde 0 en tan sólo</p>
-                  <p className="font-heading mt-2 text-[3.8rem] font-black leading-none md:text-[4.5rem]" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>5 minutos</p>
-                </div>
-              </div>
-
-              {/* 3D Clock image */}
-              <div className="relative mt-8 flex shrink-0 items-center justify-end md:mt-0 md:-mr-36 md:w-[400px]">
-                <motion.div
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                >
-        <Image
-                    src="/stat-clock.png"
-                    alt="Clock"
-                    width={380}
-                    height={380}
-                    className="drop-shadow-[0_20px_40px_rgba(0,74,173,0.4)]"
-                  />
-                </motion.div>
-                {[
-                  { top: "0%", right: "5%", size: 7, color: "#D6F951", delay: 0 },
-                  { top: "15%", right: "-5%", size: 5, color: "#fff", delay: 0.5 },
-                  { top: "-5%", right: "25%", size: 6, color: "#49D3F8", delay: 1 },
-                  { top: "75%", right: "-3%", size: 4, color: "#D6F951", delay: 0.8 },
-                  { top: "82%", right: "15%", size: 5, color: "#fff", delay: 0.3 },
-                  { top: "5%", right: "42%", size: 4, color: "#fff", delay: 1.2 },
-                ].map((p, i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ y: [0, -10, 0], opacity: [0.3, 0.8, 0.3] }}
-                    transition={{ duration: 2 + p.delay, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
-                    className="absolute rounded-full"
-                    style={{ top: p.top, right: p.right, width: p.size, height: p.size, background: p.color }}
-                  />
-                ))}
-              </div>
+            <Image
+              src="/card-canva.png"
+              alt="Cansado de gastar mil horas en Canva haciendo contenido para tu marca"
+              fill
+              sizes="(max-width: 1800px) 100vw, 1800px"
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-6 px-6 text-center sm:gap-8 md:gap-10">
+              <div className="h-[22px] shrink-0" aria-hidden="true" />
+              <h3 className="font-heading max-w-3xl translate-y-[5px] text-lg font-bold leading-[1.2] tracking-tight text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
+                ¿Cansado de gastar mil horas en Canva
+                <br className="hidden sm:block" />
+                {" "}haciendo contenido para tu marca?
+              </h3>
+              <svg
+                width="44"
+                height="22"
+                viewBox="0 0 48 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="translate-y-5 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
+              >
+                <path d="M4 4l20 16L44 4" />
+              </svg>
             </div>
           </motion.div>
 
-          {/* Card 2 — stacks on top, offset so card 1 top edge peeks */}
+          {/* ── Card 2 — fully covers card 1, centered in screen ── */}
           <motion.div
             style={{ y: card2Y, opacity: card2Opacity }}
-            className="absolute inset-x-0 top-0 z-20 overflow-hidden rounded-[2rem]"
+            className="absolute inset-0 z-20 overflow-hidden rounded-[2rem]"
           >
-            <div
-              className="relative flex min-h-[270px] flex-col justify-center overflow-hidden p-8 pl-6 sm:min-h-[310px] md:flex-row md:items-center md:p-12 md:pl-8 lg:p-14 lg:pl-10"
-              style={{ background: "linear-gradient(135deg, #1f79ff, #aefff8)" }}
-            >
-              {/* Lime accent — same style as card 1 */}
-              <div
-                className="absolute -bottom-[50px] h-20 w-[440px] rounded-[3rem] sm:h-24 sm:w-[480px] md:w-[510px]"
-                style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", left: "calc(2.5rem + 50px)" }}
-              />
-
-              <div className="relative z-10 flex-1 md:max-w-[65%]">
-                <h3 className="font-heading text-[2.7rem] font-black leading-[1.05] text-white sm:text-[3.1rem] md:text-[3.6rem]">
-                  ¿Cansad@ de no saber<br />que Ad convierte?
-                </h3>
-                <div className="mt-[100px]">
-                  <p className="text-sm font-medium" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Postty mide tus metricas y optimiza tus campañas</p>
-                  <p className="font-heading mt-2 text-[3.2rem] font-black leading-none md:text-[3.8rem]" style={{ background: "linear-gradient(135deg, #8eff00, #d2ff64)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Automaticamente</p>
-                </div>
-              </div>
-
-              {/* Piggy bank image */}
-              <div className="relative mt-8 flex shrink-0 items-center justify-end md:mt-0 md:-mr-[150px] md:w-[400px]">
-                <motion.div
-                  animate={{ y: [0, -8, 0], rotate: [0, 2, 0] }}
-                  transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Image
-                    src="/stat-pig.png"
-                    alt="Piggy bank"
-                    width={380}
-                    height={380}
-                    className="drop-shadow-[0_20px_40px_rgba(65,179,236,0.4)]"
-                  />
-                </motion.div>
-                {[
-                  { top: "0%", right: "8%", size: 7, color: "#1ea9ee", delay: 0 },
-                  { top: "15%", right: "-3%", size: 5, color: "#fff", delay: 0.5 },
-                  { top: "-5%", right: "28%", size: 6, color: "#b3efff", delay: 1 },
-                  { top: "78%", right: "-3%", size: 4, color: "#1ea9ee", delay: 0.8 },
-                  { top: "85%", right: "15%", size: 5, color: "#fff", delay: 0.3 },
-                ].map((p, i) => (
-                  <motion.div
-                    key={i}
-                    animate={{ y: [0, -10, 0], opacity: [0.3, 0.8, 0.3] }}
-                    transition={{ duration: 2 + p.delay, repeat: Infinity, ease: "easeInOut", delay: p.delay }}
-                    className="absolute rounded-full"
-                    style={{ top: p.top, right: p.right, width: p.size, height: p.size, background: p.color }}
-                  />
-                ))}
-              </div>
-
-              {/* Sparkle top right */}
-              <motion.div
-                animate={{ scale: [1, 1.3, 1], opacity: [0.5, 1, 0.5] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute right-8 top-6 text-lg text-white/70"
-              >
-                ✦
-              </motion.div>
-            </div>
+            <Image
+              src="/card-2.png"
+              alt="Seguís pagando una agencia de marketing que no te da resultados"
+              fill
+              sizes="(max-width: 1800px) 100vw, 1800px"
+              className="object-cover"
+              priority
+            />
           </motion.div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Starts playing the video once it scrolls into view, and then loops
+ * infinitely. Muted + playsInline so mobile browsers allow autoplay.
+ */
+function ScrollTriggeredVideo({ src, className }: { src: string; className?: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [started, setStarted] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || started) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+          setStarted(true);
+        }
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [started]);
+
+  return (
+    <video
+      ref={videoRef}
+      src={src}
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      className={className}
+    />
+  );
+}
+
+type CaptionStyle = {
+  top?: string;
+  bottom?: string;
+  left?: string;
+  right?: string;
+};
+
+type BrandTestimonial = {
+  name: string;
+  subtitle: string;
+  image: string;
+  stat1: { value: string; suffix?: string; label: readonly [string, string] };
+  stat2: { value: string; suffix?: string; label: readonly [string, string] };
+};
+
+const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
+  {
+    name: "StarConcept",
+    subtitle: "Marca de ropa",
+    image: "/starconcept.png",
+    stat1: {
+      value: "4.2x",
+      suffix: "roas",
+      label: ["Más conversión de Ads", "en las campañas de meta"],
+    },
+    stat2: {
+      value: "0",
+      label: ["Agencias de", "marketing"],
+    },
+  },
+  {
+    name: "Nüa Skinhouse",
+    subtitle: "Estética profesional",
+    image: "/nua.jpg",
+    stat1: {
+      value: "+40",
+      label: ["Horas mensuales", "ahorradas en Canva"],
+    },
+    stat2: {
+      value: "0",
+      label: ["Diseñadores", "contratados"],
+    },
+  },
+];
+
+const whatPosttyDoesItems: ReadonlyArray<{
+  title: readonly [string, string];
+  video: string;
+  caption: readonly [string, string];
+  widthClass: string;
+  captionStyle: CaptionStyle;
+}> = [
+  {
+    title: ["Contenido para", "Instagram y Facebook"],
+    video: "/videos/feed.mp4",
+    caption: ["Para que te olvides de", "Canva para siempre"],
+    widthClass: "max-w-[280px]",
+    // Glass caption sits at the BOTTOM tip of the LEFT side of the phone,
+    // bumped up 20px from the very bottom.
+    captionStyle: { bottom: "calc(6% + 80px)", left: "-16px" },
+  },
+  {
+    title: ["Campañas en Meta", "con Ads profesionales"],
+    video: "/videos/campagin.mp4",
+    caption: ["Para que no gastes dinero en", "Agencias de marketing"],
+    widthClass: "max-w-[280px]",
+    // Glass caption sits at the TOP of the RIGHT side of the phone.
+    captionStyle: { top: "8%", right: "-24px" },
+  },
+  {
+    title: ["Photoshoot", "para tu tienda virtual"],
+    video: "/videos/product.mp4",
+    caption: ["Para que no gastes dinero en", "fotografía y edición"],
+    widthClass: "max-w-[290px]",
+    // Glass caption sits VERY LOW on the LEFT, almost at the phone's edge.
+    captionStyle: { bottom: "1%", left: "-20px" },
+  },
+];
+
+function WhatPosttyDoesSection() {
+  return (
+    <section className="px-4 py-20 sm:px-6 sm:py-24 md:px-10 md:py-28">
+      <h2 className="font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
+        Qué hace Postty
+      </h2>
+
+      <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-16 md:mt-20 md:grid-cols-3 md:gap-10">
+        {whatPosttyDoesItems.map((item) => (
+          <div key={item.title.join(" ")} className="flex flex-col items-center">
+            {/* Title */}
+            <h3 className="font-heading text-center text-lg font-bold leading-tight sm:text-xl">
+              {item.title[0]}
+              <br />
+              {item.title[1]}
+            </h3>
+
+            {/* Video container — relative host for the floating glass caption.
+                outer has overflow-visible so the pill can poke off the edges. */}
+            <div className={`relative mt-8 aspect-[9/16] w-full ${item.widthClass}`}>
+              {/* Video wrapper — overflow-hidden here so rounded corners clip */}
+              <div className="absolute inset-0 overflow-hidden rounded-[2rem]">
+                <ScrollTriggeredVideo
+                  src={item.video}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+
+              {/* Glass caption — floating pill over the video, random-ish
+                  position on the sides. Matches the header's glass pill.
+                  Position is set via inline style so calc() + negative offsets
+                  work reliably across Tailwind JIT + Turbopack. */}
+              <div
+                style={item.captionStyle}
+                className="absolute z-10 max-w-[80%] rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-xl backdrop-saturate-150"
+              >
+                <p className="whitespace-nowrap text-center text-[13px] font-semibold leading-snug text-[#0D1522]">
+                  {item.caption[0]}
+                  <br />
+                  {item.caption[1]}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
@@ -952,8 +1031,7 @@ export default function Home() {
           </a>
           <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
-            <a href="#funcionalidades" className="whitespace-nowrap transition hover:text-[#0D1522]">Funcionalidades</a>
-            <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Testimonios</a>
+            <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Clientes</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
           <a href="https://app.posttyai.com" className="shrink-0 rounded-full bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
@@ -999,7 +1077,7 @@ export default function Home() {
 
       <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden">
+      <section className="relative h-screen overflow-hidden bg-black">
         {isMobile !== null && (
           <video
             key={isMobile ? "mobile" : "desktop"}
@@ -1007,12 +1085,13 @@ export default function Home() {
             autoPlay
             muted
             playsInline
+            preload="auto"
             onTimeUpdate={(e) => {
               if (e.currentTarget.currentTime >= 11 && !showHeroCTA) {
                 setShowHeroCTA(true);
               }
             }}
-            className="h-screen w-full object-cover"
+            className="absolute inset-0 h-full w-full object-cover"
           />
         )}
         <AnimatePresence>
@@ -1039,8 +1118,92 @@ export default function Home() {
         </AnimatePresence>
       </section>
 
-      {/* ── Stacking Cards ── */}
-      <StackingCards />
+      {/* ── Problem cards (Canva + Agencia) with scroll-linked stacking ── */}
+      <ProblemCardsStack />
+
+      {/* ── Qué hace Postty ── */}
+      <WhatPosttyDoesSection />
+
+      {/* ── Brands testimonial (StarConcept + Nüa Skinhouse) ──
+          Two cards side-by-side, each with a plush hero image + 3 glass
+          pills (brand name top-left, stat 1 bottom-left, stat 2 bottom-right).
+          id="testimonios" so the header "Clientes" link anchors here. */}
+      <section id="testimonios" className="px-4 py-20 sm:px-6 sm:py-28 md:px-8">
+        <div className="mx-auto max-w-6xl">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="font-heading text-center text-2xl font-black leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
+          >
+            Los dueños suben contenido 10x más rápido
+            <br className="hidden sm:block" />
+            {" "}y su dinero invertido en Ads rinde 3x más con Postty
+          </motion.h2>
+
+          <div className="mt-14 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-2 md:gap-10">
+            {brandTestimonials.map((brand, i) => (
+              <motion.div
+                key={brand.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="relative aspect-[5/4] overflow-hidden rounded-[2rem]"
+              >
+                {/* Plush hero image — fills the entire card, rounded via parent overflow-hidden */}
+                <Image
+                  src={brand.image}
+                  alt={brand.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                />
+
+                {/* Brand name — glass pill, top-left */}
+                <div className="absolute left-6 top-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                  <p className="font-heading text-base font-bold leading-tight text-[#0D1522] sm:text-lg">
+                    {brand.name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-[#0D1522]/60 sm:text-sm">
+                    {brand.subtitle}
+                  </p>
+                </div>
+
+                {/* Stat 1 — glass pill, bottom-left */}
+                <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                  <p className="font-heading flex items-end text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
+                    {brand.stat1.value}
+                    {brand.stat1.suffix && (
+                      <span className="font-heading ml-1.5 text-xs font-bold tracking-normal text-[#0D1522]/60 sm:text-sm">
+                        {brand.stat1.suffix}
+                      </span>
+                    )}
+                  </p>
+                  <p className="mt-2 text-[11px] leading-snug text-[#0D1522]/70 sm:text-xs">
+                    {brand.stat1.label[0]}
+                    <br />
+                    {brand.stat1.label[1]}
+                  </p>
+                </div>
+
+                {/* Stat 2 — glass pill, bottom-right */}
+                <div className="absolute bottom-6 right-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                  <p className="font-heading text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
+                    {brand.stat2.value}
+                  </p>
+                  <p className="mt-2 text-[11px] leading-snug text-[#0D1522]/70 sm:text-xs">
+                    {brand.stat2.label[0]}
+                    <br />
+                    {brand.stat2.label[1]}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── How it works ── */}
       <section id="como-funciona" className="px-4 py-20">
@@ -1329,111 +1492,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <h2 className="font-heading text-3xl font-black sm:text-4xl">
-              IA entrenada para generar contenido que vende
-            </h2>
-            <p className="mt-3 text-[#0D1522]/60">
-              Esto no es solo IA. Es inteligencia de contenido.
-            </p>
-          </motion.div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {stats.map((stat, i) => (
-              <motion.article
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.35 }}
-                className="rounded-2xl bg-[#F5F7FA] p-5 text-center"
-              >
-                <p className="font-heading text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
-                <p className="mt-2 text-sm text-[#0D1522]/60">{stat.label}</p>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* ── Privacy ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="font-heading text-3xl font-black sm:text-4xl md:text-5xl">
-            Grandes poderes vienen con
-          </h2>
-          <p className="mt-2 font-heading text-2xl font-black sm:text-3xl md:text-4xl">
-            <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">gran privacidad.</span>
-          </p>
-          <p className="mx-auto mt-5 max-w-2xl text-[#0D1522]/60">
-            Tu marca es tu mayor activo. La protegemos con encriptación completa,
-            cero intercambio de datos y control absoluto en tus manos.
-          </p>
-          <div className="relative mx-auto mt-10 w-[130px]">
-            <div className="dragon-shadow absolute bottom-0 left-1/2 h-3 w-24 -translate-x-1/2 rounded-[50%]" />
-            <Image src="/mascot.png" alt="Postty mascot" width={130} height={130} className="relative z-10" />
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -right-4 -top-4 z-20"
-              style={{ perspective: "600px" }}
-            >
-              <div
-                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1881F1] to-[#49D3F8]"
-                style={{
-                  transform: "rotateY(-10deg) rotateX(8deg)",
-                  boxShadow: "0 8px 20px rgba(24,129,241,0.35), 0 2px 4px rgba(24,129,241,0.2), inset 0 1px 0 rgba(255,255,255,0.3), 0 -2px 0 rgba(0,0,0,0.1)",
-                }}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Testimonials ── */}
-      <section id="testimonios" className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="font-heading text-center text-3xl font-black sm:text-4xl">
-            Hecho por fundadores, para fundadores que quieren vender sin preocuparse por el marketing.
-          </h2>
-          <div className="relative mt-12">
-            <div
-              className="columns-1 gap-4 sm:columns-2 lg:columns-3"
-              style={{
-                maskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
-                WebkitMaskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
-              }}
-            >
-            {testimonials.map((t) => (
-              <motion.blockquote
-                key={t.name}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                className="mb-4 break-inside-avoid rounded-2xl bg-[#F5F7FA] p-5"
-              >
-                <p className="text-sm font-bold">{t.name}</p>
-                <p className="mt-2 text-sm leading-relaxed text-[#0D1522]/70">{t.text}</p>
-                <p className="mt-3 text-xs text-[#0D1522]/40">{t.location}</p>
-              </motion.blockquote>
-            ))}
-            </div>
-          </div>
-          <p className="mt-8 text-center text-sm font-bold text-[#0D1522]">
-            +300 dueños de negocio usan Postty
-          </p>
-        </div>
-      </section>
 
       {/* ── FAQ ── */}
       <section id="faq" className="px-4 py-20">
