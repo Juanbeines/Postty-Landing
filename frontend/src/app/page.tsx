@@ -128,56 +128,6 @@ const businessTypes = [
   { name: "Apps móviles", emoji: "📱", top: "70%", left: "80%", rotate: -5 },
 ];
 
-const stats = [
-  { value: "+300", label: "negocios generando contenido solos", color: "#022BB0" },
-  { value: "5 min", label: "desde que subís tu foto hasta generar una campaña", color: "#49D3F8" },
-  { value: "0", label: "experiencia en marketing requerida", color: "#D6F951" },
-];
-
-
-const testimonials = [
-  {
-    name: "María González",
-    text: "Manejo todo sola y Postty básicamente me salvó la vida. Posts, historias, todo listo sin tener que supervisar nada. 10/10.",
-    location: "AR - Feb 2026",
-  },
-  {
-    name: "Carlos Medina",
-    text: "Tenía miedo de que fuera como otras herramientas de IA pero esto realmente suena como mi marca. Genial para dueños de negocio ocupados.",
-    location: "MX - Ene 2026",
-  },
-  {
-    name: "Lucía Fernández",
-    text: "Tenía expectativas bajas porque todas las herramientas de IA que probé se sentían super robóticas. Postty fue diferente. Capturó cómo hablamos con nuestros clientes. Funcionando el mismo día.",
-    location: "AR - Feb 2026",
-  },
-  {
-    name: "Diego Ruiz",
-    text: "Nos ahorró una fortuna en freelancers. El tono coincide bastante bien entre posts y publicidad.",
-    location: "CO - Ene 2026",
-  },
-  {
-    name: "Ana Torres",
-    text: "¿Contenido completo listo en minutos en vez de semanas? No lo creía hasta que lo vi pasar. Me encanta que no sean templates genéricos.",
-    location: "CL - Mar 2026",
-  },
-  {
-    name: "Valentina López",
-    text: "Empezar fue facilísimo, mucho más de lo que pensaba. En 10 minutos el contenido de mi marca estaba listo.",
-    location: "MX - Ene 2026",
-  },
-  {
-    name: "Roberto Díaz",
-    text: "Publicar es simple ahora. Los posts de redes sociales me llevaban HORAS. Ahora son 10 minutos por día. Increíble.",
-    location: "AR - Mar 2026",
-  },
-  {
-    name: "Elena Rossi",
-    text: "Tengo una tienda chica y Postty hizo que pareciera una agencia de marketing profesional.",
-    location: "AR - Ene 2026",
-  },
-];
-
 const faqItems = [
   {
     q: "¿Qué es Postty?",
@@ -438,9 +388,8 @@ function ProblemCardsStack() {
     };
   }, [scrollYProgress]);
 
-  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.88]);
-  const card1Y = useTransform(scrollYProgress, [0.3, 0.55], [0, -40]);
-  const card2Y = useTransform(scrollYProgress, [0.3, 0.65], [700, 14]);
+  const card1Scale = useTransform(scrollYProgress, [0.3, 0.55], [1, 0.92]);
+  const card2Y = useTransform(scrollYProgress, [0.3, 0.65], [700, 0]);
   const card2Opacity = useTransform(scrollYProgress, [0.3, 0.45], [0, 1]);
 
   return (
@@ -449,11 +398,14 @@ function ProblemCardsStack() {
       className="-mt-12 md:-mt-24"
       style={{ height: "200vh" }}
     >
-      <div className="sticky top-0 flex h-screen items-center px-4 sm:px-6 md:px-3">
-        <div className="relative mx-auto w-full max-w-[1800px]">
+      <div className="sticky top-0 flex h-screen w-full items-center justify-center px-4 sm:px-6 md:px-3">
+        <div
+          className="relative w-full max-w-[1800px]"
+          style={{ transform: "translateX(40px)" }}
+        >
           {/* ── Card 1 (Canva) ── */}
           <motion.div
-            style={{ scale: card1Scale, y: card1Y }}
+            style={{ scale: card1Scale }}
             className="relative z-10 aspect-square overflow-hidden rounded-[2rem] md:aspect-[16/9]"
           >
             <Image
@@ -487,25 +439,19 @@ function ProblemCardsStack() {
             </div>
           </motion.div>
 
-          {/* ── Card 2 (Agencia) — stacks on top, offset so card 1 peeks ── */}
+          {/* ── Card 2 — fully covers card 1, centered in screen ── */}
           <motion.div
             style={{ y: card2Y, opacity: card2Opacity }}
-            className="absolute inset-x-0 top-0 z-20 aspect-square overflow-hidden rounded-[2rem] md:aspect-[16/9]"
+            className="absolute inset-0 z-20 overflow-hidden rounded-[2rem]"
           >
             <Image
-              src="/card-agencia.png"
+              src="/card-2.png"
               alt="Seguís pagando una agencia de marketing que no te da resultados"
               fill
               sizes="(max-width: 1800px) 100vw, 1800px"
               className="object-cover"
+              priority
             />
-            <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
-              <h3 className="font-heading max-w-3xl text-lg font-bold leading-[1.2] tracking-tight text-white sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl">
-                ¿Seguís pagando una agencia de
-                <br className="hidden sm:block" />
-                {" "}marketing que no te da resultados?
-              </h3>
-            </div>
           </motion.div>
         </div>
       </div>
@@ -552,26 +498,84 @@ function ScrollTriggeredVideo({ src, className }: { src: string; className?: str
   );
 }
 
-const whatPosttyDoesItems = [
+type CaptionStyle = {
+  top?: string;
+  bottom?: string;
+  left?: string;
+  right?: string;
+};
+
+type BrandTestimonial = {
+  name: string;
+  subtitle: string;
+  image: string;
+  stat1: { value: string; suffix?: string; label: readonly [string, string] };
+  stat2: { value: string; suffix?: string; label: readonly [string, string] };
+};
+
+const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
+  {
+    name: "StarConcept",
+    subtitle: "Marca de ropa",
+    image: "/starconcept.png",
+    stat1: {
+      value: "4.2x",
+      suffix: "roas",
+      label: ["Más conversión de Ads", "en las campañas de meta"],
+    },
+    stat2: {
+      value: "0",
+      label: ["Agencias de", "marketing"],
+    },
+  },
+  {
+    name: "Nüa Skinhouse",
+    subtitle: "Estética profesional",
+    image: "/nua.jpg",
+    stat1: {
+      value: "+40",
+      label: ["Horas mensuales", "ahorradas en Canva"],
+    },
+    stat2: {
+      value: "0",
+      label: ["Diseñadores", "contratados"],
+    },
+  },
+];
+
+const whatPosttyDoesItems: ReadonlyArray<{
+  title: readonly [string, string];
+  video: string;
+  caption: readonly [string, string];
+  widthClass: string;
+  captionStyle: CaptionStyle;
+}> = [
   {
     title: ["Contenido para", "Instagram y Facebook"],
     video: "/videos/feed.mp4",
     caption: ["Para que te olvides de", "Canva para siempre"],
     widthClass: "max-w-[280px]",
+    // Glass caption sits at the BOTTOM tip of the LEFT side of the phone,
+    // bumped up 20px from the very bottom.
+    captionStyle: { bottom: "calc(6% + 80px)", left: "-16px" },
   },
   {
     title: ["Campañas en Meta", "con Ads profesionales"],
     video: "/videos/campagin.mp4",
     caption: ["Para que no gastes dinero en", "Agencias de marketing"],
     widthClass: "max-w-[280px]",
+    // Glass caption sits at the TOP of the RIGHT side of the phone.
+    captionStyle: { top: "8%", right: "-24px" },
   },
   {
     title: ["Photoshoot", "para tu tienda virtual"],
     video: "/videos/product.mp4",
     caption: ["Para que no gastes dinero en", "fotografía y edición"],
     widthClass: "max-w-[290px]",
+    // Glass caption sits VERY LOW on the LEFT, almost at the phone's edge.
+    captionStyle: { bottom: "1%", left: "-20px" },
   },
-] as const;
+];
 
 function WhatPosttyDoesSection() {
   return (
@@ -590,22 +594,31 @@ function WhatPosttyDoesSection() {
               {item.title[1]}
             </h3>
 
-            {/* Video — no frame, no shadow, no background. Sits directly on
-                the page. Product is sized slightly wider via widthClass. */}
-            <div className={`relative mt-8 aspect-[9/16] w-full overflow-hidden rounded-[2rem] ${item.widthClass}`}>
-              <ScrollTriggeredVideo
-                src={item.video}
-                className="h-full w-full object-cover"
-              />
-            </div>
+            {/* Video container — relative host for the floating glass caption.
+                outer has overflow-visible so the pill can poke off the edges. */}
+            <div className={`relative mt-8 aspect-[9/16] w-full ${item.widthClass}`}>
+              {/* Video wrapper — overflow-hidden here so rounded corners clip */}
+              <div className="absolute inset-0 overflow-hidden rounded-[2rem]">
+                <ScrollTriggeredVideo
+                  src={item.video}
+                  className="h-full w-full object-cover"
+                />
+              </div>
 
-            {/* Caption — rectangular rounded card, white, no border, soft shadow */}
-            <div className="mt-10 rounded-2xl bg-white px-7 py-4 shadow-[0_10px_30px_rgba(13,21,34,0.1)]">
-              <p className="text-center text-sm font-semibold leading-snug text-[#0D1522]">
-                {item.caption[0]}
-                <br />
-                {item.caption[1]}
-              </p>
+              {/* Glass caption — floating pill over the video, random-ish
+                  position on the sides. Matches the header's glass pill.
+                  Position is set via inline style so calc() + negative offsets
+                  work reliably across Tailwind JIT + Turbopack. */}
+              <div
+                style={item.captionStyle}
+                className="absolute z-10 max-w-[80%] rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-xl backdrop-saturate-150"
+              >
+                <p className="whitespace-nowrap text-center text-[13px] font-semibold leading-snug text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]">
+                  {item.caption[0]}
+                  <br />
+                  {item.caption[1]}
+                </p>
+              </div>
             </div>
           </div>
         ))}
@@ -1018,8 +1031,7 @@ export default function Home() {
           </a>
           <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
-            <a href="#funcionalidades" className="whitespace-nowrap transition hover:text-[#0D1522]">Funcionalidades</a>
-            <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Testimonios</a>
+            <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Clientes</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
           <a href="https://app.posttyai.com" className="shrink-0 rounded-full bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
@@ -1112,78 +1124,83 @@ export default function Home() {
       {/* ── Qué hace Postty ── */}
       <WhatPosttyDoesSection />
 
-      {/* ── StarConcept testimonial ── */}
-      <section className="py-20 sm:py-28">
-        <div className="grid grid-cols-1 items-center gap-10 md:grid-cols-[50%_1fr] md:gap-12">
-          {/* Left: product image — flush to the left edge */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
+      {/* ── Brands testimonial (StarConcept + Nüa Skinhouse) ──
+          Two cards side-by-side, each with a plush hero image + 3 glass
+          pills (brand name top-left, stat 1 bottom-left, stat 2 bottom-right).
+          id="testimonios" so the header "Clientes" link anchors here. */}
+      <section id="testimonios" className="px-4 py-20 sm:px-6 sm:py-28 md:px-8">
+        <div className="mx-auto max-w-6xl">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-            className="relative overflow-hidden rounded-r-[2rem] bg-[#F5F7FA]"
+            transition={{ duration: 0.5 }}
+            className="font-heading text-center text-2xl font-black leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
           >
-            <Image
-              src="/starconcept.png"
-              alt="StarConcept — peluche pulpo con gorra"
-              width={1000}
-              height={1000}
-              className="h-auto w-full object-cover"
-            />
-          </motion.div>
+            Los dueños suben contenido 10x más rápido
+            <br className="hidden sm:block" />
+            {" "}y su dinero invertido en Ads rinde 3x más con Postty
+          </motion.h2>
 
-          {/* Right: title + stats */}
-          <div className="flex flex-col gap-10 px-4 sm:px-6 md:gap-12 md:pr-10 md:pl-0">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5 }}
-              className="font-heading text-2xl font-black leading-[1.1] tracking-tight sm:text-3xl"
-            >
-              StarConcept
-              <br />
-              confió en Postty
-            </motion.h2>
-
-            <div className="flex flex-wrap gap-x-14 gap-y-8 sm:gap-x-16">
-              {/* Stat 1 */}
+          <div className="mt-14 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-2 md:gap-10">
+            {brandTestimonials.map((brand, i) => (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                key={brand.name}
+                initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{ duration: 0.6, delay: i * 0.1 }}
+                className="relative aspect-[5/4] overflow-hidden rounded-[2rem]"
               >
-                <p className="font-heading text-6xl font-black leading-none tracking-tight sm:text-7xl md:text-8xl">
-                  +30
-                </p>
-                <p className="mt-3 text-sm text-[#0D1522]/70 sm:text-base">
-                  Horas mensuales
-                  <br />
-                  ahorradas en Canva
-                </p>
-              </motion.div>
+                {/* Plush hero image — fills the entire card, rounded via parent overflow-hidden */}
+                <Image
+                  src={brand.image}
+                  alt={brand.name}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                />
 
-              {/* Stat 2 */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <p className="font-heading flex items-end text-6xl font-black leading-none tracking-tight sm:text-7xl md:text-8xl">
-                  3x
-                  <span className="font-heading ml-2 text-sm font-bold tracking-normal text-[#0D1522]/60 sm:text-base md:text-lg">
-                    roas
-                  </span>
-                </p>
-                <p className="mt-3 text-sm text-[#0D1522]/70 sm:text-base">
-                  Más conversión de Ads
-                  <br />
-                  en las campañas de meta
-                </p>
+                {/* Brand name — glass pill, top-left */}
+                <div className="absolute left-6 top-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                  <p className="font-heading text-base font-bold leading-tight text-[#0D1522] sm:text-lg">
+                    {brand.name}
+                  </p>
+                  <p className="mt-0.5 text-xs text-[#0D1522]/60 sm:text-sm">
+                    {brand.subtitle}
+                  </p>
+                </div>
+
+                {/* Stat 1 — glass pill, bottom-left */}
+                <div className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                  <p className="font-heading flex items-end text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
+                    {brand.stat1.value}
+                    {brand.stat1.suffix && (
+                      <span className="font-heading ml-1.5 text-xs font-bold tracking-normal text-[#0D1522]/60 sm:text-sm">
+                        {brand.stat1.suffix}
+                      </span>
+                    )}
+                  </p>
+                  <p className="mt-2 text-[11px] leading-snug text-[#0D1522]/70 sm:text-xs">
+                    {brand.stat1.label[0]}
+                    <br />
+                    {brand.stat1.label[1]}
+                  </p>
+                </div>
+
+                {/* Stat 2 — glass pill, bottom-right */}
+                <div className="absolute bottom-6 right-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150">
+                  <p className="font-heading text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
+                    {brand.stat2.value}
+                  </p>
+                  <p className="mt-2 text-[11px] leading-snug text-[#0D1522]/70 sm:text-xs">
+                    {brand.stat2.label[0]}
+                    <br />
+                    {brand.stat2.label[1]}
+                  </p>
+                </div>
               </motion.div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -1475,111 +1492,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <h2 className="font-heading text-3xl font-black sm:text-4xl">
-              IA entrenada para generar contenido que vende
-            </h2>
-            <p className="mt-3 text-[#0D1522]/60">
-              Esto no es solo IA. Es inteligencia de contenido.
-            </p>
-          </motion.div>
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {stats.map((stat, i) => (
-              <motion.article
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.35 }}
-                className="rounded-2xl bg-[#F5F7FA] p-5 text-center"
-              >
-                <p className="font-heading text-4xl font-black" style={{ color: stat.color }}>{stat.value}</p>
-                <p className="mt-2 text-sm text-[#0D1522]/60">{stat.label}</p>
-              </motion.article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* ── Privacy ── */}
-      <section className="px-4 py-20">
-        <div className="mx-auto max-w-4xl text-center">
-          <h2 className="font-heading text-3xl font-black sm:text-4xl md:text-5xl">
-            Grandes poderes vienen con
-          </h2>
-          <p className="mt-2 font-heading text-2xl font-black sm:text-3xl md:text-4xl">
-            <span className="bg-gradient-to-r from-[#022BB0] via-[#1881F1] to-[#49D3F8] bg-clip-text text-transparent">gran privacidad.</span>
-          </p>
-          <p className="mx-auto mt-5 max-w-2xl text-[#0D1522]/60">
-            Tu marca es tu mayor activo. La protegemos con encriptación completa,
-            cero intercambio de datos y control absoluto en tus manos.
-          </p>
-          <div className="relative mx-auto mt-10 w-[130px]">
-            <div className="dragon-shadow absolute bottom-0 left-1/2 h-3 w-24 -translate-x-1/2 rounded-[50%]" />
-            <Image src="/mascot.png" alt="Postty mascot" width={130} height={130} className="relative z-10" />
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute -right-4 -top-4 z-20"
-              style={{ perspective: "600px" }}
-            >
-              <div
-                className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#1881F1] to-[#49D3F8]"
-                style={{
-                  transform: "rotateY(-10deg) rotateX(8deg)",
-                  boxShadow: "0 8px 20px rgba(24,129,241,0.35), 0 2px 4px rgba(24,129,241,0.2), inset 0 1px 0 rgba(255,255,255,0.3), 0 -2px 0 rgba(0,0,0,0.1)",
-                }}
-              >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-              </div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Testimonials ── */}
-      <section id="testimonios" className="px-4 py-20">
-        <div className="mx-auto max-w-6xl">
-          <h2 className="font-heading text-center text-3xl font-black sm:text-4xl">
-            Hecho por fundadores, para fundadores que quieren vender sin preocuparse por el marketing.
-          </h2>
-          <div className="relative mt-12">
-            <div
-              className="columns-1 gap-4 sm:columns-2 lg:columns-3"
-              style={{
-                maskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
-                WebkitMaskImage: "linear-gradient(to bottom, black 45%, transparent 90%)",
-              }}
-            >
-            {testimonials.map((t) => (
-              <motion.blockquote
-                key={t.name}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-40px" }}
-                className="mb-4 break-inside-avoid rounded-2xl bg-[#F5F7FA] p-5"
-              >
-                <p className="text-sm font-bold">{t.name}</p>
-                <p className="mt-2 text-sm leading-relaxed text-[#0D1522]/70">{t.text}</p>
-                <p className="mt-3 text-xs text-[#0D1522]/40">{t.location}</p>
-              </motion.blockquote>
-            ))}
-            </div>
-          </div>
-          <p className="mt-8 text-center text-sm font-bold text-[#0D1522]">
-            +300 dueños de negocio usan Postty
-          </p>
-        </div>
-      </section>
 
       {/* ── FAQ ── */}
       <section id="faq" className="px-4 py-20">
