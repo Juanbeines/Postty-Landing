@@ -906,8 +906,25 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handler);
   }, []);
 
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.a,
+      },
+    })),
+  };
+
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#0D1522] md:min-h-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       <div className="fixed left-0 right-0 top-0 z-50 px-4 pt-4 sm:px-6">
         {/* Layer 1: Pill (visible when not scrolled) */}
         <motion.header
@@ -974,6 +991,11 @@ export default function Home() {
       <main className="flex-1 md:flex-initial">
       {/* ── Hero ── */}
       <section className="relative h-screen overflow-hidden bg-black">
+        {/* SEO-critical H1: visually represented by the hero video.
+            Keywords: agente, marketing, IA, contenido, ads, Meta. */}
+        <h1 className="sr-only">
+          Postty — Agente de marketing con IA que crea contenido y ads para Meta en 5 minutos
+        </h1>
         {isMobile !== null && (
           <video
             key={isMobile ? "mobile" : "desktop"}

@@ -5,21 +5,36 @@ import "./globals.css";
 const GA_ID = "G-F4E2KJ2W01";
 
 export const metadata: Metadata = {
-  title: "Postty | Tu Agente de Marketing con IA",
+  title: "Postty | Agente de Marketing con IA para crear Ads de Meta",
   description:
-    "Postty es tu agente de marketing con inteligencia artificial. Creá ads profesionales, publicá campañas y optimizá resultados. Sin plantillas, sin genéricos.",
+    "Postty es tu agente de marketing con IA. Creá contenido y ads profesionales para Meta (Facebook e Instagram) en 5 minutos, sin plantillas.",
   metadataBase: new URL("https://www.posttyai.com"),
   alternates: {
     canonical: "/",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   icons: {
-    icon: { url: "/mascot.png", type: "image/png", sizes: "500x500" },
-    apple: "/mascot.png",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png", type: "image/png", sizes: "512x512" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Postty | Tu Agente de Marketing con IA",
+    title: "Postty | Agente de Marketing con IA para crear Ads de Meta",
     description:
-      "Creá ads profesionales, publicá campañas y optimizá resultados con inteligencia artificial.",
+      "Creá contenido y ads profesionales para Meta en 5 minutos con inteligencia artificial. Sin plantillas, sin genéricos.",
     url: "https://www.posttyai.com",
     siteName: "Postty",
     images: [
@@ -27,7 +42,7 @@ export const metadata: Metadata = {
         url: "https://www.posttyai.com/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Postty — Tu Agente de Marketing con IA",
+        alt: "Postty — Agente de Marketing con IA",
       },
     ],
     locale: "es_AR",
@@ -35,9 +50,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Postty | Tu Agente de Marketing con IA",
+    title: "Postty | Agente de Marketing con IA para crear Ads de Meta",
     description:
-      "Creá ads profesionales, publicá campañas y optimizá resultados con inteligencia artificial.",
+      "Creá contenido y ads profesionales para Meta en 5 minutos con inteligencia artificial.",
     images: ["https://www.posttyai.com/og-image.png"],
   },
 };
@@ -52,11 +67,12 @@ export default function RootLayout({
     "@graph": [
       {
         "@type": "Organization",
+        "@id": "https://www.posttyai.com/#organization",
         name: "Postty",
         url: "https://www.posttyai.com",
         logo: "https://www.posttyai.com/mascot.png",
         description:
-          "Postty es tu agente de marketing con inteligencia artificial. Creá ads profesionales, publicá campañas y optimizá resultados.",
+          "Postty es tu agente de marketing con IA. Creá contenido y ads profesionales para Meta (Facebook e Instagram) en 5 minutos.",
         contactPoint: {
           "@type": "ContactPoint",
           email: "soporte@posttyai.com",
@@ -66,22 +82,35 @@ export default function RootLayout({
       },
       {
         "@type": "SoftwareApplication",
+        "@id": "https://www.posttyai.com/#software",
         name: "Postty",
         url: "https://app.posttyai.com",
         applicationCategory: "BusinessApplication",
+        applicationSubCategory: "MarketingApplication",
         operatingSystem: "Web",
         description:
-          "Agente de marketing con IA que crea ads profesionales, publica campañas y optimiza resultados.",
+          "Agente de marketing con IA que crea ads y contenido para Meta Ads (Facebook e Instagram) listos para publicar.",
+        featureList: [
+          "Generación de ads con IA para Meta (Facebook e Instagram)",
+          "Análisis automático de la identidad de marca (Brand DNA)",
+          "Creación de carruseles, posts, historias y UGC",
+          "Edición y redimensión de creativos",
+          "Subida directa a Meta Ads Manager",
+        ],
         offers: {
           "@type": "Offer",
           price: "0",
           priceCurrency: "USD",
+          availability: "https://schema.org/InStock",
         },
       },
       {
         "@type": "WebSite",
+        "@id": "https://www.posttyai.com/#website",
         name: "Postty",
         url: "https://www.posttyai.com",
+        inLanguage: "es-AR",
+        publisher: { "@id": "https://www.posttyai.com/#organization" },
       },
     ],
   };
@@ -89,6 +118,9 @@ export default function RootLayout({
   return (
     <html lang="es">
       <head>
+        {/* Preconnect & DNS prefetch for Google Tag Manager (reduces TTFB of analytics) */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
           strategy="afterInteractive"

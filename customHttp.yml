@@ -1,0 +1,42 @@
+customHeaders:
+  # HTML — short browser cache (revalidates quickly), long CDN cache (invalidated per-deploy)
+  - pattern: "**/*.html"
+    headers:
+      - key: "Cache-Control"
+        value: "public, max-age=300, s-maxage=31536000, must-revalidate"
+      - key: "X-Content-Type-Options"
+        value: "nosniff"
+      - key: "Referrer-Policy"
+        value: "strict-origin-when-cross-origin"
+
+  # Next.js immutable static assets (hashed filenames)
+  - pattern: "/_next/static/**"
+    headers:
+      - key: "Cache-Control"
+        value: "public, max-age=31536000, immutable"
+
+  # Images, fonts, videos — cacheable long-term
+  - pattern: "**/*.@(png|jpg|jpeg|webp|avif|gif|svg|ico|woff|woff2|ttf|mp4|webm)"
+    headers:
+      - key: "Cache-Control"
+        value: "public, max-age=31536000, immutable"
+
+  # robots.txt and sitemap.xml — short cache so updates propagate fast
+  - pattern: "/robots.txt"
+    headers:
+      - key: "Cache-Control"
+        value: "public, max-age=3600, s-maxage=86400"
+  - pattern: "/sitemap.xml"
+    headers:
+      - key: "Cache-Control"
+        value: "public, max-age=3600, s-maxage=86400"
+
+  # Global security headers for every response
+  - pattern: "**"
+    headers:
+      - key: "Strict-Transport-Security"
+        value: "max-age=63072000; includeSubDomains; preload"
+      - key: "X-Frame-Options"
+        value: "SAMEORIGIN"
+      - key: "Permissions-Policy"
+        value: "camera=(), microphone=(), geolocation=()"
