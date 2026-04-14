@@ -1535,8 +1535,20 @@ export default function Home() {
           <div className="flex flex-wrap gap-10 text-sm">
             <div>
               <p className="mb-2 font-bold text-[#0D1522]/40">Legal</p>
-              <button onClick={() => setLegalModal("privacy")} className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">Política de privacidad</button>
-              <button onClick={() => setLegalModal("tyc")} className="mt-1 block text-[#0D1522]/60 transition hover:text-[#0D1522]">Términos de servicio</button>
+              <a
+                href="/privacy"
+                onClick={(e) => { e.preventDefault(); setLegalModal("privacy"); }}
+                className="block text-[#0D1522]/60 transition hover:text-[#0D1522]"
+              >
+                Política de privacidad
+              </a>
+              <a
+                href="/terms"
+                onClick={(e) => { e.preventDefault(); setLegalModal("tyc"); }}
+                className="mt-1 block text-[#0D1522]/60 transition hover:text-[#0D1522]"
+              >
+                Términos de servicio
+              </a>
             </div>
             <div>
               <p className="mb-2 font-bold text-[#0D1522]/40">Empresa</p>
