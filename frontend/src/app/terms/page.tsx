@@ -20,9 +20,32 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    {
+      "@type": "ListItem",
+      position: 1,
+      name: "Inicio",
+      item: "https://www.posttyai.com/",
+    },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: "Términos y Condiciones",
+      item: "https://www.posttyai.com/terms/",
+    },
+  ],
+};
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-white text-[#0D1522]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <header className="border-b border-[#0D1522]/10 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
