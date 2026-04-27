@@ -440,17 +440,19 @@ function PricingSection() {
 
   const basicFeatures = [
     "Hasta 1 marca",
-    "Máximo de 3 campañas",
-    "Hasta 60 Ads generados",
-    "1 Edit por Ad",
+    "60 Ads",
+    "20 Posts",
+    "20 Photoshoots",
+    "1 Edit por foto",
   ];
 
   const proFeatures = [
     "Hasta 4 marcas",
-    "Campañas ilimitadas",
-    "Ads infinitos",
-    "Acceso a mejores modelos de IA",
-    "Edits ilimitados por Ad",
+    "Ads ilimitados",
+    "Posts ilimitados",
+    "Photoshoots ilimitados",
+    "Edits ilimitados por foto",
+    "Modelos Pro de IA",
   ];
 
   const activeCard = hoveredCard ?? "pro";
@@ -491,6 +493,16 @@ function PricingSection() {
               transition={{ duration: 0.5 }}
               className="relative z-10 rounded-3xl bg-white p-8 shadow-[0_4px_32px_rgba(0,0,0,0.08)]"
             >
+            {/* Discount centered at top */}
+            <div className="mb-5 flex w-full items-center justify-center">
+              <div
+                className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(24,129,241,0.4)]"
+                style={{ background: "linear-gradient(135deg, #1881F1, #49D3F8)" }}
+              >
+                <span className="font-heading text-lg font-black text-white">60% OFF</span>
+              </div>
+            </div>
+
             <h3
               className="font-heading text-center text-5xl font-black sm:text-6xl"
               style={{
@@ -502,10 +514,15 @@ function PricingSection() {
               Basic
             </h3>
 
-            <div className="mt-4 flex items-baseline justify-center gap-2">
-              <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
-              <span className="font-heading text-4xl font-black text-[#0D1522]">$39,999</span>
-              <span className="text-sm font-medium text-[#0D1522]/50">x mes</span>
+            <div className="mt-4 flex flex-col items-center gap-1">
+              <span className="text-xl font-bold text-[#0D1522]/40 line-through decoration-2 decoration-[#FF4D4D]/70">
+                $99.999
+              </span>
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
+                <span className="font-heading text-4xl font-black text-[#0D1522]">$39.999</span>
+                <span className="text-sm font-medium text-[#0D1522]/50">x mes</span>
+              </div>
             </div>
 
             <div className="mt-8 rounded-2xl bg-[#F8F9FB] p-5">
@@ -551,9 +568,19 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative z-10 overflow-hidden rounded-3xl p-8 text-white"
+              className="relative z-10 rounded-3xl p-8 text-white"
               style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
             >
+            {/* Discount centered at top */}
+            <div className="mb-5 flex w-full items-center justify-center">
+              <div
+                className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(181,255,0,0.5)]"
+                style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
+              >
+                <span className="font-heading text-lg font-black text-[#0D1522]">40% OFF</span>
+              </div>
+            </div>
+
             <h3
               className="font-heading text-center text-5xl font-black sm:text-6xl"
               style={{
@@ -565,10 +592,15 @@ function PricingSection() {
               Pro
             </h3>
 
-            <div className="mt-4 flex items-baseline justify-center gap-2">
-              <span className="text-xs font-semibold text-white/50">ARS</span>
-              <span className="font-heading text-4xl font-black text-white">$84,999</span>
-              <span className="text-sm font-medium text-white/60">x mes</span>
+            <div className="mt-4 flex flex-col items-center gap-1">
+              <span className="text-xl font-bold text-white/50 line-through decoration-2 decoration-[#FF6B6B]">
+                $141.999
+              </span>
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-xs font-semibold text-white/50">ARS</span>
+                <span className="font-heading text-4xl font-black text-white">$85.000</span>
+                <span className="text-sm font-medium text-white/60">x mes</span>
+              </div>
             </div>
 
             <div className="mt-8 rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
