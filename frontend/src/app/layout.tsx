@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Suspense } from "react";
+import MetaPixel from "@/components/MetaPixel";
 import "./globals.css";
 
 const GA_ID = "G-F4E2KJ2W01";
@@ -139,6 +141,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <Suspense fallback={null}>
+          <MetaPixel />
+        </Suspense>
         {children}
       </body>
     </html>
