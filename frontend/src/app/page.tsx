@@ -1403,13 +1403,12 @@ export default function Home() {
 
       {/* ── Final CTA ── */}
       <section id="empezar" className="px-6 py-20 sm:px-10 md:px-16">
-        <div className="relative mx-auto overflow-hidden rounded-3xl" style={{ aspectRatio: "16 / 9" }}>
+        <div className="relative mx-auto aspect-[4/5] overflow-hidden rounded-3xl sm:aspect-video">
           <Image
             src="/end.png"
             alt="Relax with Postty"
             fill
-            className="object-cover object-center"
-            style={{ transform: "scale(2) translate(57.5px, -15px)" }}
+            className="object-cover object-center sm:[transform:scale(2)_translate(57.5px,-15px)]"
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
             <h2 className="font-heading text-xl font-black text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl lg:text-4xl">
