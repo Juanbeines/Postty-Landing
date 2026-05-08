@@ -3,24 +3,22 @@
 import Script from 'next/script';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-
-const PIXEL_ID = '1460082568860443';
-
-declare global {
-  interface Window {
-    fbq: any;
-    _fbq: any;
-  }
-}
+import { PIXEL_ID, persistFbclid, trackPageView } from '@/lib/pixel';
 
 export default function MetaPixel() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
+  // Capture fbclid from the URL the user landed on, persist 90d.
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.fbq) {
-      window.fbq('track', 'PageView');
-    }
+    persistFbclid();
+  }, []);
+
+  // Hybrid PageView (fbq + CAPI, deduped via shared event_id) on every route change.
+  // The fbq queue created by the init script below buffers calls until fbevents.js loads,
+  // so this works even on the very first render.
+  useEffect(() => {
+    trackPageView();
   }, [pathname, searchParams]);
 
   return (
@@ -36,7 +34,6 @@ export default function MetaPixel() {
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
           fbq('init', '${PIXEL_ID}');
-          fbq('track', 'PageView');
         `}
       </Script>
       <noscript>

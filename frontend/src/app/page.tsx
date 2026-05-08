@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useInVie
 import { useCallback, useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
+import { trackEvent, useAppUrl } from "@/lib/pixel";
 
 const avatars = [
   "https://i.pravatar.cc/80?img=12",
@@ -436,7 +437,36 @@ function WhatPosttyDoesSection() {
 }
 
 function PricingSection() {
-  const [hoveredCard, setHoveredCard] = useState<"basic" | "pro" | null>("pro");
+  const [hoveredCard, setHoveredCard] = useState<"basic" | "pro" | "agency" | null>("pro");
+  const sectionRef = useRef<HTMLElement>(null);
+  const appUrl = useAppUrl();
+
+  // Fire ViewContent once per session when pricing scrolls into view (>=50%).
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node) return;
+    const KEY = "postty_viewcontent_pricing";
+    try {
+      if (sessionStorage.getItem(KEY)) return;
+    } catch {
+      /* sessionStorage unavailable — proceed without throttle */
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            trackEvent("ViewContent", { content_category: "pricing" });
+            try { sessionStorage.setItem(KEY, "1"); } catch { /* ignore */ }
+            observer.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.5 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   const basicFeatures = [
     "Hasta 1 marca",
@@ -447,7 +477,17 @@ function PricingSection() {
   ];
 
   const proFeatures = [
-    "Hasta 4 marcas",
+    "Hasta 1 marca",
+    "Ads ilimitados",
+    "Posts ilimitados",
+    "Photoshoots ilimitados",
+    "Edits ilimitados por foto",
+    "Modelos Pro de IA",
+  ];
+
+  const agencyFeatures = [
+    "Hasta 5 marcas",
+    "Hasta 10 usuarios en tu equipo",
     "Ads ilimitados",
     "Posts ilimitados",
     "Photoshoots ilimitados",
@@ -458,8 +498,8 @@ function PricingSection() {
   const activeCard = hoveredCard ?? "pro";
 
   return (
-    <section id="pricing" className="px-4 py-24">
-      <div className="mx-auto max-w-4xl">
+    <section ref={sectionRef} id="pricing" className="px-4 py-24">
+      <div className="mx-auto max-w-6xl">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -469,7 +509,7 @@ function PricingSection() {
           Precios simples
         </motion.h2>
 
-        <div className="relative mt-16 grid items-start gap-8 sm:grid-cols-2">
+        <div className="relative mt-16 grid items-start gap-8 lg:grid-cols-3">
           {/* Basic Card */}
           <div
             className="relative self-start"
@@ -499,12 +539,12 @@ function PricingSection() {
                 className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(24,129,241,0.4)]"
                 style={{ background: "linear-gradient(135deg, #1881F1, #49D3F8)" }}
               >
-                <span className="font-heading text-lg font-black text-white">60% OFF</span>
+                <span className="font-heading text-lg font-black text-white">30% OFF</span>
               </div>
             </div>
 
             <h3
-              className="font-heading text-center text-5xl font-black sm:text-6xl"
+              className="font-heading text-center text-4xl font-black"
               style={{
                 background: "linear-gradient(135deg, #1881F1, #49D3F8)",
                 WebkitBackgroundClip: "text",
@@ -516,7 +556,7 @@ function PricingSection() {
 
             <div className="mt-4 flex flex-col items-center gap-1">
               <span className="text-xl font-bold text-[#0D1522]/40 line-through decoration-2 decoration-[#FF4D4D]/70">
-                $99.999
+                $56.999
               </span>
               <div className="flex items-baseline justify-center gap-2">
                 <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
@@ -541,7 +581,17 @@ function PricingSection() {
               ))}
             </div>
 
-            <a href="https://app.posttyai.com" className="mt-8 block w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]">
+            <a
+              href={appUrl}
+              onClick={() => trackEvent("Lead", {
+                content_category: "pricing_basic",
+                content_ids: ["plan_basic"],
+                content_type: "product",
+                value: 39999,
+                currency: "ARS",
+              })}
+              className="mt-8 block w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]"
+            >
               Empezar ahora
             </a>
             </motion.div>
@@ -577,12 +627,12 @@ function PricingSection() {
                 className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(181,255,0,0.5)]"
                 style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
               >
-                <span className="font-heading text-lg font-black text-[#0D1522]">40% OFF</span>
+                <span className="font-heading text-lg font-black text-[#0D1522]">60% OFF</span>
               </div>
             </div>
 
             <h3
-              className="font-heading text-center text-5xl font-black sm:text-6xl"
+              className="font-heading text-center text-4xl font-black"
               style={{
                 background: "linear-gradient(135deg, #b5ff00, #eeff64)",
                 WebkitBackgroundClip: "text",
@@ -594,11 +644,11 @@ function PricingSection() {
 
             <div className="mt-4 flex flex-col items-center gap-1">
               <span className="text-xl font-bold text-white/50 line-through decoration-2 decoration-[#FF6B6B]">
-                $141.999
+                $211.999
               </span>
               <div className="flex items-baseline justify-center gap-2">
                 <span className="text-xs font-semibold text-white/50">ARS</span>
-                <span className="font-heading text-4xl font-black text-white">$85.000</span>
+                <span className="font-heading text-4xl font-black text-white">$84.999</span>
                 <span className="text-sm font-medium text-white/60">x mes</span>
               </div>
             </div>
@@ -620,11 +670,105 @@ function PricingSection() {
             </div>
 
             <a
-              href="https://app.posttyai.com"
+              href={appUrl}
+              onClick={() => trackEvent("Lead", {
+                content_category: "pricing_pro",
+                content_ids: ["plan_pro"],
+                content_type: "product",
+                value: 84999,
+                currency: "ARS",
+              })}
               className="mt-8 block w-full rounded-full py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
               style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
             >
               Convertirme en Pro
+            </a>
+            </motion.div>
+          </div>
+
+          {/* Agency Card */}
+          <div
+            className="relative"
+            onMouseEnter={() => setHoveredCard("agency")}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            {/* Mascot for Agency — hides/shows vertically */}
+            <motion.div
+              animate={{ y: activeCard === "agency" ? 0 : 50, opacity: activeCard === "agency" ? 1 : 0 }}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
+              style={{ width: 120, height: 120, marginTop: -55 }}
+            >
+              <Image src="/mascot.png" alt="Postty mascot" width={120} height={120} className="drop-shadow-xl" />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="relative z-10 rounded-3xl bg-white p-8 shadow-[0_4px_32px_rgba(0,0,0,0.08)]"
+            >
+            {/* Discount centered at top */}
+            <div className="mb-5 flex w-full items-center justify-center">
+              <div
+                className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(24,129,241,0.4)]"
+                style={{ background: "linear-gradient(135deg, #1881F1, #49D3F8)" }}
+              >
+                <span className="font-heading text-lg font-black text-white">30% OFF</span>
+              </div>
+            </div>
+
+            <h3
+              className="font-heading text-center text-4xl font-black"
+              style={{
+                background: "linear-gradient(135deg, #1881F1, #49D3F8)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              Agencia
+            </h3>
+
+            <div className="mt-4 flex flex-col items-center gap-1">
+              <span className="text-xl font-bold text-[#0D1522]/40 line-through decoration-2 decoration-[#FF4D4D]/70">
+                $285.999
+              </span>
+              <div className="flex items-baseline justify-center gap-2">
+                <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
+                <span className="font-heading text-4xl font-black text-[#0D1522]">$200.000</span>
+                <span className="text-sm font-medium text-[#0D1522]/50">x mes</span>
+              </div>
+            </div>
+
+            <div className="mt-8 rounded-2xl bg-[#F8F9FB] p-5">
+              {agencyFeatures.map((feat, i) => (
+                <div
+                  key={feat}
+                  className={`flex items-center justify-between py-3.5 ${
+                    i < agencyFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                  }`}
+                >
+                  <span className="text-sm font-medium text-[#0D1522]/70">{feat}</span>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <a
+              href={appUrl}
+              onClick={() => trackEvent("Lead", {
+                content_category: "pricing_agency",
+                content_ids: ["plan_agency"],
+                content_type: "product",
+                value: 200000,
+                currency: "ARS",
+              })}
+              className="mt-8 block w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]"
+            >
+              Convertirme en Agencia
             </a>
             </motion.div>
           </div>
@@ -817,6 +961,7 @@ export default function Home() {
   const [showHeroCTA, setShowHeroCTA] = useState(false);
   const [showHeroPopups, setShowHeroPopups] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const appUrl = useAppUrl();
 
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 767px)");
@@ -893,7 +1038,7 @@ export default function Home() {
             <a href="#pricing" className="whitespace-nowrap transition hover:text-[#0D1522]">Precios</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
-          <a href="https://app.posttyai.com" className="shrink-0 rounded-full bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
+          <a href={appUrl} className="shrink-0 rounded-full bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
             Iniciar sesión
           </a>
         </motion.header>
@@ -926,7 +1071,7 @@ export default function Home() {
               scale: scrolled ? 1 : 0.7,
             }}
             transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-            href="https://app.posttyai.com"
+            href={appUrl}
             className="btn-outline-gradient rounded-full bg-white/80 px-5 py-2.5 text-sm font-bold shadow-[0_2px_12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] backdrop-blur-xl"
           >
             Iniciar sesión
@@ -1049,7 +1194,8 @@ export default function Home() {
               className="pointer-events-none absolute inset-x-0 bottom-[22%] flex justify-center md:bottom-[36%]"
             >
               <motion.a
-                href="https://app.posttyai.com"
+                href={appUrl}
+                onClick={() => trackEvent("Lead", { content_name: "hero_cta_empezar_gratis" })}
                 className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-black text-[#0D1522] shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
@@ -1079,11 +1225,11 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5 }}
-            className="font-heading text-center text-2xl font-black leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
+            className="font-heading text-center text-2xl font-medium leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
           >
-            Los dueños suben contenido 10x más rápido
+            Los dueños suben contenido <span className="font-black">10x más rápido</span>
             <br className="hidden sm:block" />
-            {" "}y su dinero invertido en Ads rinde 3x más con Postty
+            {" "}y su dinero invertido en Ads <span className="font-black">rinde 3x más</span> con <span className="font-black">Postty</span>
           </motion.h2>
 
           <div className="mt-14 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-2 md:gap-10">
@@ -1271,7 +1417,8 @@ export default function Home() {
             </h2>
             <div className="mt-5">
               <motion.a
-                href="https://app.posttyai.com"
+                href={appUrl}
+                onClick={() => trackEvent("Lead", { content_name: "final_cta_empezar_gratis" })}
                 className="group inline-flex items-center gap-2 rounded-full bg-white/15 px-8 py-3.5 text-base font-black text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
