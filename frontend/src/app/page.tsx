@@ -307,13 +307,6 @@ function ScrollTriggeredVideo({ src, className }: { src: string; className?: str
   );
 }
 
-type CaptionStyle = {
-  top?: string;
-  bottom?: string;
-  left?: string;
-  right?: string;
-};
-
 type BrandTestimonial = {
   name: string;
   subtitle: string;
@@ -353,84 +346,119 @@ const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
 ];
 
 const whatPosttyDoesItems: ReadonlyArray<{
-  title: readonly [string, string];
+  title: string;
+  subtitle: readonly [string, string];
   video: string;
-  caption: readonly [string, string];
-  widthClass: string;
-  captionStyle: CaptionStyle;
 }> = [
   {
-    title: ["Contenido para", "Instagram y Facebook"],
+    title: "Contenido para redes",
+    subtitle: ["Para que no gastes más tiempo", "pensando tu próximo posteo"],
     video: "/videos/feed.mp4",
-    caption: ["Para que te olvides de", "Canva para siempre"],
-    widthClass: "max-w-[280px]",
-    // Glass caption sits at the BOTTOM tip of the LEFT side of the phone,
-    // bumped up 20px from the very bottom.
-    captionStyle: { bottom: "calc(6% + 80px)", left: "-16px" },
   },
   {
-    title: ["Campañas en Meta", "con Ads profesionales"],
+    title: "Campañas con Ads",
+    subtitle: ["Para que no gastes dinero", "en agencias de marketing"],
     video: "/videos/campagin.mp4",
-    caption: ["Para que no gastes dinero en", "Agencias de marketing"],
-    widthClass: "max-w-[280px]",
-    // Glass caption sits at the TOP of the RIGHT side of the phone.
-    captionStyle: { top: "8%", right: "-24px" },
   },
   {
-    title: ["Photoshoot", "para tu tienda virtual"],
+    title: "Photoshoot de producto",
+    subtitle: ["Para que no gastes dinero", "en un estudio y fotografía"],
     video: "/videos/product.mp4",
-    caption: ["Para que no gastes dinero en", "fotografía y edición"],
-    widthClass: "max-w-[290px]",
-    // Glass caption sits VERY LOW on the LEFT, almost at the phone's edge.
-    captionStyle: { bottom: "1%", left: "-20px" },
   },
 ];
 
+/**
+ * Apple-style 2×2 bento grid: three product tiles + a fourth "trial" CTA tile.
+ *
+ * Key design decisions:
+ *   - Section padding (px-3) MATCHES grid gap (gap-3) so the visual rhythm
+ *     between tile-edge → screen-edge is identical to tile-to-tile spacing.
+ *   - Tiles use `rounded-xl` (12px) — barely-rounded, near-rectangular per spec.
+ *   - Video bg removal: source MP4s have a pure-white padding around the phone.
+ *     `mix-blend-mode: darken` on the video keeps any pixel that's darker than
+ *     the tile gray (#F1F2F4) and replaces brighter pixels (the white padding)
+ *     with the tile gray — so the phone "floats" with no visible video frame.
+ *   - Phone bottom is intentionally cropped flush with the tile's bottom edge:
+ *     the aspect-[9/13] container is squarer than the source 9:16 video, and
+ *     `object-cover object-top` anchors the top so the bottom gets clipped.
+ *   - Mobile: single column, full-width tiles, same rules apply.
+ */
 function WhatPosttyDoesSection() {
+  const appUrl = useAppUrl();
+
   return (
-    <section className="px-4 py-20 sm:px-6 sm:py-24 md:px-10 md:py-28">
-      <h2 className="font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl">
-        Qué hace Postty
-      </h2>
-
-      <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-16 md:mt-20 md:grid-cols-3 md:gap-10">
+    <section className="px-3 py-20 sm:py-24 md:py-28">
+      <div className="mx-auto grid max-w-[1600px] grid-cols-1 gap-3 md:grid-cols-2">
         {whatPosttyDoesItems.map((item) => (
-          <div key={item.title.join(" ")} className="flex flex-col items-center">
-            {/* Title */}
-            <h3 className="font-heading text-center text-lg font-bold leading-tight sm:text-xl">
-              {item.title[0]}
-              <br />
-              {item.title[1]}
+          <div
+            key={item.title}
+            className="isolate flex flex-col items-center overflow-hidden rounded-xl bg-[#F1F2F4] px-6 pt-12 pb-0 sm:px-10 sm:pt-16"
+          >
+            <h3 className="font-heading text-center text-2xl font-black tracking-tight text-[#0D1522] sm:text-3xl">
+              {item.title}
             </h3>
-
-            {/* Video container — relative host for the floating glass caption.
-                outer has overflow-visible so the pill can poke off the edges. */}
-            <div className={`relative mt-8 aspect-[9/16] w-full ${item.widthClass}`}>
-              {/* Video wrapper — overflow-hidden here so rounded corners clip */}
-              <div className="absolute inset-0 overflow-hidden rounded-[2rem]">
+            <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base">
+              {item.subtitle[0]}
+              <br />
+              {item.subtitle[1]}
+            </p>
+            {/* Phone bottom kissses the tile's bottom edge — no pb on tile,
+                aspect-[9/13] crops the video, mix-blend-darken kills white bg. */}
+            <div className="mt-6 w-full max-w-[340px] sm:mt-8 sm:max-w-[380px]">
+              <div className="relative aspect-[9/13] w-full overflow-hidden">
                 <ScrollTriggeredVideo
                   src={item.video}
-                  className="h-full w-full object-cover"
+                  className="absolute inset-0 h-full w-full object-cover object-top mix-blend-darken"
                 />
-              </div>
-
-              {/* Glass caption — floating pill over the video, random-ish
-                  position on the sides. Matches the header's glass pill.
-                  Position is set via inline style so calc() + negative offsets
-                  work reliably across Tailwind JIT + Turbopack. */}
-              <div
-                style={item.captionStyle}
-                className="absolute z-10 max-w-[80%] rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-xl backdrop-saturate-150"
-              >
-                <p className="whitespace-nowrap text-center text-[13px] font-semibold leading-snug text-[#0D1522]">
-                  {item.caption[0]}
-                  <br />
-                  {item.caption[1]}
-                </p>
               </div>
             </div>
           </div>
         ))}
+
+        {/* ── 4th tile: free trial CTA with gift ──────────────────────────
+            CTA goes ABOVE the gift, both centered horizontally + vertically. */}
+        <div
+          className="flex flex-col items-center justify-center overflow-hidden rounded-xl px-6 py-12 sm:px-10 sm:py-16"
+          style={{ background: "linear-gradient(180deg, #C9E5FF 0%, #E8F2FA 70%, #F1F4F7 100%)" }}
+        >
+          {/* Glass CTA — frosted, with arrow that nudges right on hover.
+              Pixel Lead event so this tile's clicks count as conversions too. */}
+          <a
+            href={appUrl}
+            onClick={() => trackEvent("Lead", {
+              content_category: "free_trial_section",
+              content_ids: ["free_trial_cta"],
+              content_type: "product",
+              currency: "ARS",
+            })}
+            className="group inline-flex items-center gap-2.5 rounded-full border border-white/60 bg-white/35 px-7 py-3.5 text-base font-semibold text-[#0D1522] shadow-[0_4px_24px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 hover:bg-white/55 hover:shadow-[0_10px_36px_rgba(24,129,241,0.18),inset_0_1px_0_rgba(255,255,255,0.85)] hover:-translate-y-0.5"
+          >
+            Empezar
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            >
+              <path d="M5 12h14M13 5l7 7-7 7" />
+            </svg>
+          </a>
+          <div className="relative mt-8 w-full max-w-[260px] sm:max-w-[320px]">
+            <Image
+              src="/gift.webp"
+              alt="Probar Postty gratis"
+              width={520}
+              height={520}
+              className="h-auto w-full drop-shadow-[0_20px_40px_rgba(24,129,241,0.25)]"
+              priority={false}
+            />
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -509,14 +537,19 @@ function PricingSection() {
           Precios simples
         </motion.h2>
 
-        <div className="relative mt-16 grid items-start gap-8 lg:grid-cols-3">
-          {/* Basic Card */}
+        {/* Grid uses items-start so per-card lg:mt-X offsets stagger vertically.
+            Basic + Agencia sit lower; Pro sits slightly above so it reads as the
+            recommended plan without needing a "Recommended" tag. */}
+        <div className="relative mt-24 grid items-start gap-8 lg:grid-cols-3">
+          {/* ── Basic Card ─────────────────────────────────────────────────
+              Glass-on-light. Neutral palette so Pro can stand out.
+              No discount, no strikethrough — single clean price. */}
           <div
-            className="relative self-start"
+            className="relative self-start lg:mt-14"
             onMouseEnter={() => setHoveredCard("basic")}
             onMouseLeave={() => setHoveredCard(null)}
           >
-            {/* Mascot for Basic — hides/shows vertically */}
+            {/* Mascot — pops up when this card is the active one */}
             <motion.div
               animate={{ y: activeCard === "basic" ? 0 : 50, opacity: activeCard === "basic" ? 1 : 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
@@ -531,79 +564,65 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="relative z-10 rounded-3xl bg-white p-8 shadow-[0_4px_32px_rgba(0,0,0,0.08)]"
+              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-8 shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-            {/* Discount centered at top */}
-            <div className="mb-5 flex w-full items-center justify-center">
-              <div
-                className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(24,129,241,0.4)]"
-                style={{ background: "linear-gradient(135deg, #1881F1, #49D3F8)" }}
+              {/* Title — top-left, lighter weight */}
+              <h3 className="font-heading text-3xl font-bold text-[#0D1522]">Basic</h3>
+
+              {/* Price — left-aligned, no strikethrough, no ARS */}
+              <div className="mt-5 flex items-baseline gap-2">
+                <span className="font-heading text-5xl font-black tracking-tight text-[#0D1522]">$49.000</span>
+                <span className="text-sm font-medium text-[#0D1522]/50">/mes</span>
+              </div>
+
+              {/* Subtitle */}
+              <p className="mt-3 text-sm leading-relaxed text-[#0D1522]/65">
+                Tenés una empresa y manejás todo el marketing vos
+              </p>
+
+              {/* CTA — moved up, neutral so Pro pops */}
+              <a
+                href={appUrl}
+                onClick={() => trackEvent("Lead", {
+                  content_category: "pricing_basic",
+                  content_ids: ["plan_basic"],
+                  content_type: "product",
+                  value: 49000,
+                  currency: "ARS",
+                })}
+                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-3.5 text-center text-sm font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
-                <span className="font-heading text-lg font-black text-white">30% OFF</span>
-              </div>
-            </div>
+                Empezar ahora
+              </a>
 
-            <h3
-              className="font-heading text-center text-4xl font-black"
-              style={{
-                background: "linear-gradient(135deg, #1881F1, #49D3F8)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Basic
-            </h3>
-
-            <div className="mt-4 flex flex-col items-center gap-1">
-              <span className="text-xl font-bold text-[#0D1522]/40 line-through decoration-2 decoration-[#FF4D4D]/70">
-                $56.999
-              </span>
-              <div className="flex items-baseline justify-center gap-2">
-                <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
-                <span className="font-heading text-4xl font-black text-[#0D1522]">$39.999</span>
-                <span className="text-sm font-medium text-[#0D1522]/50">x mes</span>
-              </div>
-            </div>
-
-            <div className="mt-8 rounded-2xl bg-[#F8F9FB] p-5">
-              {basicFeatures.map((feat, i) => (
-                <div
-                  key={feat}
-                  className={`flex items-center justify-between py-3.5 ${
-                    i < basicFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
-                  }`}
-                >
-                  <span className="text-sm font-medium text-[#0D1522]/70">{feat}</span>
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              {/* Features — inner glass block */}
+              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-5 backdrop-blur-md">
+                {basicFeatures.map((feat, i) => (
+                  <div
+                    key={feat}
+                    className={`flex items-center justify-between py-3 ${
+                      i < basicFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-[#0D1522]/75">{feat}</span>
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            <a
-              href={appUrl}
-              onClick={() => trackEvent("Lead", {
-                content_category: "pricing_basic",
-                content_ids: ["plan_basic"],
-                content_type: "product",
-                value: 39999,
-                currency: "ARS",
-              })}
-              className="mt-8 block w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]"
-            >
-              Empezar ahora
-            </a>
+                ))}
+              </div>
             </motion.div>
           </div>
 
-          {/* Pro Card */}
+          {/* ── Pro Card ───────────────────────────────────────────────────
+              Solid blue gradient — only card with vivid color, only one with
+              discount badge + strikethrough. The visual weight here is the
+              point: Pro is the recommended plan. */}
           <div
-            className="relative"
+            className="relative lg:mt-2"
             onMouseEnter={() => setHoveredCard("pro")}
             onMouseLeave={() => setHoveredCard(null)}
           >
-            {/* Mascot for Pro — hides/shows vertically */}
             <motion.div
               animate={{ y: activeCard === "pro" ? 0 : 50, opacity: activeCard === "pro" ? 1 : 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
@@ -618,81 +637,92 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative z-10 rounded-3xl p-8 text-white"
+              className="relative z-10 overflow-hidden rounded-3xl p-8 text-white shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
               style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
             >
-            {/* Discount centered at top */}
-            <div className="mb-5 flex w-full items-center justify-center">
-              <div
-                className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(181,255,0,0.5)]"
+              {/* Title row — name top-left, discount badge top-right */}
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-heading text-3xl font-bold text-white">Pro</h3>
+                <div
+                  className="shrink-0 rounded-full px-3 py-1 shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
+                  style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
+                >
+                  <span className="font-heading text-xs font-black text-[#0D1522]">60% OFF</span>
+                </div>
+              </div>
+
+              {/* Price — strikethrough small first, then large discounted.
+                  Strike is white (subtle); discounted price uses chartreuse to
+                  reinforce the Pro accent color used by the badge + CTA. */}
+              <div className="mt-5">
+                <div className="text-base font-semibold text-white/60 line-through decoration-2 decoration-white/70">
+                  $211.999
+                </div>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span
+                    className="font-heading text-5xl font-black tracking-tight"
+                    style={{
+                      background: "linear-gradient(135deg, #b5ff00, #eeff64)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    $84.999
+                  </span>
+                  <span className="text-sm font-medium text-white/65">/mes</span>
+                </div>
+              </div>
+
+              {/* Subtitle */}
+              <p className="mt-3 text-sm leading-relaxed text-white/85">
+                Querés llevar tu marca al siguiente nivel sin límites
+              </p>
+
+              {/* CTA — chartreuse, only colored CTA on the page */}
+              <a
+                href={appUrl}
+                onClick={() => trackEvent("Lead", {
+                  content_category: "pricing_pro",
+                  content_ids: ["plan_pro"],
+                  content_type: "product",
+                  value: 84999,
+                  currency: "ARS",
+                })}
+                className="mt-6 block w-full rounded-full py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
                 style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
               >
-                <span className="font-heading text-lg font-black text-[#0D1522]">60% OFF</span>
-              </div>
-            </div>
+                Convertirme en Pro
+              </a>
 
-            <h3
-              className="font-heading text-center text-4xl font-black"
-              style={{
-                background: "linear-gradient(135deg, #b5ff00, #eeff64)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Pro
-            </h3>
-
-            <div className="mt-4 flex flex-col items-center gap-1">
-              <span className="text-xl font-bold text-white/50 line-through decoration-2 decoration-[#FF6B6B]">
-                $211.999
-              </span>
-              <div className="flex items-baseline justify-center gap-2">
-                <span className="text-xs font-semibold text-white/50">ARS</span>
-                <span className="font-heading text-4xl font-black text-white">$84.999</span>
-                <span className="text-sm font-medium text-white/60">x mes</span>
-              </div>
-            </div>
-
-            <div className="mt-8 rounded-2xl bg-white/10 p-5 backdrop-blur-sm">
-              {proFeatures.map((feat, i) => (
-                <div
-                  key={feat}
-                  className={`flex items-center justify-between py-3.5 ${
-                    i < proFeatures.length - 1 ? "border-b border-white/10" : ""
-                  }`}
-                >
-                  <span className="text-sm font-medium text-white/90">{feat}</span>
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              {/* Features — inner glass block on the blue */}
+              <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-md">
+                {proFeatures.map((feat, i) => (
+                  <div
+                    key={feat}
+                    className={`flex items-center justify-between py-3 ${
+                      i < proFeatures.length - 1 ? "border-b border-white/10" : ""
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-white/90">{feat}</span>
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            <a
-              href={appUrl}
-              onClick={() => trackEvent("Lead", {
-                content_category: "pricing_pro",
-                content_ids: ["plan_pro"],
-                content_type: "product",
-                value: 84999,
-                currency: "ARS",
-              })}
-              className="mt-8 block w-full rounded-full py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
-              style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
-            >
-              Convertirme en Pro
-            </a>
+                ))}
+              </div>
             </motion.div>
           </div>
 
-          {/* Agency Card */}
+          {/* ── Agencia Card ───────────────────────────────────────────────
+              Mirror of Basic (glass-on-light, neutral). No discount.
+              Higher feature count + premium price tells the story by itself.
+              Same lg:mt-14 as Basic so both side cards align horizontally and
+              Pro reads as the elevated, recommended plan. */}
           <div
-            className="relative"
+            className="relative lg:mt-14"
             onMouseEnter={() => setHoveredCard("agency")}
             onMouseLeave={() => setHoveredCard(null)}
           >
-            {/* Mascot for Agency — hides/shows vertically */}
             <motion.div
               animate={{ y: activeCard === "agency" ? 0 : 50, opacity: activeCard === "agency" ? 1 : 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
@@ -707,69 +737,48 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative z-10 rounded-3xl bg-white p-8 shadow-[0_4px_32px_rgba(0,0,0,0.08)]"
+              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-8 shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-            {/* Discount centered at top */}
-            <div className="mb-5 flex w-full items-center justify-center">
-              <div
-                className="rounded-full px-5 py-2 shadow-[0_4px_16px_rgba(24,129,241,0.4)]"
-                style={{ background: "linear-gradient(135deg, #1881F1, #49D3F8)" }}
+              <h3 className="font-heading text-3xl font-bold text-[#0D1522]">Agencia</h3>
+
+              <div className="mt-5 flex items-baseline gap-2">
+                <span className="font-heading text-5xl font-black tracking-tight text-[#0D1522]">$199.999</span>
+                <span className="text-sm font-medium text-[#0D1522]/50">/mes</span>
+              </div>
+
+              <p className="mt-3 text-sm leading-relaxed text-[#0D1522]/65">
+                Sos una agencia o tenés un equipo manejando varias marcas
+              </p>
+
+              <a
+                href={appUrl}
+                onClick={() => trackEvent("Lead", {
+                  content_category: "pricing_agency",
+                  content_ids: ["plan_agency"],
+                  content_type: "product",
+                  value: 199999,
+                  currency: "ARS",
+                })}
+                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-3.5 text-center text-sm font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
-                <span className="font-heading text-lg font-black text-white">30% OFF</span>
-              </div>
-            </div>
+                Empezar ahora
+              </a>
 
-            <h3
-              className="font-heading text-center text-4xl font-black"
-              style={{
-                background: "linear-gradient(135deg, #1881F1, #49D3F8)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-            >
-              Agencia
-            </h3>
-
-            <div className="mt-4 flex flex-col items-center gap-1">
-              <span className="text-xl font-bold text-[#0D1522]/40 line-through decoration-2 decoration-[#FF4D4D]/70">
-                $285.999
-              </span>
-              <div className="flex items-baseline justify-center gap-2">
-                <span className="text-xs font-semibold text-[#0D1522]/40">ARS</span>
-                <span className="font-heading text-4xl font-black text-[#0D1522]">$200.000</span>
-                <span className="text-sm font-medium text-[#0D1522]/50">x mes</span>
-              </div>
-            </div>
-
-            <div className="mt-8 rounded-2xl bg-[#F8F9FB] p-5">
-              {agencyFeatures.map((feat, i) => (
-                <div
-                  key={feat}
-                  className={`flex items-center justify-between py-3.5 ${
-                    i < agencyFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
-                  }`}
-                >
-                  <span className="text-sm font-medium text-[#0D1522]/70">{feat}</span>
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-5 backdrop-blur-md">
+                {agencyFeatures.map((feat, i) => (
+                  <div
+                    key={feat}
+                    className={`flex items-center justify-between py-3 ${
+                      i < agencyFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-[#0D1522]/75">{feat}</span>
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
-            <a
-              href={appUrl}
-              onClick={() => trackEvent("Lead", {
-                content_category: "pricing_agency",
-                content_ids: ["plan_agency"],
-                content_type: "product",
-                value: 200000,
-                currency: "ARS",
-              })}
-              className="mt-8 block w-full rounded-full border border-[#0D1522]/[0.07] bg-[#F5F7FA] py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:bg-[#ECEEF2]"
-            >
-              Convertirme en Agencia
-            </a>
+                ))}
+              </div>
             </motion.div>
           </div>
         </div>
@@ -831,21 +840,39 @@ function RepelPill({ biz, i, mousePos }: { biz: typeof businessTypes[0]; i: numb
   const pillRef = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 150, damping: 20 });
-  const springY = useSpring(y, { stiffness: 150, damping: 20 });
+  const springX = useSpring(x, { stiffness: 130, damping: 18 });
+  const springY = useSpring(y, { stiffness: 130, damping: 18 });
+
+  // Deterministic per-pill randomness (seeded by index) so SSR matches the client
+  // and each pill drifts on its own rhythm — no synchronized bobbing.
+  const seed = (n: number) => {
+    const v = Math.sin((i + 1) * n * 12.9898) * 43758.5453;
+    return v - Math.floor(v); // 0..1
+  };
+  const xAmp = 24 + seed(1) * 22;       // 24..46 px
+  const yAmp = 20 + seed(2) * 22;       // 20..42 px
+  const rotAmp = 4 + seed(3) * 5;        // 4..9 deg
+  const duration = 5.5 + seed(4) * 3.5;  // 5.5..9 s
+  const phase = seed(5) * 4;             // 0..4 s start delay so they desync
 
   useEffect(() => {
-    if (!pillRef.current || mousePos.x === 0 && mousePos.y === 0) return;
+    if (!pillRef.current) return;
+    // Mouse left the section → release the repel offset back to neutral.
+    if (mousePos.x === 0 && mousePos.y === 0) {
+      x.set(0);
+      y.set(0);
+      return;
+    }
     const rect = pillRef.current.getBoundingClientRect();
     const pillCenterX = rect.left + rect.width / 2;
     const pillCenterY = rect.top + rect.height / 2;
     const dx = pillCenterX - mousePos.x;
     const dy = pillCenterY - mousePos.y;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    const radius = 180;
+    const radius = 220;
 
     if (dist < radius) {
-      const force = (1 - dist / radius) * 45;
+      const force = (1 - dist / radius) * 80;
       const angle = Math.atan2(dy, dx);
       x.set(Math.cos(angle) * force);
       y.set(Math.sin(angle) * force);
@@ -865,15 +892,29 @@ function RepelPill({ biz, i, mousePos }: { biz: typeof businessTypes[0]; i: numb
       className="absolute hidden md:flex"
       style={{ top: biz.top, left: biz.left, x: springX, y: springY }}
     >
+      {/* Idle drift — animates x/y/rotate independently from the repel layer above.
+          The two transforms compose: outer = mouse repel, inner = autonomous drift. */}
       <motion.div
-        animate={{ y: [0, -6, 0] }}
-        transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: "easeInOut" }}
+        animate={{
+          x: [0, xAmp, -xAmp * 0.7, xAmp * 0.4, 0],
+          y: [0, -yAmp, -yAmp * 0.4, yAmp * 0.6, 0],
+          rotate: [
+            biz.rotate,
+            biz.rotate + rotAmp,
+            biz.rotate - rotAmp * 0.7,
+            biz.rotate + rotAmp * 0.4,
+            biz.rotate,
+          ],
+        }}
+        transition={{
+          duration,
+          delay: phase,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
         className="cursor-default"
       >
-        <div
-          className="flex items-center gap-2.5 rounded-2xl bg-white px-5 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)]"
-          style={{ transform: `rotate(${biz.rotate}deg)` }}
-        >
+        <div className="flex items-center gap-2.5 rounded-2xl bg-white px-5 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)]">
           <span className="text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]">{biz.emoji}</span>
           <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
         </div>
@@ -1072,7 +1113,11 @@ export default function Home() {
             }}
             transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
             href={appUrl}
-            className="btn-outline-gradient rounded-full bg-white/80 px-5 py-2.5 text-sm font-bold shadow-[0_2px_12px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.04)] backdrop-blur-xl"
+            // Same glass-gray styling as the pill version (line ~1086) so the
+            // CTA looks identical whether the header is in pill or split mode.
+            // Includes backdrop-saturate-150 to mimic the parent pill's filter
+            // since this scrolled variant has no blurred parent backing it.
+            className="rounded-full bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/25"
           >
             Iniciar sesión
           </motion.a>
