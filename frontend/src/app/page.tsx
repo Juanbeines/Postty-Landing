@@ -1251,18 +1251,21 @@ export default function Home() {
 
                 {/* Badge — number circle + description pill, both glass.
                     Sits over the icon center; `gap-1` keeps the circle
-                    visually attached to the pill's left edge. The pill grows
-                    horizontally to fit the single-line text (whitespace-
-                    nowrap), so it can extend past the icon's max-w. */}
+                    visually attached to the pill's left edge.
+                    Mobile: pill wraps text (rounded-2xl, max-w cap so it
+                    fits in the viewport).
+                    sm+: pill grows horizontally to fit the single-line text
+                    (rounded-full, no max-w, whitespace-nowrap). */}
                 <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1">
-                  {/* Glass number circle — bumped to h-9/w-9 to match the
-                      bigger pill text size */}
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/70 bg-white/45 font-heading text-sm font-bold text-[#0D1522] shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150">
+                  {/* Glass number circle — small on mobile (h-7), bigger
+                      on sm+ (h-9) to match the bigger desktop pill text */}
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/70 bg-white/45 font-heading text-[11px] font-bold text-[#0D1522] shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 sm:h-9 sm:w-9 sm:text-sm">
                     {step.num}
                   </div>
-                  {/* Glass pill — single line, larger text + padding */}
-                  <div className="rounded-full border border-white/70 bg-white/45 px-6 py-3 shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150">
-                    <p className="whitespace-nowrap text-center text-base font-semibold leading-none text-[#0D1522]">
+                  {/* Glass pill — significantly smaller on mobile, full size
+                      on sm+. Mobile wraps text, sm+ stays single line. */}
+                  <div className="max-w-[180px] rounded-2xl border border-white/70 bg-white/45 px-3 py-1.5 shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 sm:max-w-none sm:rounded-full sm:px-6 sm:py-3">
+                    <p className="text-center text-xs font-semibold leading-snug text-[#0D1522] sm:whitespace-nowrap sm:text-base sm:leading-none">
                       {step.text}
                     </p>
                   </div>
