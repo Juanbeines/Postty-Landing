@@ -242,10 +242,10 @@ function WhatPosttyDoesSection() {
             </p>
             {/* Video — flex-1 fills whatever vertical space is left below
                 the subtitle (no fixed aspect on the container). max-w shrunk
-                ~20% from the previous pass (390/470 → 310/375). Height area
-                is unchanged because flex-1 still consumes the remaining tile
-                height — only the phone's WIDTH gets narrower. */}
-            <div className="relative mt-3 w-full max-w-[310px] flex-1 overflow-hidden sm:max-w-[375px]">
+                another ~15% (310/375 → 265/320). Height area is unchanged
+                because flex-1 still consumes the remaining tile height —
+                only the phone's WIDTH gets narrower. */}
+            <div className="relative mt-3 w-full max-w-[265px] flex-1 overflow-hidden sm:max-w-[320px]">
               <ScrollTriggeredVideo
                 src={item.video}
                 className="absolute inset-0 h-full w-full object-cover object-top mix-blend-darken"
