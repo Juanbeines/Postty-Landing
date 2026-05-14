@@ -414,13 +414,28 @@ function PricingSection() {
               transition={{ duration: 0.5 }}
               className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-8 shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-              {/* Title — top-left, lighter weight */}
-              <h3 className="font-heading text-3xl font-bold text-[#0D1522]">Basic</h3>
+              {/* Title row — name top-left, subtle 20% OFF badge top-right.
+                  Glass styling instead of Pro's chartreuse so Basic stays
+                  visually quieter and Pro keeps the loud accent. */}
+              <div className="flex items-start justify-between gap-3">
+                <h3 className="font-heading text-3xl font-bold text-[#0D1522]">Basic</h3>
+                <div className="shrink-0 rounded-full border border-white/80 bg-white/70 px-3 py-1 shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
+                  <span className="font-heading text-xs font-black text-[#0D1522]/70">20% OFF</span>
+                </div>
+              </div>
 
-              {/* Price — left-aligned, no strikethrough, no ARS */}
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="font-heading text-5xl font-black tracking-tight text-[#0D1522]">$49.000</span>
-                <span className="text-sm font-medium text-[#0D1522]/50">/mes</span>
+              {/* Price — strikethrough small on top, then large discounted.
+                  $61.999 → $49.000 ≈ 20% OFF (matches the badge math).
+                  Strike color is dark-on-light here, mirroring Pro's white-
+                  on-blue strike — same pattern, inverted palette. */}
+              <div className="mt-5">
+                <div className="text-base font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
+                  $61.999
+                </div>
+                <div className="mt-1 flex items-baseline gap-2">
+                  <span className="font-heading text-5xl font-black tracking-tight text-[#0D1522]">$49.000</span>
+                  <span className="text-sm font-medium text-[#0D1522]/50">/mes</span>
+                </div>
               </div>
 
               {/* Subtitle */}
