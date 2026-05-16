@@ -137,8 +137,9 @@ type BrandTestimonial = {
   name: string;
   subtitle: string;
   image: string;
-  stat1: { value: string; suffix?: string; label: readonly [string, string] };
-  stat2: { value: string; suffix?: string; label: readonly [string, string] };
+  // Single hero metric per brand. The "0 agencias" / "0 diseñadores" stat
+  // was removed to free up visual space for a larger glass metric card.
+  stat: { value: string; suffix?: string; label: readonly [string, string] };
 };
 
 const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
@@ -146,27 +147,19 @@ const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
     name: "StarConcept",
     subtitle: "Marca de ropa",
     image: "/starconcept.png",
-    stat1: {
+    stat: {
       value: "4.2x",
       suffix: "roas",
       label: ["Más conversión de Ads", "en las campañas de meta"],
-    },
-    stat2: {
-      value: "0",
-      label: ["Agencias de", "marketing"],
     },
   },
   {
     name: "Nüa Skinhouse",
     subtitle: "Estética profesional",
     image: "/nua.jpg",
-    stat1: {
+    stat: {
       value: "+40",
       label: ["Horas mensuales", "ahorradas en Canva"],
-    },
-    stat2: {
-      value: "0",
-      label: ["Diseñadores", "contratados"],
     },
   },
 ];
@@ -1061,7 +1054,7 @@ export default function Home() {
                     className="h-9 w-9 shrink-0 rounded-full object-cover"
                   />
                   <div>
-                    <p className="text-xs font-bold text-white">Sofía, 27 años</p>
+                    <p className="text-xs font-bold text-white">Sofía, 27 años, Community Manager</p>
                     <p className="text-[11px] text-white/80">&ldquo;Cansada de gastar mil horas en Canva&rdquo;</p>
                   </div>
                 </motion.div>
@@ -1087,6 +1080,33 @@ export default function Home() {
                   <div>
                     <p className="text-xs font-bold text-white">Juan, 32 años</p>
                     <p className="text-[11px] text-white/80">&ldquo;Cansado de pagar agencias de marketing que no rinden&rdquo;</p>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Pilar — bottom-left, third in the sequence (delay 1.0s).
+                  Mirrors Sofía's slide-in from the left so the trio reads as
+                  Sofía (top-left) → Juan (top-right) → Pilar (bottom-left). */}
+              <div
+                className="pointer-events-none absolute z-20 hidden md:block"
+                style={{ left: "calc(5% + 20px)", top: "calc(58% + 20px)" }}
+              >
+                <motion.div
+                  initial={{ opacity: 0, x: -30, y: 10 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ delay: 1.0, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
+                  className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
+                >
+                  <Image
+                    src="https://i.pravatar.cc/80?img=44"
+                    alt="Pilar"
+                    width={36}
+                    height={36}
+                    className="h-9 w-9 shrink-0 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="text-xs font-bold text-white">Pilar, 37 años, CEO de Agencia de publicidad</p>
+                    <p className="text-[11px] text-white/80">&ldquo;Siempre me quedo atrás con las tendencias de Meta&rdquo;</p>
                   </div>
                 </motion.div>
               </div>
@@ -1125,24 +1145,38 @@ export default function Home() {
       <WhatPosttyDoesSection />
 
       {/* ── Brands testimonial (StarConcept + Nüa Skinhouse) ──
-          Two cards side-by-side, each with a plush hero image + 3 glass
-          pills (brand name top-left, stat 1 bottom-left, stat 2 bottom-right).
+          Two image cards side-by-side. Each card holds a brand-name glass
+          pill (top-left) and a single, prominent metric pill (bottom-left).
+          The previous "0 agencias / 0 diseñadores" stat was removed to give
+          the meaningful metric the visual weight it deserves.
           id="testimonios" so the header "Clientes" link anchors here. */}
-      <section id="testimonios" className="px-4 py-20 sm:px-6 sm:py-28 md:px-8">
-        <div className="mx-auto max-w-6xl">
+      <section id="testimonios" className="px-3 py-20 sm:py-28">
+        <div className="mx-auto max-w-[1500px]">
+          {/* Eyebrow — Jakarta (body font), normal weight, regular case
+              and natural letter-spacing per spec. */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.4 }}
+            className="text-center text-sm font-normal text-[#0D1522]/40 sm:text-base"
+          >
+            Resultados reales
+          </motion.p>
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5 }}
-            className="font-heading text-center text-2xl font-medium leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
+            className="mt-3 font-heading text-center text-2xl font-medium leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
           >
             Los dueños suben contenido <span className="font-black">10x más rápido</span>
             <br className="hidden sm:block" />
             {" "}y su dinero invertido en Ads <span className="font-black">rinde 3x más</span> con <span className="font-black">Postty</span>
           </motion.h2>
 
-          <div className="mt-14 grid grid-cols-1 gap-8 md:mt-20 md:grid-cols-2 md:gap-10">
+          <div className="mt-14 grid grid-cols-1 gap-3 md:mt-20 md:grid-cols-2">
             {brandTestimonials.map((brand, i) => (
               <motion.div
                 key={brand.name}
@@ -1150,7 +1184,11 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="relative aspect-[5/4] overflow-hidden rounded-[2rem]"
+                // aspect-[7/6] is slightly portrait (h/w ≈ 0.86) so cards
+                // are noticeably wider than tall — a bit shorter than the
+                // previous 4/5. rounded-xl matches the bento iPhone tiles
+                // for a unified corner radius across the page.
+                className="relative aspect-[7/6] overflow-hidden rounded-xl"
                 onMouseMove={(e) => {
                   const r = e.currentTarget.getBoundingClientRect();
                   const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
@@ -1185,39 +1223,34 @@ export default function Home() {
                   </p>
                 </div>
 
-                {/* Stat 1 — glass pill, bottom-left + parallax (opposite direction) */}
+                {/* Hero metric — glass pill, anchored bottom-LEFT (content-
+                    sized, no right- constraint). Horizontal layout: BIG
+                    number on the left + label as 2 stacked lines on the
+                    right, sized big enough (text-xl/text-3xl) so the two
+                    label lines roughly fill the vertical height of the
+                    giant 7xl/8xl number. */}
                 <div
-                  className="absolute bottom-6 left-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
-                  style={{ transform: "translate(calc(var(--cx, 0px) * -0.8), calc(var(--cy, 0px) * -0.6))", transition: "transform 0.3s ease-out" }}
+                  className="absolute bottom-4 left-4 z-10 rounded-2xl bg-white/15 px-6 py-6 shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150 sm:px-8 sm:py-7"
+                  style={{
+                    transform: "translate(calc(var(--cx, 0px) * -0.8), calc(var(--cy, 0px) * -0.6))",
+                    transition: "transform 0.3s ease-out",
+                  }}
                 >
-                  <p className="font-heading flex items-end text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
-                    {brand.stat1.value}
-                    {brand.stat1.suffix && (
-                      <span className="font-heading ml-1.5 text-xs font-bold tracking-normal text-[#0D1522]/60 sm:text-sm">
-                        {brand.stat1.suffix}
-                      </span>
-                    )}
-                  </p>
-                  <p className="mt-2 text-[11px] leading-snug text-[#0D1522]/70 sm:text-xs">
-                    {brand.stat1.label[0]}
-                    <br />
-                    {brand.stat1.label[1]}
-                  </p>
-                </div>
-
-                {/* Stat 2 — glass pill, bottom-right + parallax (different direction) */}
-                <div
-                  className="absolute bottom-6 right-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
-                  style={{ transform: "translate(calc(var(--cx, 0px) * 0.6), calc(var(--cy, 0px) * -1))", transition: "transform 0.3s ease-out" }}
-                >
-                  <p className="font-heading text-4xl font-black leading-none tracking-tight text-[#0D1522] sm:text-5xl">
-                    {brand.stat2.value}
-                  </p>
-                  <p className="mt-2 text-[11px] leading-snug text-[#0D1522]/70 sm:text-xs">
-                    {brand.stat2.label[0]}
-                    <br />
-                    {brand.stat2.label[1]}
-                  </p>
+                  <div className="flex items-center gap-5 sm:gap-6">
+                    <p className="font-heading flex shrink-0 items-end text-7xl font-black leading-none tracking-tight text-[#0D1522] sm:text-8xl">
+                      {brand.stat.value}
+                      {brand.stat.suffix && (
+                        <span className="font-heading ml-2 text-base font-bold tracking-normal text-[#0D1522]/60 sm:text-lg">
+                          {brand.stat.suffix}
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xl font-medium leading-tight text-[#0D1522]/80 sm:text-3xl">
+                      {brand.stat.label[0]}
+                      <br />
+                      {brand.stat.label[1]}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             ))}
