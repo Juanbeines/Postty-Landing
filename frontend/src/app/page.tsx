@@ -306,7 +306,8 @@ function WhatPosttyDoesSection() {
 }
 
 function PricingSection() {
-  const [hoveredCard, setHoveredCard] = useState<"basic" | "pro" | "agency" | null>("pro");
+  const [hoveredCard, setHoveredCard] = useState<"starter" | "basic" | "pro" | "agency" | null>("pro");
+  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const sectionRef = useRef<HTMLElement>(null);
   const appUrl = useAppUrl();
 
@@ -337,38 +338,42 @@ function PricingSection() {
     return () => observer.disconnect();
   }, []);
 
+  const starterFeatures = [
+    "Hasta 1 marca",
+    "Sin personalización",
+    "Hasta 4 Ads de prueba",
+    "Sin tarjeta de crédito",
+  ];
+
   const basicFeatures = [
     "Hasta 1 marca",
-    "60 Ads",
-    "20 Posts",
-    "20 Photoshoots",
-    "1 Edit por foto",
+    "100 Ads y piezas de Contenido",
+    "Personalización absoluta",
+    "1 edit por pieza",
   ];
 
   const proFeatures = [
     "Hasta 1 marca",
-    "Ads ilimitados",
-    "Posts ilimitados",
-    "Photoshoots ilimitados",
-    "Edits ilimitados por foto",
+    "Ads y piezas de Contenido ilimitadas",
+    "Personalización absoluta",
+    "Edits infinitos por pieza",
     "Modelos Pro de IA",
   ];
 
   const agencyFeatures = [
     "Hasta 5 marcas",
     "Hasta 10 usuarios en tu equipo",
-    "Ads ilimitados",
-    "Posts ilimitados",
-    "Photoshoots ilimitados",
-    "Edits ilimitados por foto",
+    "Ads y piezas de Contenido ilimitadas",
+    "Personalización absoluta",
+    "Edits infinitos por pieza",
     "Modelos Pro de IA",
   ];
 
   const activeCard = hoveredCard ?? "pro";
 
   return (
-    <section ref={sectionRef} id="pricing" className="px-4 py-24">
-      <div className="mx-auto max-w-6xl">
+    <section ref={sectionRef} id="pricing" className="px-3 py-24 sm:px-4 lg:px-6">
+      <div className="mx-auto max-w-[1360px]">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -378,21 +383,56 @@ function PricingSection() {
           Precios simples
         </motion.h2>
 
+        {/* Billing toggle — single pill container holding both options.
+            A white-glass thumb slides between them using framer-motion's
+            shared layoutId, so toggling looks like an iOS segmented control. */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="mt-8 flex justify-center"
+        >
+          <div className="inline-flex items-center rounded-full bg-[#0D1522]/[0.05] p-1">
+            {(["monthly", "yearly"] as const).map((option) => {
+              const selected = billing === option;
+              return (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setBilling(option)}
+                  className={`relative rounded-full px-5 py-2 text-sm font-semibold transition-colors sm:text-base ${
+                    selected ? "text-[#0D1522]" : "text-[#0D1522]/55 hover:text-[#0D1522]/80"
+                  }`}
+                >
+                  {selected && (
+                    <motion.span
+                      layoutId="billing-thumb"
+                      className="absolute inset-0 rounded-full border border-white/60 bg-white/70 shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl backdrop-saturate-150"
+                      transition={{ type: "spring", stiffness: 360, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{option === "monthly" ? "Mensual" : "Anual"}</span>
+                </button>
+              );
+            })}
+          </div>
+        </motion.div>
+
         {/* Grid uses items-start so per-card lg:mt-X offsets stagger vertically.
             Basic + Agencia sit lower; Pro sits slightly above so it reads as the
             recommended plan without needing a "Recommended" tag. */}
-        <div className="relative mt-24 grid items-start gap-8 lg:grid-cols-3">
-          {/* ── Basic Card ─────────────────────────────────────────────────
-              Glass-on-light. Neutral palette so Pro can stand out.
-              No discount, no strikethrough — single clean price. */}
+        <div className="relative mt-16 grid items-start gap-[1.5rem] lg:grid-cols-4">
+          {/* ── Starter (Gratis) Card ─────────────────────────────────────
+              Free tier, glass-on-light, neutral palette. */}
           <div
             className="relative self-start lg:mt-14"
-            onMouseEnter={() => setHoveredCard("basic")}
+            onMouseEnter={() => setHoveredCard("starter")}
             onMouseLeave={() => setHoveredCard(null)}
           >
-            {/* Mascot — pops up when this card is the active one */}
             <motion.div
-              animate={{ y: activeCard === "basic" ? 0 : 50, opacity: activeCard === "basic" ? 1 : 0 }}
+              animate={{ y: activeCard === "starter" ? 0 : 50, opacity: activeCard === "starter" ? 1 : 0 }}
+              initial={false}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
               className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
               style={{ width: 120, height: 120, marginTop: -55 }}
@@ -405,15 +445,82 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-8 shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
+              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
+            >
+              <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Gratis</h3>
+
+              <div className="mt-[2rem] flex items-baseline gap-2">
+                <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">$0.00</span>
+              </div>
+
+              <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
+                Probá Postty sin compromiso y generá tus primeros Ads
+              </p>
+
+              <a
+                href={appUrl}
+                onClick={() => trackEvent("Lead", {
+                  content_category: "pricing_starter",
+                  content_ids: ["plan_starter"],
+                  content_type: "product",
+                  value: 0,
+                  currency: "ARS",
+                })}
+                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
+              >
+                Probar gratis
+              </a>
+
+              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
+                {starterFeatures.map((feat, i) => (
+                  <div
+                    key={feat}
+                    className={`flex items-center justify-between py-[0.6rem] ${
+                      i < starterFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                    }`}
+                  >
+                    <span className="text-[0.78rem] font-medium text-[#0D1522]/75">{feat}</span>
+                    <div className="flex h-[1.15rem] w-[1.15rem] items-center justify-center rounded-full bg-[#D6F951]">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+
+          {/* ── Basic Card ─────────────────────────────────────────────────
+              Glass-on-light. Neutral palette so Pro can stand out. */}
+          <div
+            className="relative self-start lg:mt-14"
+            onMouseEnter={() => setHoveredCard("basic")}
+            onMouseLeave={() => setHoveredCard(null)}
+          >
+            {/* Mascot — pops up when this card is the active one */}
+            <motion.div
+              animate={{ y: activeCard === "basic" ? 0 : 50, opacity: activeCard === "basic" ? 1 : 0 }}
+              initial={false}
+              transition={{ type: "spring", stiffness: 260, damping: 24 }}
+              className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
+              style={{ width: 120, height: 120, marginTop: -55 }}
+            >
+              <Image src="/mascot.png" alt="Postty mascot" width={120} height={120} className="drop-shadow-xl" />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
               {/* Title row — name top-left, subtle 20% OFF badge top-right.
                   Glass styling instead of Pro's chartreuse so Basic stays
                   visually quieter and Pro keeps the loud accent. */}
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-heading text-3xl font-bold text-[#0D1522]">Basic</h3>
-                <div className="shrink-0 rounded-full border border-white/80 bg-white/70 px-3 py-1 shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
-                  <span className="font-heading text-xs font-black text-[#0D1522]/70">20% OFF</span>
+                <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Basic</h3>
+                <div className="inline-flex shrink-0 items-center justify-center rounded-full leading-none border border-white/80 bg-white/70 px-[0.72rem] py-[0.4rem] shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
+                  <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "37% OFF"}</span>
                 </div>
               </div>
 
@@ -421,18 +528,18 @@ function PricingSection() {
                   $61.999 → $49.000 ≈ 20% OFF (matches the badge math).
                   Strike color is dark-on-light here, mirroring Pro's white-
                   on-blue strike — same pattern, inverted palette. */}
-              <div className="mt-5">
-                <div className="text-base font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
+              <div className="mt-2">
+                <div className="text-[0.85rem] font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
                   $61.999
                 </div>
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span className="font-heading text-5xl font-black tracking-tight text-[#0D1522]">$49.000</span>
-                  <span className="text-sm font-medium text-[#0D1522]/50">/mes</span>
+                  <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">{billing === "monthly" ? "$49.000" : "$39.200"}</span>
+                  <span className="text-[0.78rem] font-medium text-[#0D1522]/50">/mes</span>
                 </div>
               </div>
 
               {/* Subtitle */}
-              <p className="mt-3 text-sm leading-relaxed text-[#0D1522]/65">
+              <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
                 Tenés una empresa y manejás todo el marketing vos
               </p>
 
@@ -443,25 +550,25 @@ function PricingSection() {
                   content_category: "pricing_basic",
                   content_ids: ["plan_basic"],
                   content_type: "product",
-                  value: 49000,
+                  value: billing === "monthly" ? 49000 : 39200,
                   currency: "ARS",
                 })}
-                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-3.5 text-center text-sm font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
+                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
                 Empezar ahora
               </a>
 
               {/* Features — inner glass block */}
-              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-5 backdrop-blur-md">
+              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
                 {basicFeatures.map((feat, i) => (
                   <div
                     key={feat}
-                    className={`flex items-center justify-between py-3 ${
+                    className={`flex items-center justify-between py-[0.6rem] ${
                       i < basicFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
                     }`}
                   >
-                    <span className="text-sm font-medium text-[#0D1522]/75">{feat}</span>
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                    <span className="text-[0.78rem] font-medium text-[#0D1522]/75">{feat}</span>
+                    <div className="flex h-[1.15rem] w-[1.15rem] items-center justify-center rounded-full bg-[#D6F951]">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     </div>
                   </div>
@@ -481,6 +588,7 @@ function PricingSection() {
           >
             <motion.div
               animate={{ y: activeCard === "pro" ? 0 : 50, opacity: activeCard === "pro" ? 1 : 0 }}
+              initial={false}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
               className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
               style={{ width: 120, height: 120, marginTop: -55 }}
@@ -493,44 +601,44 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative z-10 overflow-hidden rounded-3xl p-8 text-white shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
+              className="relative z-10 overflow-hidden rounded-3xl p-[1.53rem] text-white shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
               style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
             >
               {/* Title row — name top-left, discount badge top-right */}
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-heading text-3xl font-bold text-white">Pro</h3>
+                <h3 className="font-heading text-[2rem] font-bold text-white">Pro</h3>
                 <div
-                  className="shrink-0 rounded-full px-3 py-1 shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
+                  className="inline-flex shrink-0 items-center justify-center rounded-full leading-none px-[0.72rem] py-[0.4rem] shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
                   style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
                 >
-                  <span className="font-heading text-xs font-black text-[#0D1522]">60% OFF</span>
+                  <span className="font-heading text-[0.82rem] font-black text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "68% OFF"}</span>
                 </div>
               </div>
 
               {/* Price — strikethrough small first, then large discounted.
                   Strike is white (subtle); discounted price uses chartreuse to
                   reinforce the Pro accent color used by the badge + CTA. */}
-              <div className="mt-5">
-                <div className="text-base font-semibold text-white/60 line-through decoration-2 decoration-white/70">
+              <div className="mt-2">
+                <div className="text-[0.85rem] font-semibold text-white/60 line-through decoration-2 decoration-white/70">
                   $211.999
                 </div>
                 <div className="mt-1 flex items-baseline gap-2">
                   <span
-                    className="font-heading text-5xl font-black tracking-tight"
+                    className="font-heading text-[2.55rem] font-black tracking-tight"
                     style={{
                       background: "linear-gradient(135deg, #b5ff00, #eeff64)",
                       WebkitBackgroundClip: "text",
                       WebkitTextFillColor: "transparent",
                     }}
                   >
-                    $84.999
+                    {billing === "monthly" ? "$84.999" : "$67.999"}
                   </span>
-                  <span className="text-sm font-medium text-white/65">/mes</span>
+                  <span className="text-[0.78rem] font-medium text-white/65">/mes</span>
                 </div>
               </div>
 
               {/* Subtitle */}
-              <p className="mt-3 text-sm leading-relaxed text-white/85">
+              <p className="mt-3 text-[0.78rem] leading-relaxed text-white/85">
                 Querés llevar tu marca al siguiente nivel sin límites
               </p>
 
@@ -541,26 +649,26 @@ function PricingSection() {
                   content_category: "pricing_pro",
                   content_ids: ["plan_pro"],
                   content_type: "product",
-                  value: 84999,
+                  value: billing === "monthly" ? 84999 : 67999,
                   currency: "ARS",
                 })}
-                className="mt-6 block w-full rounded-full py-3.5 text-center text-sm font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
+                className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
                 style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
               >
                 Convertirme en Pro
               </a>
 
               {/* Features — inner glass block on the blue */}
-              <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-5 backdrop-blur-md">
+              <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
                 {proFeatures.map((feat, i) => (
                   <div
                     key={feat}
-                    className={`flex items-center justify-between py-3 ${
+                    className={`flex items-center justify-between py-[0.6rem] ${
                       i < proFeatures.length - 1 ? "border-b border-white/10" : ""
                     }`}
                   >
-                    <span className="text-sm font-medium text-white/90">{feat}</span>
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                    <span className="text-[0.78rem] font-medium text-white/90">{feat}</span>
+                    <div className="flex h-[1.15rem] w-[1.15rem] items-center justify-center rounded-full bg-[#D6F951]">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     </div>
                   </div>
@@ -570,10 +678,7 @@ function PricingSection() {
           </div>
 
           {/* ── Agencia Card ───────────────────────────────────────────────
-              Mirror of Basic (glass-on-light, neutral). No discount.
-              Higher feature count + premium price tells the story by itself.
-              Same lg:mt-14 as Basic so both side cards align horizontally and
-              Pro reads as the elevated, recommended plan. */}
+              Mirror of Basic (glass-on-light, neutral). */}
           <div
             className="relative lg:mt-14"
             onMouseEnter={() => setHoveredCard("agency")}
@@ -581,6 +686,7 @@ function PricingSection() {
           >
             <motion.div
               animate={{ y: activeCard === "agency" ? 0 : 50, opacity: activeCard === "agency" ? 1 : 0 }}
+              initial={false}
               transition={{ type: "spring", stiffness: 260, damping: 24 }}
               className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
               style={{ width: 120, height: 120, marginTop: -55 }}
@@ -593,16 +699,15 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-8 shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
+              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-              <h3 className="font-heading text-3xl font-bold text-[#0D1522]">Agencia</h3>
+              <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Agencia</h3>
 
-              <div className="mt-5 flex items-baseline gap-2">
-                <span className="font-heading text-5xl font-black tracking-tight text-[#0D1522]">$299.999</span>
-                <span className="text-sm font-medium text-[#0D1522]/50">/mes</span>
+              <div className="mt-2 flex items-baseline gap-2">
+                <span className="font-heading text-[1.75rem] font-black tracking-tight text-[#0D1522]">Personalizado</span>
               </div>
 
-              <p className="mt-3 text-sm leading-relaxed text-[#0D1522]/65">
+              <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
                 Sos una agencia o tenés un equipo manejando varias marcas
               </p>
 
@@ -612,24 +717,24 @@ function PricingSection() {
                   content_category: "pricing_agency",
                   content_ids: ["plan_agency"],
                   content_type: "product",
-                  value: 299999,
+                  value: 0,
                   currency: "ARS",
                 })}
-                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-3.5 text-center text-sm font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
+                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
-                Empezar ahora
+                Agendar reunión
               </a>
 
-              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-5 backdrop-blur-md">
+              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
                 {agencyFeatures.map((feat, i) => (
                   <div
                     key={feat}
-                    className={`flex items-center justify-between py-3 ${
+                    className={`flex items-center justify-between py-[0.6rem] ${
                       i < agencyFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
                     }`}
                   >
-                    <span className="text-sm font-medium text-[#0D1522]/75">{feat}</span>
-                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#D6F951]">
+                    <span className="text-[0.78rem] font-medium text-[#0D1522]/75">{feat}</span>
+                    <div className="flex h-[1.15rem] w-[1.15rem] items-center justify-center rounded-full bg-[#D6F951]">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     </div>
                   </div>
@@ -935,7 +1040,7 @@ export default function Home() {
             <a href="#pricing" className="whitespace-nowrap transition hover:text-[#0D1522]">Precios</a>
             <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
           </nav>
-          <a href={appUrl} className="shrink-0 rounded-full bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
+          <a href={appUrl} className="inline-flex shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
             Iniciar sesión
           </a>
         </motion.header>
@@ -1051,7 +1156,7 @@ export default function Home() {
                     alt="Sofía"
                     width={36}
                     height={36}
-                    className="h-9 w-9 shrink-0 rounded-full object-cover"
+                    className="h-9 w-9 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
                   />
                   <div>
                     <p className="text-xs font-bold text-white">Sofía, 27 años, Community Manager</p>
@@ -1075,7 +1180,7 @@ export default function Home() {
                     alt="Juan"
                     width={36}
                     height={36}
-                    className="h-9 w-9 shrink-0 rounded-full object-cover"
+                    className="h-9 w-9 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
                   />
                   <div>
                     <p className="text-xs font-bold text-white">Juan, 32 años</p>
@@ -1102,7 +1207,7 @@ export default function Home() {
                     alt="Pilar"
                     width={36}
                     height={36}
-                    className="h-9 w-9 shrink-0 rounded-full object-cover"
+                    className="h-9 w-9 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
                   />
                   <div>
                     <p className="text-xs font-bold text-white">Pilar, 37 años, CEO de Agencia de publicidad</p>
