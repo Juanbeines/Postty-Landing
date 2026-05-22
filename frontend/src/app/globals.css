@@ -128,3 +128,46 @@ html {
   background: radial-gradient(ellipse, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
   filter: blur(4px);
 }
+
+/* Chartreuse left→right sweep — used by the gift overlay's arrow button.
+   Layered on top of a transparent white-bordered pill. The ::before pseudo
+   sits behind the text (which uses `relative z-10` to stay readable) and
+   slides into view from the left on hover OR when the parent element has
+   the `.is-filled` modifier (used to "auto-paint" the button once the
+   email is valid, without needing the user to hover). */
+.btn-lime-sweep {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  transition: border-color 0.3s ease;
+}
+.btn-lime-sweep:hover,
+.btn-lime-sweep.is-filled,
+.btn-lime-sweep.is-filled:hover {
+  border-color: transparent !important;
+}
+.btn-lime-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #D6F951;
+  border-radius: inherit;
+  transform: translateX(-100%);
+  transition: transform 0.4s ease;
+}
+.btn-lime-sweep:hover::before,
+.btn-lime-sweep.is-filled::before {
+  transform: translateX(0);
+}
+
+/* Autofill override — prevents browser yellow/blue tint on autofilled
+   email/text inputs. Forces a clean white background with dark text. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: #0D1522 !important;
+  caret-color: #0D1522;
+  transition: background-color 9999s ease-in-out 0s;
+}

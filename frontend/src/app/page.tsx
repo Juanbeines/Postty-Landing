@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useMotionValue, useScroll, useSpring } from "f
 import { useCallback, useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
+import GiftOverlay from "@/components/GiftOverlay";
 import { trackEvent, useAppUrl } from "@/lib/pixel";
 
 const avatars = [
@@ -1013,6 +1014,9 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#0D1522] md:min-h-0">
+      {/* Full-screen 3-step lead-capture overlay. Triggers once per session
+          when the user scrolls into #testimonios. */}
+      <GiftOverlay />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
@@ -1256,7 +1260,7 @@ export default function Home() {
           the meaningful metric the visual weight it deserves.
           id="testimonios" so the header "Clientes" link anchors here. */}
       <section id="testimonios" className="px-3 py-20 sm:py-28">
-        <div className="mx-auto max-w-[1500px]">
+        <div className="mx-auto max-w-[1200px]">
           {/* Eyebrow — Jakarta (body font), normal weight, regular case
               and natural letter-spacing per spec. */}
           <motion.p
@@ -1317,13 +1321,13 @@ export default function Home() {
 
                 {/* Brand name — glass pill, top-left + parallax */}
                 <div
-                  className="absolute left-6 top-6 z-10 rounded-2xl bg-white/15 px-5 py-3 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
+                  className="absolute left-5 top-5 z-10 rounded-xl bg-white/15 px-4 py-2.5 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
                   style={{ transform: "translate(var(--cx, 0px), var(--cy, 0px))", transition: "transform 0.3s ease-out" }}
                 >
-                  <p className="font-heading text-base font-bold leading-tight text-[#0D1522] sm:text-lg">
+                  <p className="font-heading text-sm font-bold leading-tight text-[#0D1522] sm:text-base">
                     {brand.name}
                   </p>
-                  <p className="mt-0.5 text-xs text-[#0D1522]/60 sm:text-sm">
+                  <p className="mt-0.5 text-[11px] text-[#0D1522]/60 sm:text-xs">
                     {brand.subtitle}
                   </p>
                 </div>
@@ -1335,22 +1339,22 @@ export default function Home() {
                     label lines roughly fill the vertical height of the
                     giant 7xl/8xl number. */}
                 <div
-                  className="absolute bottom-4 left-4 z-10 rounded-2xl bg-white/15 px-6 py-6 shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150 sm:px-8 sm:py-7"
+                  className="absolute bottom-3 left-3 z-10 rounded-xl bg-white/15 px-5 py-5 shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150 sm:px-6 sm:py-6"
                   style={{
                     transform: "translate(calc(var(--cx, 0px) * -0.8), calc(var(--cy, 0px) * -0.6))",
                     transition: "transform 0.3s ease-out",
                   }}
                 >
-                  <div className="flex items-center gap-5 sm:gap-6">
-                    <p className="font-heading flex shrink-0 items-end text-7xl font-black leading-none tracking-tight text-[#0D1522] sm:text-8xl">
+                  <div className="flex items-center gap-4 sm:gap-5">
+                    <p className="font-heading flex shrink-0 items-end text-6xl font-black leading-none tracking-tight text-[#0D1522] sm:text-7xl">
                       {brand.stat.value}
                       {brand.stat.suffix && (
-                        <span className="font-heading ml-2 text-base font-bold tracking-normal text-[#0D1522]/60 sm:text-lg">
+                        <span className="font-heading ml-1.5 text-sm font-bold tracking-normal text-[#0D1522]/60 sm:text-base">
                           {brand.stat.suffix}
                         </span>
                       )}
                     </p>
-                    <p className="text-xl font-medium leading-tight text-[#0D1522]/80 sm:text-3xl">
+                    <p className="text-lg font-medium leading-tight text-[#0D1522]/80 sm:text-2xl">
                       {brand.stat.label[0]}
                       <br />
                       {brand.stat.label[1]}
