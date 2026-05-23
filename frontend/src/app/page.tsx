@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
 import GiftOverlay from "@/components/GiftOverlay";
+import BrandContentModal from "@/components/BrandContentModal";
 import { trackEvent, useAppUrl } from "@/lib/pixel";
 
 const avatars = [
@@ -141,6 +142,11 @@ type BrandTestimonial = {
   // Single hero metric per brand. The "0 agencias" / "0 diseñadores" stat
   // was removed to free up visual space for a larger glass metric card.
   stat: { value: string; suffix?: string; label: readonly [string, string] };
+  // CTA opens a carousel modal showing the brand's Postty-generated
+  // content. `items` may be undefined/empty for brands whose content
+  // isn't ready yet (Nüa as of now) — the button still renders but is
+  // disabled.
+  cta: { label: string; items?: readonly string[] };
 };
 
 const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
@@ -153,6 +159,15 @@ const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
       suffix: "roas",
       label: ["Más conversión de Ads", "en las campañas de meta"],
     },
+    cta: {
+      label: "Ver Ads",
+      items: [
+        "/ads/star/star-1.webp",
+        "/ads/star/star-7.webp",
+        "/ads/star/star-15.webp",
+        "/ads/star/star-19.webp",
+      ],
+    },
   },
   {
     name: "Nüa Skinhouse",
@@ -162,6 +177,8 @@ const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
       value: "+40",
       label: ["Horas mensuales", "ahorradas en Canva"],
     },
+    // No items yet — button renders disabled until the brand provides content.
+    cta: { label: "Ver Posts" },
   },
 ];
 
@@ -303,6 +320,163 @@ function WhatPosttyDoesSection() {
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * BrandTestimonialsSection — testimonios (StarConcept + Nüa) cards plus
+ * the eyebrow + heading. Lifted into its own component so we can host
+ * the modal-open state at the section root (no need to extract a per-
+ * card child or drill props into Home).
+ *
+ * Each card now exposes a glass "Ver Ads" / "Ver Posts" pill at the
+ * top-right; clicking opens the BrandContentModal carousel for that
+ * brand. Brands without `cta.items` show the pill in a disabled state
+ * (visible but not clickable) — Nüa is the placeholder for now.
+ */
+function BrandTestimonialsSection() {
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const activeBrand = openIdx !== null ? brandTestimonials[openIdx] : null;
+  const activeItems = activeBrand?.cta.items;
+
+  return (
+    <>
+      <section id="testimonios" className="px-3 py-20 sm:py-28">
+        <div className="mx-auto max-w-[1200px]">
+          {/* Eyebrow — Jakarta (body font), normal weight, regular case */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.4 }}
+            className="text-center text-sm font-normal text-[#0D1522]/40 sm:text-base"
+          >
+            Resultados reales
+          </motion.p>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="mt-3 font-heading text-center text-2xl font-medium leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
+          >
+            Los dueños suben contenido <span className="font-black">10x más rápido</span>
+            <br className="hidden sm:block" />
+            {" "}y su dinero invertido en Ads <span className="font-black">rinde 3x más</span> con <span className="font-black">Postty</span>
+          </motion.h2>
+
+          <div className="mt-14 grid grid-cols-1 gap-3 md:mt-20 md:grid-cols-2">
+            {brandTestimonials.map((brand, i) => {
+              const hasContent = !!brand.cta.items && brand.cta.items.length > 0;
+              return (
+                <motion.div
+                  key={brand.name}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  className="relative aspect-[7/6] overflow-hidden rounded-xl"
+                  onMouseMove={(e) => {
+                    const r = e.currentTarget.getBoundingClientRect();
+                    const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
+                    const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
+                    e.currentTarget.style.setProperty("--cx", `${nx * 4}px`);
+                    e.currentTarget.style.setProperty("--cy", `${ny * 3}px`);
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.setProperty("--cx", "0px");
+                    e.currentTarget.style.setProperty("--cy", "0px");
+                  }}
+                >
+                  <Image
+                    src={brand.image}
+                    alt={brand.name}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover"
+                  />
+
+                  {/* Brand name — glass pill, top-left + parallax */}
+                  <div
+                    className="absolute left-5 top-5 z-10 rounded-xl bg-white/15 px-4 py-2.5 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
+                    style={{ transform: "translate(var(--cx, 0px), var(--cy, 0px))", transition: "transform 0.3s ease-out" }}
+                  >
+                    <p className="font-heading text-sm font-bold leading-tight text-[#0D1522] sm:text-base">
+                      {brand.name}
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-[#0D1522]/60 sm:text-xs">
+                      {brand.subtitle}
+                    </p>
+                  </div>
+
+                  {/* "Ver Ads" / "Ver Posts" — glass pill, top-RIGHT.
+                      Same glass language as the brand-name pill but a
+                      touch more opaque (white/25 vs white/15) so it
+                      reads as an action without being heavy. Parallax
+                      pushes opposite to the brand pill (negative cx)
+                      for the same subtle 3D feel.
+                      Disabled when the brand has no content yet (Nüa).
+                      Tracks ViewContent so we can measure interest. */}
+                  <button
+                    type="button"
+                    disabled={!hasContent}
+                    onClick={() => hasContent && setOpenIdx(i)}
+                    className={`absolute right-5 top-5 z-10 rounded-xl border border-white/60 bg-white/25 px-4 py-2.5 font-heading text-sm font-bold text-[#0D1522] shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition sm:text-base ${
+                      hasContent
+                        ? "cursor-pointer hover:bg-white/40"
+                        : "cursor-not-allowed opacity-60"
+                    }`}
+                    style={{
+                      transform: "translate(calc(var(--cx, 0px) * -1), var(--cy, 0px))",
+                      transition: "transform 0.3s ease-out, background-color 0.2s ease",
+                    }}
+                    aria-label={hasContent ? `${brand.cta.label} de ${brand.name}` : `${brand.cta.label} — próximamente`}
+                  >
+                    {brand.cta.label}
+                  </button>
+
+                  {/* Hero metric — glass pill, anchored bottom-LEFT */}
+                  <div
+                    className="absolute bottom-3 left-3 z-10 rounded-xl bg-white/15 px-5 py-5 shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150 sm:px-6 sm:py-6"
+                    style={{
+                      transform: "translate(calc(var(--cx, 0px) * -0.8), calc(var(--cy, 0px) * -0.6))",
+                      transition: "transform 0.3s ease-out",
+                    }}
+                  >
+                    <div className="flex items-center gap-4 sm:gap-5">
+                      <p className="font-heading flex shrink-0 items-end text-6xl font-black leading-none tracking-tight text-[#0D1522] sm:text-7xl">
+                        {brand.stat.value}
+                        {brand.stat.suffix && (
+                          <span className="font-heading ml-1.5 text-sm font-bold tracking-normal text-[#0D1522]/60 sm:text-base">
+                            {brand.stat.suffix}
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-lg font-medium leading-tight text-[#0D1522]/80 sm:text-2xl">
+                        {brand.stat.label[0]}
+                        <br />
+                        {brand.stat.label[1]}
+                      </p>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Modal — mounts/unmounts based on openIdx. AnimatePresence is
+          inside the modal component itself (handles its own enter/exit). */}
+      {activeBrand && activeItems && activeItems.length > 0 && (
+        <BrandContentModal
+          items={activeItems}
+          brandName={activeBrand.name}
+          onClose={() => setOpenIdx(null)}
+        />
+      )}
+    </>
   );
 }
 
@@ -1253,119 +1427,7 @@ export default function Home() {
       {/* ── Qué hace Postty ── */}
       <WhatPosttyDoesSection />
 
-      {/* ── Brands testimonial (StarConcept + Nüa Skinhouse) ──
-          Two image cards side-by-side. Each card holds a brand-name glass
-          pill (top-left) and a single, prominent metric pill (bottom-left).
-          The previous "0 agencias / 0 diseñadores" stat was removed to give
-          the meaningful metric the visual weight it deserves.
-          id="testimonios" so the header "Clientes" link anchors here. */}
-      <section id="testimonios" className="px-3 py-20 sm:py-28">
-        <div className="mx-auto max-w-[1200px]">
-          {/* Eyebrow — Jakarta (body font), normal weight, regular case
-              and natural letter-spacing per spec. */}
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.4 }}
-            className="text-center text-sm font-normal text-[#0D1522]/40 sm:text-base"
-          >
-            Resultados reales
-          </motion.p>
-
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5 }}
-            className="mt-3 font-heading text-center text-2xl font-medium leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
-          >
-            Los dueños suben contenido <span className="font-black">10x más rápido</span>
-            <br className="hidden sm:block" />
-            {" "}y su dinero invertido en Ads <span className="font-black">rinde 3x más</span> con <span className="font-black">Postty</span>
-          </motion.h2>
-
-          <div className="mt-14 grid grid-cols-1 gap-3 md:mt-20 md:grid-cols-2">
-            {brandTestimonials.map((brand, i) => (
-              <motion.div
-                key={brand.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                // aspect-[7/6] is slightly portrait (h/w ≈ 0.86) so cards
-                // are noticeably wider than tall — a bit shorter than the
-                // previous 4/5. rounded-xl matches the bento iPhone tiles
-                // for a unified corner radius across the page.
-                className="relative aspect-[7/6] overflow-hidden rounded-xl"
-                onMouseMove={(e) => {
-                  const r = e.currentTarget.getBoundingClientRect();
-                  const nx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-                  const ny = ((e.clientY - r.top) / r.height - 0.5) * 2;
-                  e.currentTarget.style.setProperty("--cx", `${nx * 4}px`);
-                  e.currentTarget.style.setProperty("--cy", `${ny * 3}px`);
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.setProperty("--cx", "0px");
-                  e.currentTarget.style.setProperty("--cy", "0px");
-                }}
-              >
-                {/* Plush hero image — fills the entire card, rounded via parent overflow-hidden */}
-                <Image
-                  src={brand.image}
-                  alt={brand.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
-                />
-
-                {/* Brand name — glass pill, top-left + parallax */}
-                <div
-                  className="absolute left-5 top-5 z-10 rounded-xl bg-white/15 px-4 py-2.5 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
-                  style={{ transform: "translate(var(--cx, 0px), var(--cy, 0px))", transition: "transform 0.3s ease-out" }}
-                >
-                  <p className="font-heading text-sm font-bold leading-tight text-[#0D1522] sm:text-base">
-                    {brand.name}
-                  </p>
-                  <p className="mt-0.5 text-[11px] text-[#0D1522]/60 sm:text-xs">
-                    {brand.subtitle}
-                  </p>
-                </div>
-
-                {/* Hero metric — glass pill, anchored bottom-LEFT (content-
-                    sized, no right- constraint). Horizontal layout: BIG
-                    number on the left + label as 2 stacked lines on the
-                    right, sized big enough (text-xl/text-3xl) so the two
-                    label lines roughly fill the vertical height of the
-                    giant 7xl/8xl number. */}
-                <div
-                  className="absolute bottom-3 left-3 z-10 rounded-xl bg-white/15 px-5 py-5 shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150 sm:px-6 sm:py-6"
-                  style={{
-                    transform: "translate(calc(var(--cx, 0px) * -0.8), calc(var(--cy, 0px) * -0.6))",
-                    transition: "transform 0.3s ease-out",
-                  }}
-                >
-                  <div className="flex items-center gap-4 sm:gap-5">
-                    <p className="font-heading flex shrink-0 items-end text-6xl font-black leading-none tracking-tight text-[#0D1522] sm:text-7xl">
-                      {brand.stat.value}
-                      {brand.stat.suffix && (
-                        <span className="font-heading ml-1.5 text-sm font-bold tracking-normal text-[#0D1522]/60 sm:text-base">
-                          {brand.stat.suffix}
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-lg font-medium leading-tight text-[#0D1522]/80 sm:text-2xl">
-                      {brand.stat.label[0]}
-                      <br />
-                      {brand.stat.label[1]}
-                    </p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <BrandTestimonialsSection />
 
       {/* ── How it works ──
           Vertical stack (per spec — same orientation as the deprecated
