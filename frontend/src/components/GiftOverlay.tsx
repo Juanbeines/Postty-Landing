@@ -37,7 +37,8 @@ import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/pixel";
 
 const SESSION_KEY = "postty_gift_overlay_seen";
-const TRIGGER_SELECTOR = "#testimonios";
+const TRIGGER_SELECTOR = "#pricing";
+const TRIGGER_DELAY_MS = 3000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Step = 0 | 1 | 2; // 0 = hidden
@@ -63,29 +64,35 @@ export default function GiftOverlay() {
 
   const emailValid = EMAIL_RE.test(email.trim());
 
-  /* Trigger */
+  /* Trigger — when #pricing intersects the viewport, wait TRIGGER_DELAY_MS
+     before opening the overlay. The delay lets the user read pricing for a
+     few seconds (and starts to think about it) before the gift interrupts.
+     If they scroll away during the wait, the timer still completes — the
+     intent is a single, predictable nudge per session. */
   useEffect(() => {
     try {
       if (sessionStorage.getItem(SESSION_KEY)) return;
     } catch { /* ignore */ }
     const target = document.querySelector<HTMLElement>(TRIGGER_SELECTOR);
     if (!target) return;
-    // Higher threshold (was 0.2) + negative-top rootMargin so the overlay
-    // doesn't appear the instant the testimonials section creeps in — the
-    // user gets to see the StarConcept / Nüa cards first, then the gift
-    // takes over once they're a bit deeper into the section.
+    let timer: number | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setStep(1);
+          // Mark seen immediately so the page reload / rapid re-scroll
+          // can't queue up a second timer.
           try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
+          timer = window.setTimeout(() => setStep(1), TRIGGER_DELAY_MS);
           observer.disconnect();
         }
       },
-      { threshold: 0.5, rootMargin: "-200px 0px 0px 0px" },
+      { threshold: 0.3 },
     );
     observer.observe(target);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timer !== undefined) window.clearTimeout(timer);
+    };
   }, []);
 
   /* Lock body scroll */
