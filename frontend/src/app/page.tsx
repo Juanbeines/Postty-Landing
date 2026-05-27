@@ -1502,6 +1502,141 @@ export default function Home() {
       {/* ── Business types ── */}
       <BusinessTypesSection />
 
+      {/* ── Tu equipo / Por qué Postty ──
+          3-col grid (1-col on mobile) with alternating quote cards and
+          team photo cards. Quote cards have a neutral gray bg with the
+          quote in Jakarta + author in Outfit bold; photo cards have a
+          dark bottom-gradient overlay so the name (Outfit) and role
+          (Outfit lighter) stay readable on top of the photo.
+          Padding is uniform — gap-4/6, p-5/6 inside cards, px-4/6
+          around the section — so the visual rhythm stays consistent. */}
+      <section id="equipo" className="px-4 py-20 sm:px-6 sm:py-28">
+        <div className="mx-auto max-w-6xl">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.4 }}
+            className="text-center text-sm font-normal text-[#0D1522]/40 sm:text-base"
+          >
+            Tu equipo
+          </motion.p>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="mt-3 font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
+          >
+            Por qué Postty?
+          </motion.h2>
+
+          {/* Asymmetric staggered grid (md+):
+              - Quote cells aspect-[8/5] (landscape, h = 0.625W)
+              - Photo cells aspect-[4/5] (portrait, h = 1.25W) + row-span-2
+              - Photo h = 2 × quote h → photos span exactly 2 grid rows
+              - Each grid row = quote height, so cells line up at row
+                boundaries (no empty space, no stretching). Gap-6 between
+                rows AND columns means the spacing between every pair of
+                cards is identical — Dari↔Juan photo = Juan photo↔Agus =
+                Dari↔Dario = etc.
+              JSX order matters for auto-placement; Agustina photo is
+              before Juan quote so the quote lands at (row 3, col 2). */}
+          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:mt-14 md:grid-cols-3 md:grid-rows-3">
+            {([
+              { kind: "quote", text: "Queremos que la IA esté al servicio de quien vende, no que sume una complejidad más.", author: "Dari" },
+              { kind: "photo", name: "Juan Beines", role: "CEO", image: "/team/juan.webp" },
+              { kind: "quote", text: "Para que cada marca pueda enfocarse en su estrategia mientras la ejecución del contenido se resuelve sola.", author: "Agus" },
+              { kind: "photo", name: "Dario Soria", role: "CTO", image: "/team/dari.webp" },
+              { kind: "photo", name: "Agustina Tobias", role: "CMO", image: "/team/agustina.webp" },
+              { kind: "quote", text: "Nacimos para que vender de forma digital deje de ser un problema y vuelva a ser una oportunidad.", author: "Juan" },
+            ] as const).map((cell, i) => {
+              // Mobile-only reorder: pair each person's photo with their
+              // quote right below it (Juan photo → Juan quote → Dario photo
+              // → Dari quote → Agustina photo → Agus quote). `md:order-none`
+              // resets so the desktop grid uses DOM order for the
+              // staggered layout.
+              const mobileOrderClasses = ["order-4", "order-1", "order-6", "order-3", "order-5", "order-2"];
+              const orderClass = `${mobileOrderClasses[i]} md:order-none`;
+              return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.45, delay: (i % 3) * 0.08 }}
+                className={
+                  cell.kind === "quote"
+                    // Mobile: smaller quote box — width 80% centered, aspect
+                    // [5/2] (much shorter), reduced padding. sm+ reverts to
+                    // the full-width staggered-grid sizing.
+                    ? `${orderClass} mx-auto flex aspect-[5/2] w-4/5 flex-col justify-between rounded-2xl bg-[#F1F2F4] p-4 sm:mx-0 sm:aspect-[8/5] sm:w-full sm:p-6${
+                        // Juan quote sits at the bottom of col 2 (under
+                        // his photo). Shift it up ~12px on md+ so it
+                        // visually "kisses" the photo instead of sitting
+                        // in the middle of an oversized gap.
+                        cell.author === "Juan" ? " md:-mt-3" : ""
+                      }`
+                    : `${orderClass} relative aspect-[4/5] overflow-hidden rounded-2xl md:row-span-2`
+                }
+              >
+                {cell.kind === "quote" ? (
+                  <>
+                    <p className="text-sm leading-relaxed text-[#0D1522]/85 sm:text-base">
+                      &ldquo;{cell.text}&rdquo;
+                    </p>
+                    <p className="mt-4 font-heading text-sm font-bold text-[#0D1522] sm:text-base">
+                      {cell.author}
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <Image
+                      src={cell.image}
+                      alt={cell.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                      // scale-[2] zooms 2× from the center; translate-x
+                      // nudges Juan + Dari to the right so their bodies are
+                      // better-centered after the 2x crop. Dari needs a
+                      // larger shift than Juan because the new "dari 2"
+                      // source has him further off-center.
+                      className={`scale-[2] object-cover ${
+                        cell.name === "Dario Soria"
+                          ? "translate-x-10"
+                          : cell.name === "Juan Beines"
+                            ? "translate-x-3"
+                            : ""
+                      }`}
+                    />
+                    {/* Black bottom gradient — concentrated in the BOTTOM
+                        ~30% of the photo (was 55%). Heavier black at the
+                        very bottom for legibility, fades to transparent
+                        quickly so most of the photo stays unobscured. */}
+                    <div
+                      className="pointer-events-none absolute inset-0"
+                      style={{
+                        background:
+                          "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 15%, rgba(0,0,0,0) 32%)",
+                      }}
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
+                      <p className="font-heading text-xl font-bold leading-tight text-white sm:text-2xl">
+                        {cell.name}
+                      </p>
+                      <p className="mt-1 font-heading text-base font-normal leading-tight text-white/80 sm:text-lg">
+                        {cell.role}
+                      </p>
+                    </div>
+                  </>
+                )}
+              </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* ── FAQ ── */}
       <section id="faq" className="px-4 py-20">
         <div className="mx-auto max-w-3xl">
