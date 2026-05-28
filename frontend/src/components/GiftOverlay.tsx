@@ -35,6 +35,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/pixel";
+import { applyGiftDiscount } from "@/lib/giftDiscount";
 
 const SESSION_KEY = "postty_gift_overlay_seen";
 const TRIGGER_SELECTOR = "#pricing";
@@ -71,7 +72,13 @@ export default function GiftOverlay() {
      intent is a single, predictable nudge per session. */
   useEffect(() => {
     try {
-      if (sessionStorage.getItem(SESSION_KEY)) return;
+      if (sessionStorage.getItem(SESSION_KEY)) {
+        // The overlay already fired in a previous page load of this
+        // session — make sure the discount is locked in (covers users
+        // whose session predates the "apply on open" change).
+        applyGiftDiscount();
+        return;
+      }
     } catch { /* ignore */ }
     const target = document.querySelector<HTMLElement>(TRIGGER_SELECTOR);
     if (!target) return;
@@ -82,7 +89,14 @@ export default function GiftOverlay() {
           // Mark seen immediately so the page reload / rapid re-scroll
           // can't queue up a second timer.
           try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
-          timer = window.setTimeout(() => setStep(1), TRIGGER_DELAY_MS);
+          timer = window.setTimeout(() => {
+            setStep(1);
+            // Apply the discount the MOMENT the overlay opens — per spec
+            // the gift itself is the trigger, not the email submit. The
+            // user gets the 20% OFF regardless of whether they submit,
+            // close with the X, or just dismiss.
+            applyGiftDiscount();
+          }, TRIGGER_DELAY_MS);
           observer.disconnect();
         }
       },
@@ -130,6 +144,9 @@ export default function GiftOverlay() {
       content_type: "lead_magnet",
       currency: "ARS",
     });
+    // Note: the discount was already applied when the overlay first
+    // opened (per spec — the gift itself is the trigger, not the email
+    // submit). The submit here just attaches the email to the Lead.
     setSubmitted(true);
   };
 
@@ -271,7 +288,7 @@ export default function GiftOverlay() {
                     transition={{ duration: 0.22 }}
                     className="text-center text-sm text-[#0D1522]/70 sm:text-base"
                   >
-                    {submitted ? "Te enviamos un mail con el regalo" : "Agregá tu mail para obtenerlo"}
+                    {submitted ? "¡Listo! Ya aplicamos tu descuento al plan Basic" : "Agregá tu mail para obtenerlo"}
                   </motion.p>
                 </AnimatePresence>
               </div>

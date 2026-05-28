@@ -8,6 +8,7 @@ import TermsContent from "@/components/legal/TermsContent";
 import GiftOverlay from "@/components/GiftOverlay";
 import BrandContentModal from "@/components/BrandContentModal";
 import { trackEvent, useAppUrl } from "@/lib/pixel";
+import { useGiftDiscount } from "@/lib/giftDiscount";
 
 const avatars = [
   "https://i.pravatar.cc/80?img=12",
@@ -483,6 +484,10 @@ function BrandTestimonialsSection() {
 function PricingSection() {
   const [hoveredCard, setHoveredCard] = useState<"starter" | "basic" | "pro" | "agency" | null>("pro");
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  // Whether the user already claimed their gift via the GiftOverlay.
+  // The Basic card only shows the 20% OFF badge + strikethrough when
+  // this is true; otherwise it renders the plain undiscounted price.
+  const giftDiscountApplied = useGiftDiscount();
   const sectionRef = useRef<HTMLElement>(null);
   const appUrl = useAppUrl();
 
@@ -689,26 +694,34 @@ function PricingSection() {
               transition={{ duration: 0.5 }}
               className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-              {/* Title row — name top-left, subtle 20% OFF badge top-right.
-                  Glass styling instead of Pro's chartreuse so Basic stays
-                  visually quieter and Pro keeps the loud accent. */}
+              {/* Title row — name top-left, subtle 20% OFF badge top-right
+                  (only when the gift discount has been claimed). Without
+                  the gift the Basic card shows the plain, undiscounted
+                  price and no badge / strikethrough at all. */}
               <div className="flex items-start justify-between gap-3">
                 <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Basic</h3>
-                <div className="inline-flex shrink-0 items-center justify-center rounded-full leading-none border border-white/80 bg-white/70 px-[0.72rem] py-[0.4rem] shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
-                  <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "37% OFF"}</span>
-                </div>
+                {giftDiscountApplied && (
+                  <div className="inline-flex shrink-0 items-center justify-center rounded-full leading-none border border-white/80 bg-white/70 px-[0.72rem] py-[0.4rem] shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
+                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "37% OFF"}</span>
+                  </div>
+                )}
               </div>
 
-              {/* Price — strikethrough small on top, then large discounted.
-                  $61.999 → $49.000 ≈ 20% OFF (matches the badge math).
-                  Strike color is dark-on-light here, mirroring Pro's white-
-                  on-blue strike — same pattern, inverted palette. */}
+              {/* Price — strikethrough + discounted only when the gift
+                  was claimed. Otherwise: plain $61.999 / $51.500 with no
+                  badge or strikethrough. */}
               <div className="mt-2">
-                <div className="text-[0.85rem] font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
-                  $61.999
-                </div>
+                {giftDiscountApplied && (
+                  <div className="text-[0.85rem] font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
+                    $61.999
+                  </div>
+                )}
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">{billing === "monthly" ? "$49.000" : "$39.200"}</span>
+                  <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">
+                    {giftDiscountApplied
+                      ? (billing === "monthly" ? "$49.000" : "$39.200")
+                      : (billing === "monthly" ? "$61.999" : "$51.500")}
+                  </span>
                   <span className="text-[0.78rem] font-medium text-[#0D1522]/50">/mes</span>
                 </div>
               </div>
@@ -725,7 +738,9 @@ function PricingSection() {
                   content_category: "pricing_basic",
                   content_ids: ["plan_basic"],
                   content_type: "product",
-                  value: billing === "monthly" ? 49000 : 39200,
+                  value: giftDiscountApplied
+                    ? (billing === "monthly" ? 49000 : 39200)
+                    : (billing === "monthly" ? 61999 : 51500),
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
