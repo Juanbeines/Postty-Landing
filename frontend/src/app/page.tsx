@@ -178,8 +178,17 @@ const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
       value: "+40",
       label: ["Horas mensuales", "ahorradas en Canva"],
     },
-    // No items yet — button renders disabled until the brand provides content.
-    cta: { label: "Ver Posts" },
+    cta: {
+      label: "Ver Posts",
+      items: [
+        // nua-18 moved to first per request
+        "/ads/nua/nua-18.webp",
+        "/ads/nua/nua-8.webp",
+        "/ads/nua/nua-11.webp",
+        "/ads/nua/nua-13.webp",
+        "/ads/nua/nua-15.webp",
+      ],
+    },
   },
 ];
 
