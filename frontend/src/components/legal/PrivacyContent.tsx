@@ -4,7 +4,7 @@ export default function PrivacyContent() {
       <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 13 de marzo de 2026</p>
 
       <h2>Responsable del tratamiento</h2>
-      <p>Juan Martin Beines Furcada, con domicilio en Echeverria 1200, CP 1617, Buenos Aires, Argentina.</p>
+      <p>Postty SAS, con domicilio en Echeverria 1200, CP 1617, Buenos Aires, Argentina.</p>
       <p>Correo electrónico: <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a></p>
 
       <h2>Datos que recopilamos</h2>

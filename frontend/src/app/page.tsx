@@ -7,8 +7,9 @@ import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
 import GiftOverlay from "@/components/GiftOverlay";
 import BrandContentModal from "@/components/BrandContentModal";
+import Confetti from "@/components/Confetti";
 import { trackEvent, useAppUrl } from "@/lib/pixel";
-import { useGiftDiscount } from "@/lib/giftDiscount";
+import { useGiftDiscount, useGiftOverlayClosed } from "@/lib/giftDiscount";
 
 const avatars = [
   "https://i.pravatar.cc/80?img=12",
@@ -494,9 +495,38 @@ function PricingSection() {
   const [hoveredCard, setHoveredCard] = useState<"starter" | "basic" | "pro" | "agency" | null>("pro");
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   // Whether the user already claimed their gift via the GiftOverlay.
-  // The Basic card only shows the 20% OFF badge + strikethrough when
-  // this is true; otherwise it renders the plain undiscounted price.
+  // The Pro card only shows the 60% OFF badge + strikethrough when this
+  // is true; otherwise it renders the plain undiscounted price.
   const giftDiscountApplied = useGiftDiscount();
+  // Confetti fires the instant the GiftOverlay closes (X, ESC, Cerrar
+  // link, backdrop click). Origin = Pro 60% OFF badge center. Watching
+  // overlayClosed instead of giftDiscountApplied is important: the
+  // discount is applied the moment the overlay OPENS (so the badge is
+  // already visible "underneath"), but the user can't see the confetti
+  // while the overlay covers the page.
+  const giftOverlayClosed = useGiftOverlayClosed();
+  const proBadgeRef = useRef<HTMLDivElement>(null);
+  const [confettiOn, setConfettiOn] = useState(false);
+  const [confettiOrigin, setConfettiOrigin] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    if (!giftOverlayClosed || !giftDiscountApplied) return;
+    try {
+      if (sessionStorage.getItem("postty_gift_confetti_fired") === "1") return;
+    } catch { /* ignore */ }
+    // Small delay so the overlay's exit animation can finish and the
+    // pricing cards are fully visible before the confetti pops.
+    const t = window.setTimeout(() => {
+      const el = proBadgeRef.current;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      setConfettiOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+      setConfettiOn(true);
+      try { sessionStorage.setItem("postty_gift_confetti_fired", "1"); } catch { /* ignore */ }
+      window.setTimeout(() => setConfettiOn(false), 2200);
+    }, 200);
+    return () => window.clearTimeout(t);
+  }, [giftOverlayClosed, giftDiscountApplied]);
   const sectionRef = useRef<HTMLElement>(null);
   const appUrl = useAppUrl();
 
@@ -547,6 +577,7 @@ function PricingSection() {
     "Personalización absoluta",
     "Edits infinitos por pieza",
     "Modelos Pro de IA",
+    "Optimización de Campañas",
   ];
 
   const agencyFeatures = [
@@ -562,6 +593,13 @@ function PricingSection() {
 
   return (
     <section ref={sectionRef} id="pricing" className="px-3 py-24 sm:px-4 lg:px-6">
+      {/* Confetti that bursts from the Pro "60% OFF" badge when the
+          gift discount lands. Same animation as the GiftOverlay's
+          "Ver regalo" burst — just centered on the badge instead of
+          the viewport center. */}
+      {confettiOn && (
+        <Confetti originX={confettiOrigin.x} originY={confettiOrigin.y} />
+      )}
       <div className="mx-auto max-w-[1360px]">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -711,25 +749,25 @@ function PricingSection() {
                 <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Basic</h3>
                 {giftDiscountApplied && (
                   <div className="inline-flex shrink-0 items-center justify-center rounded-full leading-none border border-white/80 bg-white/70 px-[0.72rem] py-[0.4rem] shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
-                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "37% OFF"}</span>
+                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "36% OFF"}</span>
                   </div>
                 )}
               </div>
 
               {/* Price — strikethrough + discounted only when the gift
-                  was claimed. Otherwise: plain $61.999 / $51.500 with no
+                  was claimed. Otherwise: plain $87.900 / $73.000 with no
                   badge or strikethrough. */}
               <div className="mt-2">
                 {giftDiscountApplied && (
                   <div className="text-[0.85rem] font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
-                    $61.999
+                    $87.900
                   </div>
                 )}
                 <div className="mt-1 flex items-baseline gap-2">
                   <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">
                     {giftDiscountApplied
-                      ? (billing === "monthly" ? "$49.000" : "$39.200")
-                      : (billing === "monthly" ? "$61.999" : "$51.500")}
+                      ? (billing === "monthly" ? "$69.900" : "$55.900")
+                      : (billing === "monthly" ? "$87.900" : "$73.000")}
                   </span>
                   <span className="text-[0.78rem] font-medium text-[#0D1522]/50">/mes</span>
                 </div>
@@ -748,8 +786,8 @@ function PricingSection() {
                   content_ids: ["plan_basic"],
                   content_type: "product",
                   value: giftDiscountApplied
-                    ? (billing === "monthly" ? 49000 : 39200)
-                    : (billing === "monthly" ? 61999 : 51500),
+                    ? (billing === "monthly" ? 69900 : 55900)
+                    : (billing === "monthly" ? 87900 : 73000),
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
@@ -803,24 +841,32 @@ function PricingSection() {
               className="relative z-10 overflow-hidden rounded-3xl p-[1.53rem] text-white shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
               style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
             >
-              {/* Title row — name top-left, discount badge top-right */}
+              {/* Title row — name top-left, discount badge top-right.
+                  Badge + strikethrough only render when the gift has been
+                  claimed (the gift IS the 60% off — without it Pro shows
+                  the full price). */}
               <div className="flex items-start justify-between gap-3">
                 <h3 className="font-heading text-[2rem] font-bold text-white">Pro</h3>
-                <div
-                  className="inline-flex shrink-0 items-center justify-center rounded-full leading-none px-[0.72rem] py-[0.4rem] shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
-                  style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
-                >
-                  <span className="font-heading text-[0.82rem] font-black text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "68% OFF"}</span>
-                </div>
+                {giftDiscountApplied && (
+                  <div
+                    ref={proBadgeRef}
+                    className="inline-flex shrink-0 items-center justify-center rounded-full leading-none px-[0.72rem] py-[0.4rem] shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
+                    style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
+                  >
+                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "68% OFF"}</span>
+                  </div>
+                )}
               </div>
 
-              {/* Price — strikethrough small first, then large discounted.
-                  Strike is white (subtle); discounted price uses chartreuse to
-                  reinforce the Pro accent color used by the badge + CTA. */}
+              {/* Price — strikethrough + discounted price only when gift
+                  claimed. Otherwise: plain $249.900 / $199.900 full
+                  price, no strikethrough. */}
               <div className="mt-2">
-                <div className="text-[0.85rem] font-semibold text-white/60 line-through decoration-2 decoration-white/70">
-                  $211.999
-                </div>
+                {giftDiscountApplied && (
+                  <div className="text-[0.85rem] font-semibold text-white/60 line-through decoration-2 decoration-white/70">
+                    $249.900
+                  </div>
+                )}
                 <div className="mt-1 flex items-baseline gap-2">
                   <span
                     className="font-heading text-[2.55rem] font-black tracking-tight"
@@ -830,7 +876,9 @@ function PricingSection() {
                       WebkitTextFillColor: "transparent",
                     }}
                   >
-                    {billing === "monthly" ? "$84.999" : "$67.999"}
+                    {giftDiscountApplied
+                      ? (billing === "monthly" ? "$99.900" : "$79.900")
+                      : (billing === "monthly" ? "$249.900" : "$199.900")}
                   </span>
                   <span className="text-[0.78rem] font-medium text-white/65">/mes</span>
                 </div>
@@ -838,7 +886,7 @@ function PricingSection() {
 
               {/* Subtitle */}
               <p className="mt-3 text-[0.78rem] leading-relaxed text-white/85">
-                Querés llevar tu marca al siguiente nivel sin límites
+                Optimiza tus campañas
               </p>
 
               {/* CTA — chartreuse, only colored CTA on the page */}
@@ -848,7 +896,9 @@ function PricingSection() {
                   content_category: "pricing_pro",
                   content_ids: ["plan_pro"],
                   content_type: "product",
-                  value: billing === "monthly" ? 84999 : 67999,
+                  value: giftDiscountApplied
+                    ? (billing === "monthly" ? 99900 : 79900)
+                    : (billing === "monthly" ? 249900 : 199900),
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
@@ -1240,9 +1290,24 @@ export default function Home() {
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
             <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Clientes</a>
             <a href="#pricing" className="whitespace-nowrap transition hover:text-[#0D1522]">Precios</a>
-            <a href="#faq" className="whitespace-nowrap transition hover:text-[#0D1522]">FAQ</a>
+            {/* WhatsApp icon — glass circle matching the Iniciar sesión
+                pill below. Icon is dark here (header) instead of WhatsApp
+                green, so it blends with the neutral nav text. The hero
+                CTA keeps the green brand color. */}
+            <a
+              href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Contactar por WhatsApp"
+              onClick={() => trackEvent("Lead", { content_name: "header_whatsapp" })}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#0D1522" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+              </svg>
+            </a>
           </nav>
-          <a href={appUrl} className="inline-flex shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
+          <a href={appUrl} className="inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
             Iniciar sesión
           </a>
         </motion.header>
@@ -1269,23 +1334,37 @@ export default function Home() {
           >
             <span className="font-heading text-base font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</span>
           </motion.a>
-          <motion.a
+          {/* Right side of the scrolled header — WhatsApp circle + Iniciar
+              sesión pill, animated together as a group. Same standalone
+              glass treatment as before (collapses the layered pill effect
+              into one button since there's no parent pill in scroll mode). */}
+          <motion.div
             animate={{
               x: scrolled ? 0 : -120,
               scale: scrolled ? 1 : 0.7,
             }}
             transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
-            href={appUrl}
-            // Standalone glass that mimics the LAYERED effect of the pill
-            // version (parent pill bg-white/10 + backdrop-blur-2xl  +  button
-            // bg-white/15 + backdrop-blur-xl). Combined those two layers read
-            // as roughly bg-white/25 with backdrop-blur-2xl + saturate, so we
-            // collapse them into one button here. Outer drop shadow comes from
-            // the parent pill; inset highlight comes from the button itself.
-            className="rounded-full bg-white/25 px-5 py-2 text-sm font-bold text-[#0D1522] shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
+            className="flex items-center gap-2"
           >
-            Iniciar sesión
-          </motion.a>
+            <a
+              href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Contactar por WhatsApp"
+              onClick={() => trackEvent("Lead", { content_name: "header_whatsapp_scrolled" })}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#0D1522" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+              </svg>
+            </a>
+            <a
+              href={appUrl}
+              className="inline-flex h-9 items-center justify-center rounded-full bg-white/25 px-5 text-sm font-bold text-[#0D1522] shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
+            >
+              Iniciar sesión
+            </a>
+          </motion.div>
         </motion.div>
       </div>
 
@@ -1339,85 +1418,59 @@ export default function Home() {
             Outer div = absolute position + mouse parallax via CSS vars.
             Inner motion.div = entrance animation + glass styling.
             María above the title, Juan top-right. ── */}
+        {/* Floating testimonial pills — stacked vertically, low in the
+            hero (almost touching the bottom edge). Order top → bottom:
+            Juan (biggest) → Pilar (medium) → Sofía (smallest). Each
+            slides up + fades in with sequential delays
+            (0s / 0.5s / 1.0s). */}
         <AnimatePresence>
           {showHeroPopups && !isMobile && (
-            <>
-              {/* Sofía — above the title, left side */}
-              <div
-                className="pointer-events-none absolute z-20 hidden md:block"
-                style={{ left: "calc(5% + 20px)", top: "calc(28% + 40px)" }}
+            <div className="pointer-events-none absolute inset-x-0 bottom-[1%] z-20 hidden flex-col items-center gap-2 md:flex md:bottom-[3%]">
+              {/* TOP — Juan, BIGGEST. z-10 so it sits IN FRONT of Sofía
+                  who overlaps slightly from below. */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                className="relative z-10 flex items-center gap-3.5 rounded-full bg-white/10 px-7 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
               >
-                <motion.div
-                  initial={{ opacity: 0, x: -30, y: 10 }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  transition={{ duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-                  className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
-                >
-                  <Image
-                    src="https://i.pravatar.cc/80?img=47"
-                    alt="Sofía"
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
-                  />
-                  <div>
-                    <p className="text-xs font-bold text-white">Sofía, 27 años, Community Manager</p>
-                    <p className="text-[11px] text-white/80">&ldquo;Cansada de gastar mil horas en Canva&rdquo;</p>
-                  </div>
-                </motion.div>
-              </div>
+                <Image
+                  src="https://i.pravatar.cc/80?img=12"
+                  alt="Juan"
+                  width={52}
+                  height={52}
+                  className="h-13 w-13 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
+                  style={{ width: 52, height: 52 }}
+                />
+                <div>
+                  <p className="text-base font-bold text-white">Juan, 32 años, Dueño de una marca de ropa</p>
+                  <p className="text-sm text-white/80">&ldquo;Cansado de pagar agencias de marketing que no rinden&rdquo;</p>
+                </div>
+              </motion.div>
 
-              {/* Juan — top-right */}
-              <div
-                className="pointer-events-none absolute right-[5%] top-[22%] z-20 hidden md:block"
+              {/* MIDDLE — Sofía (formerly Pilar — kept the original
+                  Pilar age/role/quote, only swapped the NAME and PHOTO).
+                  -mt-4 makes this pill sit slightly behind Juan, z-0
+                  pushes it behind in the stacking order. */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
+                className="relative z-0 -mt-4 flex items-center gap-3 rounded-full bg-white/10 px-6 py-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
               >
-                <motion.div
-                  initial={{ opacity: 0, x: 30, y: -10 }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  transition={{ delay: 0.5, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-                  className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
-                >
-                  <Image
-                    src="https://i.pravatar.cc/80?img=12"
-                    alt="Juan"
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
-                  />
-                  <div>
-                    <p className="text-xs font-bold text-white">Juan, 32 años</p>
-                    <p className="text-[11px] text-white/80">&ldquo;Cansado de pagar agencias de marketing que no rinden&rdquo;</p>
-                  </div>
-                </motion.div>
-              </div>
-
-              {/* Pilar — bottom-left, third in the sequence (delay 1.0s).
-                  Mirrors Sofía's slide-in from the left so the trio reads as
-                  Sofía (top-left) → Juan (top-right) → Pilar (bottom-left). */}
-              <div
-                className="pointer-events-none absolute z-20 hidden md:block"
-                style={{ left: "calc(5% + 20px)", top: "calc(58% + 20px)" }}
-              >
-                <motion.div
-                  initial={{ opacity: 0, x: -30, y: 10 }}
-                  animate={{ opacity: 1, x: 0, y: 0 }}
-                  transition={{ delay: 1.0, duration: 0.7, ease: [0.4, 0, 0.2, 1] }}
-                  className="flex items-center gap-3 rounded-full bg-white/10 px-4 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
-                >
-                  <Image
-                    src="https://i.pravatar.cc/80?img=44"
-                    alt="Pilar"
-                    width={36}
-                    height={36}
-                    className="h-9 w-9 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
-                  />
-                  <div>
-                    <p className="text-xs font-bold text-white">Pilar, 37 años, CEO de Agencia de publicidad</p>
-                    <p className="text-[11px] text-white/80">&ldquo;Siempre me quedo atrás con las tendencias de Meta&rdquo;</p>
-                  </div>
-                </motion.div>
-              </div>
-            </>
+                <Image
+                  src="https://i.pravatar.cc/80?img=47"
+                  alt="Sofía"
+                  width={44}
+                  height={44}
+                  className="h-11 w-11 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
+                />
+                <div>
+                  <p className="text-sm font-bold text-white">Sofía, 37 años, Community Manager</p>
+                  <p className="text-xs text-white/80">&ldquo;Siempre me quedo atrás con las tendencias de Meta&rdquo;</p>
+                </div>
+              </motion.div>
+            </div>
           )}
         </AnimatePresence>
 
@@ -1428,12 +1481,34 @@ export default function Home() {
               animate={{ y: 0, scale: 1 }}
               exit={{ y: 40, scale: 0.9 }}
               transition={{ type: "spring", stiffness: 280, damping: 26 }}
-              className="pointer-events-none absolute inset-x-0 bottom-[22%] flex justify-center md:bottom-[36%]"
+              className="pointer-events-none absolute inset-x-0 bottom-[22%] flex justify-center gap-2 sm:gap-3 md:bottom-[36%]"
             >
+              {/* Secondary CTA — WhatsApp. Same glass language as the
+                  primary so they read as a pair, slightly less horizontal
+                  padding so "Empezar gratis" remains the visual anchor.
+                  Icon in WhatsApp brand green (#25D366). target=_blank
+                  + noopener since it leaves the site. */}
+              <motion.a
+                href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("Lead", { content_name: "hero_cta_whatsapp" })}
+                className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-6 py-[18px] text-lg font-black text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px] sm:px-7"
+                whileHover={{ y: -2, scale: 1.015 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 340, damping: 22 }}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+                </svg>
+                WhatsApp
+              </motion.a>
+
+              {/* Primary CTA — unchanged */}
               <motion.a
                 href={appUrl}
                 onClick={() => trackEvent("Lead", { content_name: "hero_cta_empezar_gratis" })}
-                className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-black text-[#0D1522] shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
+                className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-black text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
@@ -1721,6 +1796,20 @@ export default function Home() {
           <div>
             <p className="font-heading text-xl font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</p>
             <p className="mt-2 text-sm text-[#0D1522]/50">soporte@posttyai.com</p>
+            {/* WhatsApp CTA — same brand-green icon + text pill as the
+                hero, sized down to footer-meta scale. */}
+            <a
+              href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => trackEvent("Lead", { content_name: "footer_whatsapp" })}
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-[#0D1522] transition hover:border-gray-300 hover:bg-gray-50"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+              </svg>
+              WhatsApp
+            </a>
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
             <div>

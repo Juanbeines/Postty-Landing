@@ -22,6 +22,8 @@ import { useEffect, useState } from "react";
 
 const STORAGE_KEY = "postty_gift_discount_applied";
 const EVENT_NAME = "postty:gift-discount";
+const CLOSED_KEY = "postty_gift_overlay_closed";
+const CLOSED_EVENT = "postty:gift-overlay-closed";
 
 export function applyGiftDiscount(): void {
   if (typeof window === "undefined") return;
@@ -58,4 +60,43 @@ export function useGiftDiscount(): boolean {
   }, []);
 
   return applied;
+}
+
+/**
+ * GiftOverlay calls this when it closes (X button, ESC key, "Cerrar"
+ * link, or backdrop click). Persists a sessionStorage flag so a page
+ * reload still knows the user already saw + dismissed the gift, and
+ * dispatches a same-tab event so PricingSection can fire its confetti
+ * exactly when the overlay disappears.
+ */
+export function markGiftOverlayClosed(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.setItem(CLOSED_KEY, "1");
+    window.dispatchEvent(new Event(CLOSED_EVENT));
+  } catch {
+    /* ignore */
+  }
+}
+
+export function useGiftOverlayClosed(): boolean {
+  const [closed, setClosed] = useState(false);
+
+  useEffect(() => {
+    const read = () => {
+      try {
+        setClosed(sessionStorage.getItem(CLOSED_KEY) === "1");
+      } catch {
+        setClosed(false);
+      }
+    };
+    read();
+    const onCustom = () => read();
+    window.addEventListener(CLOSED_EVENT, onCustom);
+    return () => {
+      window.removeEventListener(CLOSED_EVENT, onCustom);
+    };
+  }, []);
+
+  return closed;
 }

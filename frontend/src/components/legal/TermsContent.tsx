@@ -4,7 +4,7 @@ export default function TermsContent() {
       <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 13 de marzo de 2026</p>
 
       <h2>1. Introducción</h2>
-      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias para Meta (Facebook e Instagram) asistida por inteligencia artificial, operada por Juan Martin Beines Furcada (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;la Empresa&quot;), con domicilio en Echeverria 1200, CP 1617, Buenos Aires, Argentina.</p>
+      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias para Meta (Facebook e Instagram) asistida por inteligencia artificial, operada por Postty SAS (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;la Empresa&quot;), con domicilio en Echeverria 1200, CP 1617, Buenos Aires, Argentina.</p>
       <p>Al acceder, registrarse o utilizar Postty, usted (en adelante, &quot;el Usuario&quot;) acepta estos Términos y Condiciones (en adelante, &quot;los Términos&quot;). Si no está de acuerdo con alguna de estas condiciones, le solicitamos que no utilice el Servicio.</p>
 
       <h2>2. Descripción del Servicio</h2>

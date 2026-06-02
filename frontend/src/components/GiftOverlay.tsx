@@ -35,7 +35,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/pixel";
-import { applyGiftDiscount } from "@/lib/giftDiscount";
+import { applyGiftDiscount, markGiftOverlayClosed } from "@/lib/giftDiscount";
+import Confetti from "@/components/Confetti";
 
 const SESSION_KEY = "postty_gift_overlay_seen";
 const TRIGGER_SELECTOR = "#pricing";
@@ -50,6 +51,7 @@ export default function GiftOverlay() {
   const [submitted, setSubmitted] = useState(false);
   const [confettiKey, setConfettiKey] = useState(0);
   const [confettiOn, setConfettiOn] = useState(false);
+  const [confettiOrigin, setConfettiOrigin] = useState({ x: 0, y: 0 });
   /* Input width tracked in state so the wrapper width can match the input
      exactly per breakpoint (260 mobile / 320 sm+). Without matching them,
      the wrapper retains its base size on mobile and leaves dead space
@@ -121,7 +123,12 @@ export default function GiftOverlay() {
   /* ESC to close */
   useEffect(() => {
     if (step === 0) return;
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setStep(0); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setStep(0);
+        markGiftOverlayClosed();
+      }
+    };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [step]);
@@ -130,6 +137,7 @@ export default function GiftOverlay() {
 
   const handleVerRegalo = () => {
     setConfettiKey((k) => k + 1);
+    setConfettiOrigin({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
     setConfettiOn(true);
     window.setTimeout(() => setStep(2), 380);
     window.setTimeout(() => setConfettiOn(false), 2200);
@@ -150,10 +158,17 @@ export default function GiftOverlay() {
     setSubmitted(true);
   };
 
-  const close = () => setStep(0);
+  const close = () => {
+    setStep(0);
+    // Signal to PricingSection that the overlay just closed → it fires
+    // the confetti on the Pro 60% OFF badge. Per spec the burst should
+    // land the moment the user sees the discount, not while the overlay
+    // is still covering the pricing cards.
+    markGiftOverlayClosed();
+  };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white px-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-white px-4 pb-24 sm:pb-40">
       {/* X close */}
       <button
         type="button"
@@ -164,7 +179,7 @@ export default function GiftOverlay() {
         ×
       </button>
 
-      {confettiOn && <Confetti key={confettiKey} />}
+      {confettiOn && <Confetti key={confettiKey} originX={confettiOrigin.x} originY={confettiOrigin.y} />}
 
       <div className="flex w-full flex-col items-center">
         {/* Title — always rendered, never remounts. Stays put while content
@@ -236,7 +251,7 @@ export default function GiftOverlay() {
                   background: "linear-gradient(160deg, #1881F1, #49D3F8)",
                 }}
               >
-                {/* "20% OFF" — chartreuse gradient */}
+                {/* "60% OFF" — chartreuse gradient */}
                 <p
                   className="font-heading text-3xl font-black leading-none tracking-tight sm:text-6xl"
                   style={{
@@ -246,9 +261,9 @@ export default function GiftOverlay() {
                     backgroundClip: "text",
                   }}
                 >
-                  20% OFF
+                  60% OFF
                 </p>
-                {/* "Plan mensual" — soft white→light-blue gradient */}
+                {/* "en plan Pro" — soft white→light-blue gradient */}
                 <p
                   className="mt-2 text-base font-medium sm:text-xl"
                   style={{
@@ -258,7 +273,7 @@ export default function GiftOverlay() {
                     backgroundClip: "text",
                   }}
                 >
-                  Plan mensual
+                  en plan Pro
                 </p>
               </motion.div>
             )}
@@ -288,49 +303,56 @@ export default function GiftOverlay() {
                     transition={{ duration: 0.22 }}
                     className="text-center text-sm text-[#0D1522]/70 sm:text-base"
                   >
-                    {submitted ? "¡Listo! Ya aplicamos tu descuento al plan Basic" : "Agregá tu mail para obtenerlo"}
+                    {submitted ? "¡Listo! Ya aplicamos tu descuento al plan Pro" : "Agregá tu mail para obtenerlo"}
                   </motion.p>
                 </AnimatePresence>
               </div>
 
               <form
                 onSubmit={handleSubmit}
-                className="flex items-center"
-                style={{ gap: submitted ? 0 : 10 }}
+                className="flex flex-col items-center gap-3"
               >
-                <motion.div
-                  initial={false}
-                  animate={{
-                    width: submitted ? 0 : inputWidth,
-                    opacity: submitted ? 0 : 1,
-                  }}
-                  transition={{ duration: 0.45, ease: [0.4, 0, 0.2, 1] }}
-                  className="overflow-hidden"
-                >
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="quieroeldescuento@gmail.com"
-                    disabled={submitted}
-                    autoComplete="email"
-                    className="rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm text-[#0D1522] outline-none placeholder:text-[#0D1522]/40 focus:border-gray-300 disabled:opacity-100"
-                    style={{ backgroundColor: "#ffffff", width: inputWidth }}
-                  />
-                </motion.div>
+                <AnimatePresence initial={false}>
+                  {!submitted && (
+                    <motion.div
+                      key="email-input"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                      className="overflow-hidden"
+                    >
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="quieroeldescuento@gmail.com"
+                        autoComplete="email"
+                        className="rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm text-[#0D1522] outline-none placeholder:text-[#0D1522]/40 focus:border-gray-300"
+                        style={{ backgroundColor: "#ffffff", width: inputWidth }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* "Obtener" CTA — same btn-lime-sweep + is-filled as the
+                    old arrow button, just sized as a pill with text instead
+                    of an icon-only circle. Auto-fills chartreuse the
+                    instant the email is valid. After submit it morphs to a
+                    check icon in-place (keeps the chartreuse). */}
                 <button
                   type="submit"
                   disabled={!emailValid || submitted}
-                  aria-label={submitted ? "Enviado" : "Enviar"}
+                  aria-label={submitted ? "Enviado" : "Obtener"}
                   className={[
-                    "btn-lime-sweep group flex h-10 w-10 shrink-0 items-center justify-center rounded-full border transition-colors",
+                    "btn-lime-sweep group inline-flex items-center justify-center rounded-full border px-8 py-2.5 text-sm font-bold transition-colors",
                     emailValid || submitted
-                      ? "is-filled cursor-pointer border-transparent"
-                      : "cursor-not-allowed border-gray-200",
+                      ? "is-filled cursor-pointer border-transparent text-[#0D1522]"
+                      : "cursor-not-allowed border-gray-200 text-gray-400",
                   ].join(" ")}
                 >
-                  <span className="relative z-10 flex h-full w-full items-center justify-center">
+                  <span className="relative z-10 flex items-center justify-center">
                     <AnimatePresence mode="wait" initial={false}>
                       {submitted ? (
                         <motion.svg
@@ -339,8 +361,8 @@ export default function GiftOverlay() {
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.4 }}
                           transition={{ duration: 0.25, type: "spring", stiffness: 300, damping: 18 }}
-                          width="16"
-                          height="16"
+                          width="18"
+                          height="18"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="#0D1522"
@@ -351,24 +373,15 @@ export default function GiftOverlay() {
                           <path d="M20 6 9 17l-5-5" />
                         </motion.svg>
                       ) : (
-                        <motion.svg
-                          key="arrow"
-                          initial={{ opacity: 0, scale: 0.6 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0.6 }}
+                        <motion.span
+                          key="obtener"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
                           transition={{ duration: 0.2 }}
-                          width="14"
-                          height="14"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke={emailValid ? "#0D1522" : "#D1D5DB"}
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="transition-colors"
                         >
-                          <path d="M9 18l6-6-6-6" />
-                        </motion.svg>
+                          Obtener
+                        </motion.span>
                       )}
                     </AnimatePresence>
                   </span>
@@ -398,47 +411,4 @@ export default function GiftOverlay() {
   );
 }
 
-/* Confetti — N particles flying outward from screen center with gravity + spin */
-function Confetti() {
-  const PARTICLES = 60;
-  const COLORS = ["#1881F1", "#49D3F8", "#D6F951", "#022BB0", "#b5ff00", "#FFFFFF"];
-
-  return (
-    <div className="pointer-events-none fixed inset-0 z-[200] flex items-center justify-center overflow-hidden">
-      <div className="relative h-0 w-0">
-        {Array.from({ length: PARTICLES }).map((_, i) => {
-          const angle = (Math.PI * 2 * i) / PARTICLES + (Math.random() - 0.5) * 0.4;
-          const distance = 260 + Math.random() * 380;
-          const x = Math.cos(angle) * distance;
-          const yLateral = Math.sin(angle) * distance;
-          const color = COLORS[i % COLORS.length];
-          const size = 6 + Math.random() * 8;
-          const duration = 1.4 + Math.random() * 0.9;
-          const rotate = (Math.random() - 0.5) * 1080;
-          const round = Math.random() > 0.55 ? "50%" : "2px";
-          return (
-            <motion.span
-              key={i}
-              initial={{ x: 0, y: 0, opacity: 1, rotate: 0, scale: 1 }}
-              animate={{
-                x,
-                y: yLateral + 520,
-                opacity: 0,
-                rotate,
-                scale: 0.6,
-              }}
-              transition={{ duration, ease: [0.2, 0.55, 0.4, 1] }}
-              className="absolute block"
-              style={{
-                width: size,
-                height: size,
-                backgroundColor: color,
-                borderRadius: round,
-              }}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-}
+/* Confetti now lives in @/components/Confetti */
