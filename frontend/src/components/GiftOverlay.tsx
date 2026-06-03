@@ -102,7 +102,10 @@ export default function GiftOverlay() {
           observer.disconnect();
         }
       },
-      { threshold: 0.3 },
+      // Fires as soon as 10% of the pricing section is visible — on
+      // mobile the section is tall, a higher threshold meant the user
+      // had to scroll deep before the timer even started.
+      { threshold: 0.1 },
     );
     observer.observe(target);
     return () => {
