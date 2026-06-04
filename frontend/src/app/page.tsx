@@ -1488,7 +1488,7 @@ export default function Home() {
               animate={{ y: 0, scale: 1 }}
               exit={{ y: 40, scale: 0.9 }}
               transition={{ type: "spring", stiffness: 280, damping: 26 }}
-              className="pointer-events-none absolute inset-x-0 bottom-[17%] flex flex-col-reverse items-center justify-center gap-2 sm:flex-row sm:gap-3 md:bottom-[28%]"
+              className="pointer-events-none absolute inset-x-0 bottom-[25%] flex flex-col-reverse items-center justify-center gap-2 sm:flex-row sm:gap-3 md:bottom-[36%]"
             >
               {/* Secondary CTA — WhatsApp. Same glass language as the
                   primary so they read as a pair, slightly less horizontal
