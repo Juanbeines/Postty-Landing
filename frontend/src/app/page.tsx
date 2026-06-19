@@ -749,7 +749,7 @@ function PricingSection() {
                 <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Basic</h3>
                 {giftDiscountApplied && (
                   <div className="inline-flex shrink-0 items-center justify-center rounded-full leading-none border border-white/80 bg-white/70 px-[0.72rem] py-[0.4rem] shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
-                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "36% OFF"}</span>
+                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "30% OFF"}</span>
                   </div>
                 )}
               </div>
@@ -766,8 +766,8 @@ function PricingSection() {
                 <div className="mt-1 flex items-baseline gap-2">
                   <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">
                     {giftDiscountApplied
-                      ? (billing === "monthly" ? "$69.900" : "$55.900")
-                      : (billing === "monthly" ? "$87.900" : "$73.000")}
+                      ? (billing === "monthly" ? "$69.900" : "$61.500")
+                      : (billing === "monthly" ? "$87.900" : "$79.100")}
                   </span>
                   <span className="text-[0.78rem] font-medium text-[#0D1522]/50">/mes</span>
                 </div>
@@ -786,8 +786,8 @@ function PricingSection() {
                   content_ids: ["plan_basic"],
                   content_type: "product",
                   value: giftDiscountApplied
-                    ? (billing === "monthly" ? 69900 : 55900)
-                    : (billing === "monthly" ? 87900 : 73000),
+                    ? (billing === "monthly" ? 69900 : 61500)
+                    : (billing === "monthly" ? 87900 : 79100),
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
@@ -853,7 +853,7 @@ function PricingSection() {
                     className="inline-flex shrink-0 items-center justify-center rounded-full leading-none px-[0.72rem] py-[0.4rem] shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
                     style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
                   >
-                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "68% OFF"}</span>
+                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "70% OFF"}</span>
                   </div>
                 )}
               </div>
@@ -877,8 +877,8 @@ function PricingSection() {
                     }}
                   >
                     {giftDiscountApplied
-                      ? (billing === "monthly" ? "$99.900" : "$79.900")
-                      : (billing === "monthly" ? "$249.900" : "$199.900")}
+                      ? (billing === "monthly" ? "$99.900" : "$74.900")
+                      : (billing === "monthly" ? "$249.900" : "$224.900")}
                   </span>
                   <span className="text-[0.78rem] font-medium text-white/65">/mes</span>
                 </div>
@@ -897,8 +897,8 @@ function PricingSection() {
                   content_ids: ["plan_pro"],
                   content_type: "product",
                   value: giftDiscountApplied
-                    ? (billing === "monthly" ? 99900 : 79900)
-                    : (billing === "monthly" ? 249900 : 199900),
+                    ? (billing === "monthly" ? 99900 : 74900)
+                    : (billing === "monthly" ? 249900 : 224900),
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
