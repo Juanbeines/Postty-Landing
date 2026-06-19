@@ -7,7 +7,7 @@ import "./globals.css";
 const GA_ID = "G-F4E2KJ2W01";
 
 export const metadata: Metadata = {
-  title: "Postty | Agente de Marketing con IA para crear Ads de Meta",
+  title: "Postty | Tu Agente de Marketing - Genera contenido para redes sociales y ads profesionales",
   description:
     "Postty es tu agente de marketing con IA. Creá contenido y ads profesionales para Meta (Facebook e Instagram) en 5 minutos, sin plantillas.",
   metadataBase: new URL("https://www.posttyai.com"),
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Postty | Agente de Marketing con IA para crear Ads de Meta",
+    title: "Postty | Tu Agente de Marketing - Genera contenido para redes sociales y ads profesionales",
     description:
       "Creá contenido y ads profesionales para Meta en 5 minutos con inteligencia artificial. Sin plantillas, sin genéricos.",
     url: "https://www.posttyai.com",
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Postty | Agente de Marketing con IA para crear Ads de Meta",
+    title: "Postty | Tu Agente de Marketing - Genera contenido para redes sociales y ads profesionales",
     description:
       "Creá contenido y ads profesionales para Meta en 5 minutos con inteligencia artificial.",
     images: ["https://www.posttyai.com/og-image.png"],
