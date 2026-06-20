@@ -83,10 +83,6 @@ const faqItems = [
     a: "Todo lo que necesitás para crecer: posts para feed, historias, publicidad pagada, carruseles y más. Siempre alineado con el estilo de tu marca.",
   },
   {
-    q: "¿Puedo manejar múltiples marcas en una cuenta?",
-    a: "Sí. Podés gestionar hasta 4 marcas en una sola cuenta de Postty. Cada una con su propio estilo, espacio de trabajo y configuración.",
-  },
-  {
     q: "¿Tienen prueba gratuita?",
     a: "Sí. Postty te genera 4 ads gratis para que pruebes la herramienta sin compromiso. Después de esa prueba, podés elegir un plan y seguir creando tus campañas.",
   },
