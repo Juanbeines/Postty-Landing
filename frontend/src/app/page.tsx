@@ -8,8 +8,12 @@ import TermsContent from "@/components/legal/TermsContent";
 import GiftOverlay from "@/components/GiftOverlay";
 import BrandContentModal from "@/components/BrandContentModal";
 import Confetti from "@/components/Confetti";
-import { trackEvent, useAppUrl } from "@/lib/pixel";
+import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { useGiftDiscount, useGiftOverlayClosed } from "@/lib/giftDiscount";
+
+// Agencia "Agendar reunión" opens this Calendly booking page in a new tab,
+// mirroring the in-app /trial pricing modal (TrialPricingModal.tsx).
+const AGENCY_CALENDLY = "https://calendly.com/soporte-posttyai/30min";
 
 const avatars = [
   "https://i.pravatar.cc/80?img=12",
@@ -530,6 +534,13 @@ function PricingSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const appUrl = useAppUrl();
 
+  // Deep-links for the Basic/Pro cards → app auto-fires the MP checkout for
+  // this plan + the selected billing period. The landing toggle says
+  // "monthly" | "yearly"; the app expects "monthly" | "annual".
+  const checkoutPeriod = billing === "yearly" ? "annual" : "monthly";
+  const basicCheckoutUrl = useCheckoutUrl("basic", checkoutPeriod);
+  const proCheckoutUrl = useCheckoutUrl("pro", checkoutPeriod);
+
   // Fire ViewContent once per session when pricing scrolls into view (>=50%).
   useEffect(() => {
     const node = sectionRef.current;
@@ -780,7 +791,7 @@ function PricingSection() {
 
               {/* CTA — moved up, neutral so Pro pops */}
               <a
-                href={appUrl}
+                href={basicCheckoutUrl}
                 onClick={() => trackEvent("Lead", {
                   content_category: "pricing_basic",
                   content_ids: ["plan_basic"],
@@ -891,7 +902,7 @@ function PricingSection() {
 
               {/* CTA — chartreuse, only colored CTA on the page */}
               <a
-                href={appUrl}
+                href={proCheckoutUrl}
                 onClick={() => trackEvent("Lead", {
                   content_category: "pricing_pro",
                   content_ids: ["plan_pro"],
@@ -961,13 +972,12 @@ function PricingSection() {
               </p>
 
               <a
-                href={appUrl}
+                href={AGENCY_CALENDLY}
+                target="_blank"
+                rel="noopener noreferrer"
                 onClick={() => trackEvent("Lead", {
-                  content_category: "pricing_agency",
-                  content_ids: ["plan_agency"],
-                  content_type: "product",
-                  value: 0,
-                  currency: "ARS",
+                  content_name: "agency_meeting",
+                  content_category: "agency",
                 })}
                 className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >

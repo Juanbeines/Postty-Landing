@@ -108,6 +108,20 @@ export function useAppUrl(baseUrl: string = APP_BASE_URL): string {
   return url;
 }
 
+/**
+ * React hook: deep-link into the app's trial that auto-fires the MercadoPago
+ * checkout for a given plan + period. The app reads ``?plan``/``?period`` after
+ * sign-in (sessionStorage intent) and runs the same checkout the /trial pricing
+ * cards do. ``flow=trial`` shows the trial welcome copy on the login screen.
+ * fbclid is appended after hydration (same as ``useAppUrl``) for attribution.
+ */
+export function useCheckoutUrl(
+  plan: 'basic' | 'pro',
+  period: 'monthly' | 'annual',
+): string {
+  return useAppUrl(`${APP_BASE_URL}/?plan=${plan}&period=${period}&flow=trial`);
+}
+
 /* ── CAPI ── */
 
 function getCookie(name: string): string | null {
