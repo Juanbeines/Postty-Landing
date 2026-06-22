@@ -1657,10 +1657,10 @@ export default function Home() {
           <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:mt-14 md:grid-cols-3 md:grid-rows-3">
             {([
               { kind: "quote", text: "Queremos que la IA esté al servicio de quien vende, no que sume una complejidad más.", author: "Dari" },
-              { kind: "photo", name: "Juan Beines", role: "CEO", image: "/team/juan.webp" },
+              { kind: "photo", name: "Juan Beines", role: "CEO", image: "/team/juan.webp", link: "https://www.linkedin.com/in/juanbeines/" },
               { kind: "quote", text: "Para que cada marca pueda enfocarse en su estrategia mientras la ejecución del contenido se resuelve sola.", author: "Agus" },
-              { kind: "photo", name: "Dario Soria", role: "CTO", image: "/team/dari.webp" },
-              { kind: "photo", name: "Agustina Tobias", role: "CMO", image: "/team/agustina.webp" },
+              { kind: "photo", name: "Dario Soria", role: "CTO", image: "/team/dari.webp", link: "https://www.linkedin.com/in/dario-soria-11198324/" },
+              { kind: "photo", name: "Agustina Tobias", role: "CMO", image: "/team/agustina.webp", link: "https://www.linkedin.com/in/agustobias/" },
               { kind: "quote", text: "Nacimos para que vender de forma digital deje de ser un problema y vuelva a ser una oportunidad.", author: "Juan" },
             ] as const).map((cell, i) => {
               // Mobile-only reorder: pair each person's photo with their
@@ -1740,6 +1740,16 @@ export default function Home() {
                         {cell.role}
                       </p>
                     </div>
+                    {/* Invisible full-card link to the member's LinkedIn.
+                        Sits on top (z-10) so the whole photo + name is
+                        clickable; no visible affordance beyond the cursor. */}
+                    <a
+                      href={cell.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`LinkedIn de ${cell.name}`}
+                      className="absolute inset-0 z-10 cursor-pointer"
+                    />
                   </>
                 )}
               </motion.div>
