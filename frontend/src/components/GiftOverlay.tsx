@@ -40,7 +40,7 @@ import Confetti from "@/components/Confetti";
 
 const SESSION_KEY = "postty_gift_overlay_seen";
 const TRIGGER_SELECTOR = "#pricing";
-const TRIGGER_DELAY_MS = 3000;
+const TRIGGER_DELAY_MS = 8000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type Step = 0 | 1 | 2; // 0 = hidden
