@@ -1,11 +1,11 @@
 export default function PrivacyContent() {
   return (
     <>
-      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 13 de marzo de 2026</p>
+      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 6 de julio de 2026</p>
 
       <h2>Responsable del tratamiento</h2>
-      <p>Postty SAS, con domicilio en Echeverria 1200, CP 1617, Buenos Aires, Argentina.</p>
-      <p>Correo electrónico: <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a></p>
+      <p>Postty es un servicio operado por Darío Soria, persona física con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
+      <p>Correo electrónico de contacto: <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a></p>
 
       <h2>Datos que recopilamos</h2>
       <ul>
@@ -15,6 +15,7 @@ export default function PrivacyContent() {
         <li><strong>Campañas:</strong> Borradores, conversaciones con IA, piezas generadas</li>
         <li><strong>Pagos:</strong> ID de suscripción, plan, estado (MercadoPago)</li>
         <li><strong>Uso:</strong> Contadores, feedback, calificaciones</li>
+        <li><strong>Cuentas publicitarias conectadas (opcional):</strong> cuando conectás tu cuenta de Meta Ads o Google Ads, almacenamos los tokens de acceso (cifrados con AES-256), los IDs de las cuentas publicitarias autorizadas, y metadatos de las campañas que gestionás desde Postty (estructura, presupuesto, métricas de rendimiento). Estos datos se procesan únicamente para operaciones que iniciás vos desde la plataforma.</li>
       </ul>
 
       <h2>Finalidad del tratamiento</h2>
@@ -35,12 +36,25 @@ export default function PrivacyContent() {
 
       <h2>Servicios de terceros</h2>
       <ul>
-        <li><strong>Firebase (Google):</strong> Autenticación</li>
-        <li><strong>Gemini (Google):</strong> IA conversacional y análisis</li>
-        <li><strong>Nano Banana (Google):</strong> Generación de imágenes</li>
-        <li><strong>MercadoPago:</strong> Pagos y suscripciones</li>
-        <li><strong>Meta:</strong> Publicación de ads (opcional)</li>
+        <li><strong>Firebase (Google):</strong> Autenticación de usuarios</li>
+        <li><strong>Gemini (Google):</strong> IA conversacional, análisis multimodal y generación de scripts</li>
+        <li><strong>Nano Banana (Google):</strong> Generación de imágenes publicitarias</li>
+        <li><strong>ElevenLabs:</strong> Generación de voz para videos</li>
+        <li><strong>MercadoPago:</strong> Procesamiento de pagos y suscripciones</li>
+        <li><strong>Meta (Facebook e Instagram):</strong> Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta)</li>
+        <li><strong>Google Ads:</strong> Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta)</li>
       </ul>
+
+      <h2>Integración con Google Ads API</h2>
+      <p>Cuando conectás tu cuenta de Google Ads a Postty mediante OAuth 2.0, accedemos únicamente a los datos necesarios para operar campañas publicitarias en tu nombre. Los datos que accedemos, escribimos y almacenamos son:</p>
+      <ul>
+        <li><strong>Datos que accedemos (lectura):</strong> información de las cuentas de Google Ads a las que autorizás acceso (identificadores de cliente, moneda, zona horaria), estructura de campañas existentes (nombres, estado, presupuesto, segmentación a nivel general), métricas de rendimiento (impresiones, clics, conversiones, costo, tasa de clics), y recursos creativos previamente cargados en tu cuenta.</li>
+        <li><strong>Datos que escribimos:</strong> creamos campañas publicitarias, subimos como recursos creativos las imágenes y videos generados por inteligencia artificial que vos aprobás explícitamente en la interfaz de Postty, creamos anuncios dentro de esas campañas, y pausamos o reanudamos campañas cuando lo indicás vos.</li>
+        <li><strong>Datos que almacenamos:</strong> los tokens OAuth (cifrados con AES-256 antes de escribirse en la base de datos), los IDs de las cuentas autorizadas, y una copia de los metadatos de las campañas que creaste desde Postty para poder mostrarte tu historial y métricas dentro de nuestra interfaz.</li>
+      </ul>
+      <p><strong>Finalidad exclusiva:</strong> los datos accedidos vía Google Ads API se usan únicamente para ejecutar las acciones que vos autorizás desde la interfaz de Postty. No leemos datos de otras cuentas, no cruzamos datos entre usuarios distintos, ni compartimos ni vendemos esta información a terceros.</p>
+      <p><strong>Revocación del acceso:</strong> podés revocar la autorización en cualquier momento desde (a) la configuración de tu cuenta en Postty, o (b) directamente desde tu cuenta de Google en <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>. La revocación es efectiva de forma inmediata: dejamos de poder llamar al API en tu nombre y los tokens almacenados se invalidan.</p>
+      <p>El uso que Postty hace de la información recibida de las APIs de Google se adhiere a la <a href="https://developers.google.com/terms/api-services-user-data-policy">Política de Datos de Usuario de los Servicios API de Google</a>, incluyendo los requisitos de Uso Limitado.</p>
 
       <h2>Almacenamiento y seguridad</h2>
       <ul>
@@ -57,7 +71,7 @@ export default function PrivacyContent() {
       </ul>
 
       <h2>Transferencia internacional</h2>
-      <p>Tus datos pueden procesarse en servidores de Google (EE.UU.) y otros países donde operan nuestros proveedores. Estos cumplen con estándares de protección adecuados.</p>
+      <p>Tus datos pueden procesarse en servidores de nuestros proveedores ubicados en Estados Unidos, Unión Europea y otras jurisdicciones donde operan Google (Firebase, Gemini, Nano Banana, Google Ads), Meta (Facebook, Instagram), ElevenLabs, MercadoPago y AWS. Todos estos proveedores cumplen con estándares reconocidos de protección de datos y contamos con las bases legales adecuadas para la transferencia internacional según la Ley 25.326 de Argentina.</p>
 
       <h2>Tus derechos (ARCO)</h2>
       <p>Tenés derecho a acceder, rectificar, suprimir y oponerte al tratamiento de tus datos.</p>

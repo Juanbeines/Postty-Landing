@@ -50,7 +50,7 @@ const howItWorksSteps: ReadonlyArray<{
   {
     num: "3",
     icon: "/step-3.webp",
-    text: "Postty publica y optimiza tus redes y campañas",
+    text: "Postty publica y optimiza tus campañas en Meta Ads y Google Ads",
   },
 ];
 
@@ -94,7 +94,79 @@ const faqItems = [
     q: "¿Puedo editar mis Ads generados?",
     a: "Sí. Cada Ad que genera Postty se puede editar. En el plan Basic tenés 1 edit por Ad para ajustar lo que necesites. En el plan Pro, los edits son ilimitados: podés modificar tus Ads todas las veces que quieras hasta que queden perfectos.",
   },
+  {
+    q: "¿En qué plataformas puedo publicar mis campañas?",
+    a: "Hoy Postty publica en Meta Ads (Facebook e Instagram). Estamos integrando Google Ads para publicar campañas con las imágenes y videos generados por inteligencia artificial. TikTok llegará próximamente. En todos los casos, Postty conecta con tu cuenta publicitaria a través del proceso oficial de autorización (OAuth 2.0) — nunca almacenamos ni compartimos tus credenciales, y podés revocar el acceso cuando quieras desde tu cuenta.",
+  },
 ];
+
+/**
+ * Supported ad platforms — multi-canal positioning required for the Google Ads
+ * developer-token review. `live` drives the badge style: Meta is available
+ * today; Google + TikTok are "Próximamente" (honest declarative state Google
+ * asks for on pre-launch integrations).
+ */
+const platformCards: ReadonlyArray<{
+  name: string;
+  logo: "meta" | "instagram" | "google-ads" | "tiktok";
+  status: string;
+  live: boolean;
+  desc: string;
+}> = [
+  {
+    name: "Meta",
+    logo: "meta",
+    status: "Disponible hoy",
+    live: true,
+    desc: "Publicá tus campañas en Facebook directamente desde Postty.",
+  },
+  {
+    name: "Instagram",
+    logo: "instagram",
+    status: "Disponible hoy",
+    live: true,
+    desc: "Creá y publicá contenido y anuncios para Instagram.",
+  },
+  {
+    name: "Google Ads",
+    logo: "google-ads",
+    status: "Próximamente",
+    live: false,
+    desc: "Campañas con imágenes y videos creados por inteligencia artificial.",
+  },
+  {
+    name: "TikTok",
+    logo: "tiktok",
+    status: "Próximamente",
+    live: false,
+    desc: "Llegá a nuevas audiencias con contenido pensado para TikTok.",
+  },
+];
+
+/**
+ * Brand logos for the platform cards. Official full-color SVGs live in
+ * /public/logos and render with object-contain so each keeps its native
+ * aspect ratio inside the square tile.
+ */
+const LOGO_LABELS: Record<(typeof platformCards)[number]["logo"], string> = {
+  meta: "Meta",
+  instagram: "Instagram",
+  "google-ads": "Google Ads",
+  tiktok: "TikTok",
+};
+
+function PlatformLogo({ name }: { name: (typeof platformCards)[number]["logo"] }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`/logos/${name}.svg`}
+      alt={LOGO_LABELS[name]}
+      width={36}
+      height={36}
+      className="h-9 w-9 object-contain"
+    />
+  );
+}
 
 /* ── Subcomponents ── */
 
@@ -1387,7 +1459,7 @@ export default function Home() {
         {/* SEO-critical H1: visually represented by the hero video.
             Keywords: agente, marketing, IA, contenido, ads, Meta. */}
         <h1 className="sr-only">
-          Postty — Agente de marketing con IA que crea contenido y ads para Meta en 5 minutos
+          Postty — Agente de marketing con IA que crea contenido y ads para Meta y Google en 5 minutos
         </h1>
         {isMobile !== null && (
           <video
@@ -1607,6 +1679,67 @@ export default function Home() {
         </div>
       </section>
 
+
+      {/* ── Plataformas soportadas ──
+          Multi-canal positioning for the Google Ads review: makes explicit that
+          Postty connects to ad accounts via OAuth. Meta = live today; Google +
+          TikTok = "Próximamente". Sits above Pricing so it's visible without
+          excessive scroll (a review gate). */}
+      <section id="plataformas" className="px-4 py-16 md:py-20">
+        <div className="mx-auto max-w-[1100px]">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
+          >
+            Publicá en las plataformas más importantes
+          </motion.h2>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.05 }}
+            className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base"
+          >
+            Postty se conecta con tus cuentas publicitarias de forma 100% segura.
+            Vos mantenés el control total.
+          </motion.p>
+
+          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:mt-14 lg:grid-cols-4">
+            {platformCards.map((platform, i) => (
+              <motion.div
+                key={platform.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ delay: i * 0.1, duration: 0.5 }}
+                className="flex flex-col items-center rounded-2xl border border-white/70 bg-white/45 px-6 py-8 text-center shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150"
+              >
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_2px_10px_rgba(13,21,34,0.06)]">
+                  <PlatformLogo name={platform.logo} />
+                </div>
+                <h3 className="mt-3 font-heading text-lg font-black tracking-tight text-[#0D1522] sm:text-xl">
+                  {platform.name}
+                </h3>
+                <span
+                  className={`mt-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                    platform.live
+                      ? "bg-[#0D1522] text-white"
+                      : "border border-[#0D1522]/15 bg-white/40 text-[#0D1522]/60"
+                  }`}
+                >
+                  {platform.status}
+                </span>
+                <p className="mt-3 text-xs leading-relaxed text-[#0D1522]/60 sm:text-sm">
+                  {platform.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ── Pricing ── */}
       <PricingSection />

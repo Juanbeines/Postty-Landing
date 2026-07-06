@@ -1,10 +1,10 @@
 export default function TermsContent() {
   return (
     <>
-      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 13 de marzo de 2026</p>
+      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 6 de julio de 2026</p>
 
       <h2>1. Introducción</h2>
-      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias para Meta (Facebook e Instagram) asistida por inteligencia artificial, operada por Postty SAS (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;la Empresa&quot;), con domicilio en Echeverria 1200, CP 1617, Buenos Aires, Argentina.</p>
+      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias multi-canal asistida por inteligencia artificial, con soporte para Meta Ads y Google Ads (integración con TikTok Ads planificada), operada por Darío Soria (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;el Operador&quot;), persona física con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
       <p>Al acceder, registrarse o utilizar Postty, usted (en adelante, &quot;el Usuario&quot;) acepta estos Términos y Condiciones (en adelante, &quot;los Términos&quot;). Si no está de acuerdo con alguna de estas condiciones, le solicitamos que no utilice el Servicio.</p>
 
       <h2>2. Descripción del Servicio</h2>
@@ -15,7 +15,7 @@ export default function TermsContent() {
         <li>Generar campañas publicitarias para Meta Ads mediante un agente conversacional impulsado por inteligencia artificial.</li>
         <li>Crear piezas publicitarias (imágenes estáticas, carruseles, creativos estilo UGC) utilizando generación de imágenes con IA.</li>
         <li>Editar y redimensionar las piezas publicitarias generadas.</li>
-        <li>Subir campañas directamente a Meta Ads Manager (funcionalidad sujeta a disponibilidad y autorización previa).</li>
+        <li>Publicar campañas directamente en Meta Ads Manager y en Google Ads (funcionalidades sujetas a disponibilidad y a la autorización previa del Usuario mediante OAuth 2.0 sobre su cuenta publicitaria correspondiente). El soporte de TikTok Ads está planificado en el roadmap del Servicio.</li>
       </ul>
 
       <h2>3. Registro y Cuenta de Usuario</h2>
@@ -92,6 +92,7 @@ export default function TermsContent() {
         <li><strong>Datos de uso:</strong> URL de tienda, productos extraídos, identidad de marca, borradores de campañas, historial de conversaciones con el agente de IA, piezas publicitarias generadas.</li>
         <li><strong>Datos de suscripción:</strong> ID de suscripción de MercadoPago, plan contratado, estado del pago.</li>
         <li><strong>Datos de uso del servicio:</strong> contadores de uso, retroalimentación del Usuario (calificaciones y comentarios).</li>
+        <li><strong>Datos de cuentas publicitarias conectadas (opcional):</strong> tokens OAuth cifrados, identificadores de cuentas publicitarias (Meta ad account IDs, Google Ads customer IDs), estructura y métricas de las campañas gestionadas desde Postty.</li>
       </ul>
       <h3>7.2. Finalidad del tratamiento</h3>
       <p>Los datos se utilizan para:</p>
@@ -105,11 +106,13 @@ export default function TermsContent() {
       <h3>7.3. Servicios de terceros</h3>
       <p>Postty utiliza los siguientes servicios de terceros que pueden procesar datos del Usuario:</p>
       <ul>
-        <li><strong>Google Firebase</strong> — Autenticación y gestión de sesiones.</li>
-        <li><strong>Google Gemini (IA)</strong> — Análisis de productos, extracción de Brand DNA, generación de campañas y prompts creativos.</li>
-        <li><strong>Nano Banana</strong> — Generación de imágenes publicitarias.</li>
+        <li><strong>Firebase (Google)</strong> — Autenticación de usuarios.</li>
+        <li><strong>Gemini (Google)</strong> — IA conversacional, análisis multimodal y generación de scripts.</li>
+        <li><strong>Nano Banana (Google)</strong> — Generación de imágenes publicitarias.</li>
+        <li><strong>ElevenLabs</strong> — Generación de voz para videos.</li>
         <li><strong>MercadoPago</strong> — Procesamiento de pagos y suscripciones.</li>
-        <li><strong>Meta (Facebook/Instagram)</strong> — Subida de campañas a Meta Ads Manager (cuando el Usuario lo autorice).</li>
+        <li><strong>Meta (Facebook e Instagram)</strong> — Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta).</li>
+        <li><strong>Google Ads</strong> — Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta).</li>
       </ul>
       <h3>7.4. Almacenamiento</h3>
       <p>Los datos se almacenan en bases de datos PostgreSQL. Postty implementa medidas de seguridad razonables para proteger los datos, pero no puede garantizar una seguridad absoluta.</p>
@@ -128,14 +131,15 @@ export default function TermsContent() {
         <li>Resultados comerciales específicos derivados del uso del contenido generado.</li>
       </ul>
       <p>El Usuario es el único responsable de revisar, aprobar y asumir las consecuencias del uso del contenido generado.</p>
-      <h3>8.2.5. Rechazo por Meta</h3>
-      <p>Las piezas publicitarias generadas por Postty se crean siguiendo las mejores prácticas de la industria para Meta Ads. Sin embargo, Postty no garantiza la aprobación de los anuncios por parte de Meta. El Usuario es el único responsable de:</p>
+      <h3>8.2.5. Rechazo o suspensión por parte de las plataformas publicitarias</h3>
+      <p>Las piezas publicitarias generadas por Postty se crean siguiendo las mejores prácticas de la industria para cada plataforma publicitaria soportada (Meta Ads, Google Ads). Sin embargo, Postty no garantiza la aprobación de los anuncios por parte de las plataformas. El Usuario es el único responsable de:</p>
       <ul>
-        <li>Revisar que el contenido cumpla con las Políticas de Publicidad de Meta antes de publicar.</li>
-        <li>Realizar las modificaciones necesarias si Meta rechaza un anuncio.</li>
-        <li>Asumir las consecuencias de cualquier violación a las políticas de Meta.</li>
+        <li>Revisar que el contenido cumpla con las políticas publicitarias de la plataforma correspondiente antes de publicar (Meta Advertising Policies, Google Ads Policies).</li>
+        <li>Realizar las modificaciones necesarias si una plataforma rechaza un anuncio.</li>
+        <li>Mantener el cumplimiento de las políticas de la plataforma en su cuenta publicitaria durante toda la vigencia de las campañas.</li>
+        <li>Asumir las consecuencias de cualquier violación a las políticas de las plataformas, incluyendo posibles suspensiones o cancelaciones de la cuenta publicitaria del Usuario.</li>
       </ul>
-      <p>Postty queda exento de toda responsabilidad por rechazos, suspensiones de cuenta, o cualquier otra acción tomada por Meta contra el Usuario o sus anuncios.</p>
+      <p>Postty queda exento de toda responsabilidad por rechazos, suspensiones de cuenta, o cualquier otra acción tomada por Meta, Google u otras plataformas publicitarias contra el Usuario o sus anuncios. Postty se reserva el derecho de suspender el acceso a la integración con una plataforma si detecta patrones de uso que violen las políticas de dicha plataforma y que puedan poner en riesgo el acceso de Postty a la API correspondiente.</p>
       <h3>8.3. Disponibilidad</h3>
       <p>Postty no garantiza que el Servicio estará disponible de forma ininterrumpida o libre de errores. Nos reservamos el derecho de realizar mantenimientos, actualizaciones o modificaciones al Servicio sin previo aviso.</p>
       <h3>8.4. Límites de uso</h3>
@@ -168,7 +172,7 @@ export default function TermsContent() {
       <p>La terminación no exime al Usuario de las obligaciones adquiridas durante el período de vigencia.</p>
 
       <h2>12. Ley Aplicable y Jurisdicción</h2>
-      <p>Estos Términos se regirán e interpretarán conforme a las leyes de la República Argentina. Cualquier controversia derivada de estos Términos será sometida a la jurisdicción de los tribunales ordinarios de la Ciudad Autónoma de Buenos Aires, renunciando las partes a cualquier otro fuero que pudiera corresponderles.</p>
+      <p>Estos Términos se regirán e interpretarán conforme a las leyes de la República Argentina. Cualquier controversia derivada de estos Términos será sometida a la jurisdicción de los tribunales ordinarios competentes del Partido de Vicente López, Provincia de Buenos Aires, renunciando las partes a cualquier otro fuero que pudiera corresponderles.</p>
 
       <h2>13. Contacto</h2>
       <p>Para cualquier consulta, reclamo o solicitud relacionada con estos Términos o el Servicio, el Usuario puede comunicarse a:</p>

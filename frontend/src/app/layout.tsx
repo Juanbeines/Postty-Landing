@@ -7,9 +7,9 @@ import "./globals.css";
 const GA_ID = "G-F4E2KJ2W01";
 
 export const metadata: Metadata = {
-  title: "Postty | Tu Agente de Marketing - Genera contenido para redes sociales y ads profesionales",
+  title: "Postty | Agente de Marketing con IA para Meta y Google Ads",
   description:
-    "Postty es tu agente de marketing con IA. Creá contenido y ads profesionales para Meta (Facebook e Instagram) en 5 minutos, sin plantillas.",
+    "Creá contenido y campañas publicitarias profesionales para Meta y Google Ads en 5 minutos con inteligencia artificial. Sin plantillas, sin genéricos.",
   metadataBase: new URL("https://www.posttyai.com"),
   alternates: {
     canonical: "/",
@@ -34,9 +34,9 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
-    title: "Postty | Tu Agente de Marketing - Genera contenido para redes sociales y ads profesionales",
+    title: "Postty | Agente de Marketing con IA para Meta y Google Ads",
     description:
-      "Creá contenido y ads profesionales para Meta en 5 minutos con inteligencia artificial. Sin plantillas, sin genéricos.",
+      "Creá contenido y campañas publicitarias profesionales para Meta y Google Ads en 5 minutos con inteligencia artificial. Sin plantillas, sin genéricos.",
     url: "https://www.posttyai.com",
     siteName: "Postty",
     images: [
@@ -52,9 +52,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Postty | Tu Agente de Marketing - Genera contenido para redes sociales y ads profesionales",
+    title: "Postty | Agente de Marketing con IA para Meta y Google Ads",
     description:
-      "Creá contenido y ads profesionales para Meta en 5 minutos con inteligencia artificial.",
+      "Creá contenido y campañas publicitarias profesionales para Meta y Google Ads en 5 minutos con inteligencia artificial.",
     images: ["https://www.posttyai.com/og-image.png"],
   },
 };
@@ -74,7 +74,7 @@ export default function RootLayout({
         url: "https://www.posttyai.com",
         logo: "https://www.posttyai.com/mascot.png",
         description:
-          "Postty es tu agente de marketing con IA. Creá contenido y ads profesionales para Meta (Facebook e Instagram) en 5 minutos.",
+          "Postty es tu agente de marketing con IA. Creá contenido y campañas publicitarias profesionales para Meta y Google Ads en 5 minutos.",
         contactPoint: {
           "@type": "ContactPoint",
           email: "soporte@posttyai.com",
@@ -91,13 +91,13 @@ export default function RootLayout({
         applicationSubCategory: "MarketingApplication",
         operatingSystem: "Web",
         description:
-          "Agente de marketing con IA que crea ads y contenido para Meta Ads (Facebook e Instagram) listos para publicar.",
+          "Agente de marketing con IA que crea ads y contenido para Meta Ads y Google Ads listos para publicar.",
         featureList: [
-          "Generación de ads con IA para Meta (Facebook e Instagram)",
+          "Generación de ads con IA para Meta (Facebook e Instagram) y Google Ads (próximamente)",
           "Análisis automático de la identidad de marca (Brand DNA)",
           "Creación de carruseles, posts, historias y UGC",
           "Edición y redimensión de creativos",
-          "Subida directa a Meta Ads Manager",
+          "Publicación de campañas en Meta Ads y Google Ads",
         ],
         offers: {
           "@type": "Offer",
