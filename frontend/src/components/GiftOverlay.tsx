@@ -36,12 +36,16 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { trackEvent } from "@/lib/pixel";
 import { applyGiftDiscount, markGiftOverlayClosed } from "@/lib/giftDiscount";
+import { captureGiftLead } from "@/lib/giftCapture";
 import Confetti from "@/components/Confetti";
 
 const SESSION_KEY = "postty_gift_overlay_seen";
 const TRIGGER_SELECTOR = "#pricing";
 const TRIGGER_DELAY_MS = 8000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// Identifies this gift/promo in the Postty admin dashboard ("Gift emails" tab).
+// Change per landing/promo so leads can be filtered by campaign.
+const GIFT_CAMPAIGN = "regalo-20off";
 
 type Step = 0 | 1 | 2; // 0 = hidden
 
@@ -149,15 +153,25 @@ export default function GiftOverlay() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!emailValid || submitted) return;
+    const cleanedEmail = email.trim();
     trackEvent("Lead", {
       content_category: "gift_overlay",
       content_ids: ["gift_20pct_off"],
       content_type: "lead_magnet",
       currency: "ARS",
     });
+    // Send the lead to the Postty backend so it lands in the admin dashboard.
+    // Fire-and-forget + fail-open: we optimistically flip to the success state
+    // and never block the gift flow on a network error (the backend dedupes by
+    // email). Failures are logged for observability only.
+    void captureGiftLead({ email: cleanedEmail, campaign: GIFT_CAMPAIGN }).then(
+      (r) => {
+        if (!r.ok) console.warn("gift-capture failed:", r.error);
+      },
+    );
     // Note: the discount was already applied when the overlay first
     // opened (per spec — the gift itself is the trigger, not the email
-    // submit). The submit here just attaches the email to the Lead.
+    // submit).
     setSubmitted(true);
   };
 
