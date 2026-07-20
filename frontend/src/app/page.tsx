@@ -10,6 +10,7 @@ import BrandContentModal from "@/components/BrandContentModal";
 import Confetti from "@/components/Confetti";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { useGiftDiscount, useGiftOverlayClosed } from "@/lib/giftDiscount";
+import { WHATSAPP_URL } from "@/lib/whatsapp";
 
 // Agencia "Agendar reunión" opens this Calendly booking page in a new tab,
 // mirroring the in-app /trial pricing modal (TrialPricingModal.tsx).
@@ -1379,7 +1380,7 @@ export default function Home() {
               and the Iniciar sesión pill. Icon is dark (matches the
               neutral pill copy); hero CTA keeps the green brand color. */}
           <a
-            href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+            href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Contactar por WhatsApp"
@@ -1432,7 +1433,7 @@ export default function Home() {
             className="flex items-center gap-2"
           >
             <a
-              href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+              href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Contactar por WhatsApp"
@@ -1574,7 +1575,7 @@ export default function Home() {
                   Icon in WhatsApp brand green (#25D366). target=_blank
                   + noopener since it leaves the site. */}
               <motion.a
-                href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+                href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("Lead", { content_name: "hero_cta_whatsapp" })}
@@ -1955,7 +1956,7 @@ export default function Home() {
             {/* WhatsApp CTA — same brand-green icon + text pill as the
                 hero, sized down to footer-meta scale. */}
             <a
-              href="https://api.whatsapp.com/message/3PFUF7MKQFCDB1?autoload=1&app_absent=0"
+              href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackEvent("Lead", { content_name: "footer_whatsapp" })}
