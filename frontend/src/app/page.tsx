@@ -646,7 +646,7 @@ function PricingSection() {
 
   const basicFeatures = [
     "Hasta 1 marca",
-    "100 Ads e imágenes de Contenido",
+    "Hasta 100 imágenes por mes",
     "Personalización absoluta",
     "1 edit por imagen",
   ];
