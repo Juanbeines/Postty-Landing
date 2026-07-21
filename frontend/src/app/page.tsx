@@ -46,7 +46,7 @@ const howItWorksSteps: ReadonlyArray<{
   {
     num: "2",
     icon: "/step-2.webp",
-    text: "Postty genera +100 piezas de contenido y Ads profesionales",
+    text: "Postty genera +100 imágenes de contenido y Ads profesionales",
   },
   {
     num: "3",
@@ -646,16 +646,16 @@ function PricingSection() {
 
   const basicFeatures = [
     "Hasta 1 marca",
-    "100 Ads y piezas de Contenido",
+    "100 Ads e imágenes de Contenido",
     "Personalización absoluta",
-    "1 edit por pieza",
+    "1 edit por imagen",
   ];
 
   const proFeatures = [
     "Hasta 1 marca",
-    "Ads y piezas de Contenido ilimitadas",
+    "Hasta 400 imágenes por mes",
     "Personalización absoluta",
-    "Edits infinitos por pieza",
+    "Edits infinitos por imagen",
     "Modelos Pro de IA",
     "Optimización de Campañas",
   ];
@@ -663,9 +663,9 @@ function PricingSection() {
   const agencyFeatures = [
     "Hasta 5 marcas",
     "Hasta 10 usuarios en tu equipo",
-    "Ads y piezas de Contenido ilimitadas",
+    "Ads e imágenes de Contenido ilimitadas",
     "Personalización absoluta",
-    "Edits infinitos por pieza",
+    "Edits infinitos por imagen",
     "Modelos Pro de IA",
   ];
 
