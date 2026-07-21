@@ -85,7 +85,11 @@ const faqItems = [
   },
   {
     q: "¿Tienen prueba gratuita?",
-    a: "Sí. Postty te genera 4 ads gratis para que pruebes la herramienta sin compromiso. Después de esa prueba, podés elegir un plan y seguir creando tus campañas.",
+    a: "Sí. En la prueba gratuita Postty te genera contenido para tu perfil de Instagram y ads para tu perfil de Meta, sin tarjeta y sin compromiso. Para que salgan lo más personalizados posible conviene conectar tus cuentas de Instagram y Meta; si preferís no conectarlas, Postty igual genera a partir de la URL de tu página web, aunque el resultado es menos personalizado. Después podés elegir un plan y seguir creando.",
+  },
+  {
+    q: "¿Necesito conectar mis redes para usar Postty?",
+    a: "No es obligatorio, pero sí recomendado. Si conectás tus cuentas de Instagram y Meta, Postty genera contenido para tu perfil de Instagram y ads para tu perfil de Meta mucho más personalizados. Si preferís no conectarlas, Postty trabaja a partir de la URL de tu página web y genera igual, aunque el resultado es menos personalizado.",
   },
   {
     q: "¿Es adecuado para mi tipo de negocio?",

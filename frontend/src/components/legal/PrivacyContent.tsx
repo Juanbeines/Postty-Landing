@@ -1,10 +1,10 @@
 export default function PrivacyContent() {
   return (
     <>
-      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 6 de julio de 2026</p>
+      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 21 de julio de 2026</p>
 
       <h2>Responsable del tratamiento</h2>
-      <p>Postty es un servicio operado por Darío Soria, persona física con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
+      <p>Postty es una marca registrada, titularidad de Darío Soria, con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina. El responsable del tratamiento de tus datos personales es Darío Soria (Postty), con quien podés comunicarte para cualquier consulta al correo indicado a continuación.</p>
       <p>Correo electrónico de contacto: <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a></p>
 
       <h2>Datos que recopilamos</h2>
@@ -15,7 +15,9 @@ export default function PrivacyContent() {
         <li><strong>Campañas:</strong> Borradores, conversaciones con IA, piezas generadas</li>
         <li><strong>Pagos:</strong> ID de suscripción, plan, estado (MercadoPago)</li>
         <li><strong>Uso:</strong> Contadores, feedback, calificaciones</li>
+        <li><strong>Contacto por WhatsApp (opcional):</strong> si nos escribís por WhatsApp, recibimos tu número de teléfono y tu nombre de perfil en nuestra bandeja de WhatsApp Business. No exportamos estos datos a ningún CRM ni los conservamos más allá de la conversación.</li>
         <li><strong>Cuentas publicitarias conectadas (opcional):</strong> cuando conectás tu cuenta de Meta Ads o Google Ads, almacenamos los tokens de acceso (cifrados con AES-256), los IDs de las cuentas publicitarias autorizadas, y metadatos de las campañas que gestionás desde Postty (estructura, presupuesto, métricas de rendimiento). Estos datos se procesan únicamente para operaciones que iniciás vos desde la plataforma.</li>
+        <li><strong>Perfiles de Instagram y Meta conectados (opcional):</strong> si conectás tus cuentas de Instagram y Meta para personalizar el contenido y los anuncios, accedemos a la información de tu perfil necesaria para ese fin (datos de la cuenta y publicaciones). Si preferís no conectarlas, Postty genera a partir de la URL de tu sitio web, con un menor grado de personalización.</li>
       </ul>
 
       <h2>Finalidad del tratamiento</h2>
@@ -43,6 +45,10 @@ export default function PrivacyContent() {
         <li><strong>MercadoPago:</strong> Procesamiento de pagos y suscripciones</li>
         <li><strong>Meta (Facebook e Instagram):</strong> Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta)</li>
         <li><strong>Google Ads:</strong> Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta)</li>
+        <li><strong>Amazon Web Services (AWS):</strong> Alojamiento e infraestructura del servicio</li>
+        <li><strong>Google Analytics (Google):</strong> Analítica de uso del sitio web (cookies)</li>
+        <li><strong>Meta Pixel (Meta):</strong> Medición de conversiones publicitarias (cookies)</li>
+        <li><strong>WhatsApp Business (Meta):</strong> Canal de contacto y atención (opcional, solo si nos escribís)</li>
       </ul>
 
       <h2>Integración con Google Ads API</h2>
@@ -55,6 +61,14 @@ export default function PrivacyContent() {
       <p><strong>Finalidad exclusiva:</strong> los datos accedidos vía Google Ads API se usan únicamente para ejecutar las acciones que vos autorizás desde la interfaz de Postty. No leemos datos de otras cuentas, no cruzamos datos entre usuarios distintos, ni compartimos ni vendemos esta información a terceros.</p>
       <p><strong>Revocación del acceso:</strong> podés revocar la autorización en cualquier momento desde (a) la configuración de tu cuenta en Postty, o (b) directamente desde tu cuenta de Google en <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>. La revocación es efectiva de forma inmediata: dejamos de poder llamar al API en tu nombre y los tokens almacenados se invalidan.</p>
       <p>El uso que Postty hace de la información recibida de las APIs de Google se adhiere a la <a href="https://developers.google.com/terms/api-services-user-data-policy">Política de Datos de Usuario de los Servicios API de Google</a>, incluyendo los requisitos de Uso Limitado.</p>
+
+      <h2>Cookies y tecnologías de seguimiento</h2>
+      <p>Nuestro sitio web utiliza cookies y tecnologías similares para analítica y medición publicitaria:</p>
+      <ul>
+        <li><strong>Google Analytics:</strong> mide el uso del sitio (páginas visitadas, origen del tráfico, dispositivo) mediante cookies.</li>
+        <li><strong>Meta Pixel:</strong> mide las conversiones de nuestras campañas publicitarias. Puede almacenar en tu navegador un identificador de clic (fbclid) por hasta 90 días.</li>
+      </ul>
+      <p>Podés bloquear o eliminar las cookies desde la configuración de tu navegador; en ese caso, algunas funciones de medición dejarán de estar disponibles. Estas herramientas no afectan el funcionamiento de la aplicación ni la generación de contenido.</p>
 
       <h2>Almacenamiento y seguridad</h2>
       <ul>

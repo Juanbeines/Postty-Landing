@@ -1,10 +1,10 @@
 export default function TermsContent() {
   return (
     <>
-      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 6 de julio de 2026</p>
+      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 21 de julio de 2026</p>
 
       <h2>1. Introducción</h2>
-      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias multi-canal asistida por inteligencia artificial, con soporte para Meta Ads y Google Ads (integración con TikTok Ads planificada), operada por Darío Soria (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;el Operador&quot;), persona física con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
+      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias multi-canal asistida por inteligencia artificial, con soporte para Meta Ads y Google Ads (integración con TikTok Ads planificada), operada bajo la marca registrada &quot;Postty&quot;, titularidad de Darío Soria (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;el Operador&quot;), con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
       <p>Al acceder, registrarse o utilizar Postty, usted (en adelante, &quot;el Usuario&quot;) acepta estos Términos y Condiciones (en adelante, &quot;los Términos&quot;). Si no está de acuerdo con alguna de estas condiciones, le solicitamos que no utilice el Servicio.</p>
 
       <h2>2. Descripción del Servicio</h2>
@@ -12,7 +12,8 @@ export default function TermsContent() {
       <ul>
         <li>Extraer productos de su tienda online (Shopify, Tiendanube y otras plataformas de e-commerce) mediante análisis automatizado de su sitio web.</li>
         <li>Analizar la identidad de marca (Brand DNA), incluyendo colores, tipografías, tono de comunicación e identidad visual, a partir de la URL de su tienda.</li>
-        <li>Generar campañas publicitarias para Meta Ads mediante un agente conversacional impulsado por inteligencia artificial.</li>
+        <li>Generar campañas publicitarias para Meta Ads y Google Ads mediante un agente conversacional impulsado por inteligencia artificial.</li>
+        <li>Generar contenido para el perfil de Instagram del Usuario y anuncios para su perfil de Meta. El grado de personalización es mayor cuando el Usuario conecta sus cuentas de Instagram y Meta; si el Usuario opta por no conectarlas, la generación se realiza a partir de la URL de su sitio web, con un menor grado de personalización.</li>
         <li>Crear piezas publicitarias (imágenes estáticas, carruseles, creativos estilo UGC) utilizando generación de imágenes con IA.</li>
         <li>Editar y redimensionar las piezas publicitarias generadas.</li>
         <li>Publicar campañas directamente en Meta Ads Manager y en Google Ads (funcionalidades sujetas a disponibilidad y a la autorización previa del Usuario mediante OAuth 2.0 sobre su cuenta publicitaria correspondiente). El soporte de TikTok Ads está planificado en el roadmap del Servicio.</li>
@@ -32,28 +33,33 @@ export default function TermsContent() {
       <ul>
         <li>1 marca (URL de tienda) vinculada a la cuenta.</li>
         <li>Hasta 4 piezas publicitarias generadas por prueba.</li>
+        <li>La prueba genera contenido para el perfil de Instagram y anuncios para el perfil de Meta del Usuario. Para obtener resultados más personalizados, el Usuario puede conectar sus cuentas de Instagram y Meta; de no conectarlas, la generación se basa en la URL de su sitio web, con un menor grado de personalización.</li>
         <li>Límites diarios en generación de Brand DNA, campañas y ediciones.</li>
         <li>La URL de la tienda utilizada en la prueba gratuita queda vinculada a la cuenta (&quot;brand lock&quot;).</li>
       </ul>
       <h3>4.2. Plan Básico</h3>
       <ul>
         <li>1 marca vinculada.</li>
+        <li>Hasta 100 piezas publicitarias (imágenes) generadas por mes.</li>
+        <li>1 edición por pieza publicitaria.</li>
         <li>Hasta 4 borradores de campañas guardados.</li>
         <li>Límites diarios ampliados en generación de campañas y ediciones.</li>
-        <li>Precio: según lo indicado en la página de precios de la Plataforma (facturado mensualmente).</li>
+        <li>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</li>
       </ul>
       <h3>4.3. Plan Pro</h3>
       <ul>
-        <li>Hasta 4 marcas vinculadas.</li>
+        <li>1 marca vinculada.</li>
+        <li>Hasta 400 piezas publicitarias (imágenes) generadas por mes.</li>
+        <li>Ediciones ilimitadas por pieza publicitaria.</li>
+        <li>Acceso a los modelos Pro de IA y a la optimización de campañas.</li>
         <li>Hasta 20 borradores de campañas guardados.</li>
         <li>Límites diarios significativamente mayores.</li>
-        <li>Ediciones ilimitadas por pieza publicitaria.</li>
-        <li>Precio: según lo indicado en la página de precios de la Plataforma (facturado mensualmente).</li>
+        <li>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</li>
       </ul>
       <h3>4.4. Facturación y Pagos</h3>
       <p>Los pagos se procesan a través de MercadoPago. Al suscribirse a un plan pago, el Usuario:</p>
       <ul>
-        <li>Autoriza el cobro recurrente mensual a través de MercadoPago.</li>
+        <li>Autoriza el cobro recurrente (mensual o anual, según el período de facturación elegido) a través de MercadoPago.</li>
         <li>Acepta los Términos y Condiciones de MercadoPago.</li>
         <li>Entiende que Postty no almacena datos de tarjetas de crédito o débito; estos son gestionados exclusivamente por MercadoPago.</li>
       </ul>
@@ -73,7 +79,7 @@ export default function TermsContent() {
 
       <h2>6. Propiedad Intelectual</h2>
       <h3>6.1. Propiedad de Postty</h3>
-      <p>La Plataforma, incluyendo pero no limitado a su código fuente, diseño, logotipos, marca &quot;Postty&quot;, algoritmos de IA, y la interfaz de usuario, son propiedad exclusiva de Postty y están protegidos por las leyes de propiedad intelectual aplicables.</p>
+      <p>La Plataforma, incluyendo pero no limitado a su código fuente, diseño, logotipos, la marca registrada &quot;Postty&quot;, algoritmos de IA, y la interfaz de usuario, son propiedad exclusiva de Postty y están protegidos por las leyes de propiedad intelectual aplicables.</p>
       <h3>6.2. Contenido generado por IA</h3>
       <p>Las piezas publicitarias, textos, imágenes y demás contenido generado por la inteligencia artificial de Postty a solicitud del Usuario podrán ser utilizados libremente por el Usuario para sus campañas publicitarias. No obstante:</p>
       <ul>
