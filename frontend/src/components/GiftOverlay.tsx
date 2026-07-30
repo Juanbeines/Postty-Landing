@@ -228,7 +228,7 @@ export default function GiftOverlay() {
       <div className="flex w-full flex-col items-center">
         {/* Title — always rendered, never remounts. Stays put while content
             below grows/shrinks (parent flex centers the whole stack). */}
-        <h2 className="font-heading text-center text-2xl font-black text-[#0D1522] sm:text-3xl">
+        <h2 className="font-heading text-center text-2xl font-semibold text-[#0D1522] sm:text-3xl">
           ¡Te ganaste un regalo!
         </h2>
 
@@ -297,7 +297,7 @@ export default function GiftOverlay() {
               >
                 {/* "60% OFF" — chartreuse gradient */}
                 <p
-                  className="font-heading text-3xl font-black leading-none tracking-tight sm:text-6xl"
+                  className="font-heading text-3xl font-semibold leading-none tracking-tight sm:text-6xl"
                   style={{
                     background: "linear-gradient(135deg, #D6F951 0%, #b5ff00 50%, #eeff64 100%)",
                     WebkitBackgroundClip: "text",
@@ -365,7 +365,7 @@ export default function GiftOverlay() {
                 rel="noopener noreferrer"
                 onClick={handleWhatsAppClick}
                 aria-label={submitted ? "Abrir WhatsApp de nuevo" : "Enviar mensaje por WhatsApp"}
-                className="btn-lime-sweep is-filled group inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent px-8 py-2.5 text-sm font-bold text-[#0D1522] transition-colors"
+                className="btn-lime-sweep is-filled group inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent px-8 py-2.5 text-sm font-medium text-[#0D1522] transition-colors"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
                   {/* Ink, not brand green — the glyph sits on chartreuse and
@@ -398,7 +398,7 @@ export default function GiftOverlay() {
                     transition={{ delay: 0.5, duration: 0.3 }}
                     className={`mt-5 cursor-pointer text-sm transition ${
                       returned
-                        ? "font-bold text-[#0D1522]"
+                        ? "font-medium text-[#0D1522]"
                         : "font-medium text-[#0D1522]/70 hover:text-[#0D1522]"
                     }`}
                   >

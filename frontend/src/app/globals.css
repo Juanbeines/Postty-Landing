@@ -25,7 +25,7 @@
 }
 
 :root {
-  --background: #ffffff;
+  --background: #f2f3f5;
   --foreground: #0d1522;
 }
 
@@ -38,7 +38,16 @@
 }
 
 body {
-  background: var(--background);
+  /* Super-light gray base with a soft white bloom near the top-center,
+     echoing the reference's central highlight so the background reads with
+     depth instead of flat white. */
+  background-color: var(--background);
+  background-image: radial-gradient(
+    1100px 650px at 50% 0%,
+    #ffffff 0%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  background-repeat: no-repeat;
   color: var(--foreground);
   font-family: "Plus Jakarta Sans", Arial, Helvetica, sans-serif;
 }
@@ -158,6 +167,96 @@ html {
 .btn-lime-sweep:hover::before,
 .btn-lime-sweep.is-filled::before {
   transform: translateX(0);
+}
+
+/* ── "Cómo funciona" flow diagram ───────────────────────────────────────
+   Logos travel along the incoming rails into the glass card, and result
+   pills travel back out — an infinite loop. Each chip rides its own SVG
+   path via CSS motion path (`offset-path`), using the exact same `d`
+   string the <svg> uses to paint the rail, so chip and line stay glued
+   together at any stage scale.
+
+   The chip must sit at left:0/top:0 for the path coordinates to line up
+   with the SVG viewBox, so that positioning only kicks in inside the
+   @supports block. Browsers without motion-path fall back to the static
+   --fx/--fy resting spot instead of piling up in the corner. */
+.flow-chip {
+  position: absolute;
+  left: var(--fx, 0);
+  top: var(--fy, 0);
+  z-index: 1;
+}
+
+@supports (offset-path: path("M0 0")) {
+  .flow-chip {
+    left: 0;
+    top: 0;
+    offset-path: var(--path);
+    /* Default is `auto`, which would tilt each chip along the tangent. */
+    offset-rotate: 0deg;
+    offset-distance: 0%;
+    animation: flow-travel var(--dur, 13s) linear infinite;
+    animation-delay: var(--delay, 0s);
+    will-change: offset-distance, opacity;
+  }
+}
+
+/* Fades in as it leaves the outer edge (or the card, on the way out) and
+   dissolves again on arrival, so the loop never visibly "pops". */
+@keyframes flow-travel {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  9% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 1;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+}
+
+/* Faint dots running along each rail — reads as "data flowing". The dash
+   pattern is a zero-length dash with a round cap, so each mark is a
+   perfect circle; the offset travels exactly one dash period per cycle
+   (0.1 + 92) so the loop is seamless. */
+.rail-dash {
+  animation: rail-dash-flow 2.9s linear infinite;
+}
+@keyframes rail-dash-flow {
+  to {
+    stroke-dashoffset: -92.1;
+  }
+}
+
+/* Octopus breathing behind the card */
+.mascot-float {
+  animation: mascot-float 5s ease-in-out infinite;
+}
+@keyframes mascot-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-chip {
+    animation: none;
+    offset-distance: var(--rest, 50%);
+    opacity: 1;
+  }
+  .rail-dash,
+  .mascot-float {
+    animation: none;
+  }
 }
 
 /* Autofill override — prevents browser yellow/blue tint on autofilled

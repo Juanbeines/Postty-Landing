@@ -6,8 +6,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
 import GiftOverlay from "@/components/GiftOverlay";
+import CreativeSphereSection from "@/components/CreativeSphereSection";
 import BrandContentModal from "@/components/BrandContentModal";
 import Confetti from "@/components/Confetti";
+import HowItWorksFlow from "@/components/HowItWorksFlow";
+import AppsCarousel from "@/components/AppsCarousel";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { useGiftDiscount, useGiftOverlayClosed } from "@/lib/giftDiscount";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
@@ -25,33 +28,35 @@ const avatars = [
 ];
 
 /**
- * Cómo funciona — three step cards using 3D icons + glass pills.
- * Old animated-mockup version is archived at
- * src/components/_extras/HowItWorksOldSection.tsx.
- *
- * `text` is a single string rendered on ONE line via `whitespace-nowrap` —
- * the pill grows with content (it can extend beyond the icon's container
- * since the badge is absolute-positioned).
+ * Team — each person carries their own quote on their own card (see the
+ * "¿Por qué Postty?" section). Array order is the desktop layout, with
+ * Juan in the middle column; on mobile his card is pulled to the top
+ * (`order-first`) so the CEO still leads.
  */
-const howItWorksSteps: ReadonlyArray<{
-  num: string;
-  icon: string;
-  text: string;
-}> = [
+const teamMembers = [
   {
-    num: "1",
-    icon: "/step-1.webp",
-    text: "Conectás tu tienda y Postty genera el ADN de tu marca",
+    name: "Dario Soria",
+    role: "CTO",
+    image: "/team/dari.webp",
+    link: "https://www.linkedin.com/in/dario-soria-11198324/",
+    quote:
+      "Queremos que la IA esté al servicio de quien vende, no que sume una complejidad más.",
   },
   {
-    num: "2",
-    icon: "/step-2.webp",
-    text: "Postty genera +100 imágenes de contenido y Ads profesionales",
+    name: "Juan Beines",
+    role: "CEO",
+    image: "/team/juan.webp",
+    link: "https://www.linkedin.com/in/juanbeines/",
+    quote:
+      "Nacimos para que vender de forma digital deje de ser un problema y vuelva a ser una oportunidad.",
   },
   {
-    num: "3",
-    icon: "/step-3.webp",
-    text: "Postty publica y optimiza tus campañas en Meta Ads y Google Ads",
+    name: "Agustina Tobias",
+    role: "CMO",
+    image: "/team/agustina.webp",
+    link: "https://www.linkedin.com/in/agustobias/",
+    quote:
+      "Para que cada marca pueda enfocarse en su estrategia mientras la ejecución del contenido se resuelve sola.",
   },
 ];
 
@@ -105,73 +110,9 @@ const faqItems = [
   },
 ];
 
-/**
- * Supported ad platforms — multi-canal positioning required for the Google Ads
- * developer-token review. `live` drives the badge style: Meta is available
- * today; Google + TikTok are "Próximamente" (honest declarative state Google
- * asks for on pre-launch integrations).
- */
-const platformCards: ReadonlyArray<{
-  name: string;
-  logo: "meta" | "instagram" | "google-ads" | "tiktok";
-  status: string;
-  live: boolean;
-  desc: string;
-}> = [
-  {
-    name: "Meta",
-    logo: "meta",
-    status: "Disponible hoy",
-    live: true,
-    desc: "Publicá tus campañas en Facebook directamente desde Postty.",
-  },
-  {
-    name: "Instagram",
-    logo: "instagram",
-    status: "Disponible hoy",
-    live: true,
-    desc: "Creá y publicá contenido y anuncios para Instagram.",
-  },
-  {
-    name: "Google Ads",
-    logo: "google-ads",
-    status: "Próximamente",
-    live: false,
-    desc: "Campañas con imágenes y videos creados por inteligencia artificial.",
-  },
-  {
-    name: "TikTok",
-    logo: "tiktok",
-    status: "Próximamente",
-    live: false,
-    desc: "Llegá a nuevas audiencias con contenido pensado para TikTok.",
-  },
-];
-
-/**
- * Brand logos for the platform cards. Official full-color SVGs live in
- * /public/logos and render with object-contain so each keeps its native
- * aspect ratio inside the square tile.
- */
-const LOGO_LABELS: Record<(typeof platformCards)[number]["logo"], string> = {
-  meta: "Meta",
-  instagram: "Instagram",
-  "google-ads": "Google Ads",
-  tiktok: "TikTok",
-};
-
-function PlatformLogo({ name }: { name: (typeof platformCards)[number]["logo"] }) {
-  return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={`/logos/${name}.svg`}
-      alt={LOGO_LABELS[name]}
-      width={36}
-      height={36}
-      className="h-9 w-9 object-contain"
-    />
-  );
-}
+/* Supported ad platforms (name, logo, live/"Próximamente" state and the
+   OAuth copy the Google Ads review needs) now live with the section that
+   renders them: src/components/AppsCarousel.tsx. */
 
 /* ── Subcomponents ── */
 
@@ -331,7 +272,7 @@ function WhatPosttyDoesSection() {
             // bottom, which is the desired look).
             className="isolate flex aspect-[5/7] flex-col items-center overflow-hidden rounded-xl bg-[#F1F2F4] px-3 pt-12 pb-0 sm:pt-20 md:aspect-[7/6]"
           >
-            <h3 className="font-heading text-center text-2xl font-black tracking-tight text-[#0D1522] sm:text-3xl">
+            <h3 className="font-heading text-center text-2xl font-semibold tracking-tight text-[#0D1522] sm:text-3xl">
               {item.title}
             </h3>
             <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base">
@@ -449,9 +390,9 @@ function BrandTestimonialsSection() {
             transition={{ duration: 0.5 }}
             className="mt-3 font-heading text-center text-2xl font-medium leading-[1.2] tracking-tight sm:text-3xl md:text-4xl"
           >
-            Los dueños suben contenido <span className="font-black">10x más rápido</span>
+            Los dueños suben contenido <span className="font-semibold">10x más rápido</span>
             <br className="hidden sm:block" />
-            {" "}y su dinero invertido en Ads <span className="font-black">rinde 3x más</span> con <span className="font-black">Postty</span>
+            {" "}y su dinero invertido en Ads <span className="font-semibold">rinde 3x más</span> con <span className="font-semibold">Postty</span>
           </motion.h2>
 
           <div className="mt-14 grid grid-cols-1 gap-3 md:mt-20 md:grid-cols-2">
@@ -490,7 +431,7 @@ function BrandTestimonialsSection() {
                     className="absolute left-5 top-5 z-10 rounded-xl bg-white/15 px-4 py-2.5 shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.6)] backdrop-blur-xl backdrop-saturate-150"
                     style={{ transform: "translate(var(--cx, 0px), var(--cy, 0px))", transition: "transform 0.3s ease-out" }}
                   >
-                    <p className="font-heading text-sm font-bold leading-tight text-[#0D1522] sm:text-base">
+                    <p className="font-heading text-sm font-medium leading-tight text-[#0D1522] sm:text-base">
                       {brand.name}
                     </p>
                     <p className="mt-0.5 text-[11px] text-[#0D1522]/60 sm:text-xs">
@@ -510,7 +451,7 @@ function BrandTestimonialsSection() {
                     type="button"
                     disabled={!hasContent}
                     onClick={() => hasContent && setOpenIdx(i)}
-                    className={`absolute right-5 top-5 z-10 rounded-xl border border-white/60 bg-white/25 px-4 py-2.5 font-heading text-sm font-bold text-[#0D1522] shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition sm:text-base ${
+                    className={`absolute right-5 top-5 z-10 rounded-xl border border-white/60 bg-white/25 px-4 py-2.5 font-heading text-sm font-medium text-[#0D1522] shadow-[0_8px_32px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition sm:text-base ${
                       hasContent
                         ? "cursor-pointer hover:bg-white/40"
                         : "cursor-not-allowed opacity-60"
@@ -533,10 +474,10 @@ function BrandTestimonialsSection() {
                     }}
                   >
                     <div className="flex items-center gap-4 sm:gap-5">
-                      <p className="font-heading flex shrink-0 items-end text-6xl font-black leading-none tracking-tight text-[#0D1522] sm:text-7xl">
+                      <p className="font-heading flex shrink-0 items-end text-6xl font-semibold leading-none tracking-tight text-[#0D1522] sm:text-7xl">
                         {brand.stat.value}
                         {brand.stat.suffix && (
-                          <span className="font-heading ml-1.5 text-sm font-bold tracking-normal text-[#0D1522]/60 sm:text-base">
+                          <span className="font-heading ml-1.5 text-sm font-medium tracking-normal text-[#0D1522]/60 sm:text-base">
                             {brand.stat.suffix}
                           </span>
                         )}
@@ -689,7 +630,7 @@ function PricingSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="font-heading text-center text-3xl font-black sm:text-4xl md:text-5xl"
+          className="font-heading text-center text-3xl font-semibold sm:text-4xl md:text-5xl"
         >
           Precios simples
         </motion.h2>
@@ -758,10 +699,10 @@ function PricingSection() {
               transition={{ duration: 0.5 }}
               className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-              <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Gratis</h3>
+              <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">Gratis</h3>
 
               <div className="mt-[2rem] flex items-baseline gap-2">
-                <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">$0.00</span>
+                <span className="font-heading text-[2.55rem] font-semibold tracking-tight text-[#0D1522]">$0.00</span>
               </div>
 
               <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
@@ -830,10 +771,10 @@ function PricingSection() {
                   the gift the Basic card shows the plain, undiscounted
                   price and no badge / strikethrough at all. */}
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Basic</h3>
+                <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">Basic</h3>
                 {giftDiscountApplied && (
                   <div className="inline-flex shrink-0 items-center justify-center rounded-full leading-none border border-white/80 bg-white/70 px-[0.72rem] py-[0.4rem] shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
-                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "30% OFF"}</span>
+                    <span className="font-heading text-[0.82rem] font-semibold text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "30% OFF"}</span>
                   </div>
                 )}
               </div>
@@ -848,7 +789,7 @@ function PricingSection() {
                   </div>
                 )}
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span className="font-heading text-[2.55rem] font-black tracking-tight text-[#0D1522]">
+                  <span className="font-heading text-[2.55rem] font-semibold tracking-tight text-[#0D1522]">
                     {giftDiscountApplied
                       ? (billing === "monthly" ? "$69.900" : "$61.500")
                       : (billing === "monthly" ? "$87.900" : "$79.100")}
@@ -930,14 +871,14 @@ function PricingSection() {
                   claimed (the gift IS the 60% off — without it Pro shows
                   the full price). */}
               <div className="flex items-start justify-between gap-3">
-                <h3 className="font-heading text-[2rem] font-bold text-white">Pro</h3>
+                <h3 className="font-heading text-[2rem] font-medium text-white">Pro</h3>
                 {giftDiscountApplied && (
                   <div
                     ref={proBadgeRef}
                     className="inline-flex shrink-0 items-center justify-center rounded-full leading-none px-[0.72rem] py-[0.4rem] shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
                     style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
                   >
-                    <span className="font-heading text-[0.82rem] font-black text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "70% OFF"}</span>
+                    <span className="font-heading text-[0.82rem] font-semibold text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "70% OFF"}</span>
                   </div>
                 )}
               </div>
@@ -953,7 +894,7 @@ function PricingSection() {
                 )}
                 <div className="mt-1 flex items-baseline gap-2">
                   <span
-                    className="font-heading text-[2.55rem] font-black tracking-tight"
+                    className="font-heading text-[2.55rem] font-semibold tracking-tight"
                     style={{
                       background: "linear-gradient(135deg, #b5ff00, #eeff64)",
                       WebkitBackgroundClip: "text",
@@ -985,7 +926,7 @@ function PricingSection() {
                     : (billing === "monthly" ? 249900 : 224900),
                   currency: "ARS",
                 })}
-                className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-bold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
+                className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-medium text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
                 style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
               >
                 Convertirme en Pro
@@ -1034,10 +975,10 @@ function PricingSection() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-              <h3 className="font-heading text-[2rem] font-bold text-[#0D1522]">Agencia</h3>
+              <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">Agencia</h3>
 
               <div className="mt-2 flex items-baseline gap-2">
-                <span className="font-heading text-[1.75rem] font-black tracking-tight text-[#0D1522]">Personalizado</span>
+                <span className="font-heading text-[1.75rem] font-semibold tracking-tight text-[#0D1522]">Personalizado</span>
               </div>
 
               <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
@@ -1102,7 +1043,7 @@ function BusinessTypesSection() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="font-heading text-center text-4xl font-black leading-tight sm:text-5xl md:text-6xl"
+              className="font-heading text-center text-4xl font-semibold leading-tight sm:text-5xl md:text-6xl"
             >
               Funciona para cualquier
               <br />
@@ -1272,13 +1213,13 @@ function LegalModal({ open, onClose, title, children }: { open: boolean; onClose
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#0D1522]/10 bg-white px-6 py-4">
-              <h2 className="font-heading text-lg font-black text-[#0D1522]">{title}</h2>
+              <h2 className="font-heading text-lg font-semibold text-[#0D1522]">{title}</h2>
               <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-full transition hover:bg-[#0D1522]/5">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
               </button>
             </div>
             <div className="overflow-y-auto px-6 py-6" style={{ maxHeight: "calc(85vh - 65px)" }}>
-              <div className="prose prose-sm max-w-none text-[#0D1522]/80 [&_h2]:font-heading [&_h2]:text-lg [&_h2]:font-black [&_h2]:text-[#0D1522] [&_h2]:mt-8 [&_h2]:mb-3 [&_h3]:font-heading [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-[#0D1522] [&_h3]:mt-6 [&_h3]:mb-2 [&_strong]:text-[#0D1522] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_p]:leading-relaxed [&_p]:mb-3 [&_a]:text-[#1881F1] [&_a]:underline">
+              <div className="prose prose-sm max-w-none text-[#0D1522]/80 [&_h2]:font-heading [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-[#0D1522] [&_h2]:mt-8 [&_h2]:mb-3 [&_h3]:font-heading [&_h3]:text-base [&_h3]:font-medium [&_h3]:text-[#0D1522] [&_h3]:mt-6 [&_h3]:mb-2 [&_strong]:text-[#0D1522] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_p]:leading-relaxed [&_p]:mb-3 [&_a]:text-[#1881F1] [&_a]:underline">
                 {children}
               </div>
             </div>
@@ -1395,7 +1336,7 @@ export default function Home() {
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
             </svg>
           </a>
-          <a href={appUrl} className="inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-bold text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
+          <a href={appUrl} className="inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-medium text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
             Iniciar sesión
           </a>
         </motion.header>
@@ -1450,7 +1391,7 @@ export default function Home() {
             </a>
             <a
               href={appUrl}
-              className="inline-flex h-9 items-center justify-center rounded-full bg-white/25 px-5 text-sm font-bold text-[#0D1522] shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
+              className="inline-flex h-9 items-center justify-center rounded-full bg-white/25 px-5 text-sm font-medium text-[#0D1522] shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
             >
               Iniciar sesión
             </a>
@@ -1533,7 +1474,7 @@ export default function Home() {
                   style={{ width: 52, height: 52 }}
                 />
                 <div>
-                  <p className="text-base font-bold text-white">Juan, 32 años, Dueño de una marca de ropa</p>
+                  <p className="text-base font-medium text-white">Juan, 32 años, Dueño de una marca de ropa</p>
                   <p className="text-sm text-white/80">&ldquo;Cansado de pagar agencias de marketing que no rinden&rdquo;</p>
                 </div>
               </motion.div>
@@ -1556,7 +1497,7 @@ export default function Home() {
                   className="h-11 w-11 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
                 />
                 <div>
-                  <p className="text-sm font-bold text-white">Sofía, 37 años, Community Manager</p>
+                  <p className="text-sm font-medium text-white">Sofía, 37 años, Community Manager</p>
                   <p className="text-xs text-white/80">&ldquo;Siempre me quedo atrás con las tendencias de Meta&rdquo;</p>
                 </div>
               </motion.div>
@@ -1583,7 +1524,7 @@ export default function Home() {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("Lead", { content_name: "hero_cta_whatsapp" })}
-                className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-6 py-[18px] text-lg font-black text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px] sm:px-7"
+                className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-6 py-[18px] text-lg font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px] sm:px-7"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
@@ -1598,7 +1539,7 @@ export default function Home() {
               <motion.a
                 href={appUrl}
                 onClick={() => trackEvent("Lead", { content_name: "hero_cta_empezar_gratis" })}
-                className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-black text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
+                className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
@@ -1616,135 +1557,25 @@ export default function Home() {
       {/* ── Qué hace Postty ── */}
       <WhatPosttyDoesSection />
 
-      <BrandTestimonialsSection />
+      {/* Lluvia de creativos — 3D sphere. Replaced BrandTestimonialsSection
+          (StarConcept + Nüa), which stays defined above in case we bring
+          testimonials back. */}
+      <CreativeSphereSection />
 
       {/* ── How it works ──
-          Vertical stack (per spec — same orientation as the deprecated
-          section, archived at _extras/HowItWorksOldSection.tsx). Each step
-          uses the same icon-size + pill-size proportions for visual rhythm.
-          The number lives in its own glass circle, sitting flush to the LEFT
-          of the description pill — both glass elements visually integrated
-          into the lower-center of the icon. */}
-      <section id="como-funciona" className="px-4 py-16 md:py-20">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
-        >
-          Cómo funciona
-        </motion.h2>
-
-        <div className="mx-auto mt-12 flex max-w-[520px] flex-col gap-10 md:mt-16 md:gap-14">
-          {howItWorksSteps.map((step, i) => (
-            <motion.div
-              key={step.num}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-80px" }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
-              className="flex flex-col items-center"
-            >
-              {/* Icon — same max-w across all 3 steps so the icon-to-pill
-                  proportion is identical. Sized down vs the previous pass so
-                  the badge doesn't get visually swallowed by the icon. */}
-              <div className="relative w-full max-w-[260px]">
-                <Image
-                  src={step.icon}
-                  alt={`Paso ${step.num}`}
-                  width={420}
-                  height={420}
-                  className="h-auto w-full"
-                />
-
-                {/* Badge — number circle + description pill, both glass.
-                    Sits over the icon center; `gap-1` keeps the circle
-                    visually attached to the pill's left edge.
-                    Mobile: pill wraps text (rounded-2xl, max-w cap so it
-                    fits in the viewport).
-                    sm+: pill grows horizontally to fit the single-line text
-                    (rounded-full, no max-w, whitespace-nowrap). */}
-                <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-1">
-                  {/* Glass number circle — small on mobile (h-7), bigger
-                      on sm+ (h-9) to match the bigger desktop pill text */}
-                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/70 bg-white/45 font-heading text-[11px] font-bold text-[#0D1522] shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 sm:h-9 sm:w-9 sm:text-sm">
-                    {step.num}
-                  </div>
-                  {/* Glass pill — significantly smaller on mobile, full size
-                      on sm+. Mobile wraps text, sm+ stays single line. */}
-                  <div className="max-w-[180px] rounded-2xl border border-white/70 bg-white/45 px-3 py-1.5 shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 sm:max-w-none sm:rounded-full sm:px-6 sm:py-3">
-                    <p className="text-center text-xs font-semibold leading-snug text-[#0D1522] sm:whitespace-nowrap sm:text-base sm:leading-none">
-                      {step.text}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+          Flow diagram: connected platforms ride into the glass card, the
+          generated formats ride back out. The previous three-card version
+          is archived at _extras/HowItWorksCardsSection.tsx. */}
+      <HowItWorksFlow />
 
 
       {/* ── Plataformas soportadas ──
           Multi-canal positioning for the Google Ads review: makes explicit that
-          Postty connects to ad accounts via OAuth. Meta = live today; Google +
-          TikTok = "Próximamente". Sits above Pricing so it's visible without
-          excessive scroll (a review gate). */}
-      <section id="plataformas" className="px-4 py-16 md:py-20">
-        <div className="mx-auto max-w-[1100px]">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
-          >
-            Publicá en las plataformas más importantes
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.05 }}
-            className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base"
-          >
-            Postty se conecta con tus cuentas publicitarias de forma 100% segura.
-            Vos mantenés el control total.
-          </motion.p>
-
-          <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:mt-14 lg:grid-cols-4">
-            {platformCards.map((platform, i) => (
-              <motion.div
-                key={platform.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ delay: i * 0.1, duration: 0.5 }}
-                className="flex flex-col items-center rounded-2xl border border-white/70 bg-white/45 px-6 py-8 text-center shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150"
-              >
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white shadow-[0_2px_10px_rgba(13,21,34,0.06)]">
-                  <PlatformLogo name={platform.logo} />
-                </div>
-                <h3 className="mt-3 font-heading text-lg font-black tracking-tight text-[#0D1522] sm:text-xl">
-                  {platform.name}
-                </h3>
-                <span
-                  className={`mt-3 inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
-                    platform.live
-                      ? "bg-[#0D1522] text-white"
-                      : "border border-[#0D1522]/15 bg-white/40 text-[#0D1522]/60"
-                  }`}
-                >
-                  {platform.status}
-                </span>
-                <p className="mt-3 text-xs leading-relaxed text-[#0D1522]/60 sm:text-sm">
-                  {platform.desc}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+          Postty connects to ad accounts via OAuth, and declares which
+          integrations are live vs "Próximamente". Sits above Pricing so it's
+          visible without excessive scroll (a review gate). The previous
+          4-card grid is archived at _extras/PlatformCardsSection.tsx. */}
+      <AppsCarousel />
 
       {/* ── Pricing ── */}
       <PricingSection />
@@ -1752,147 +1583,97 @@ export default function Home() {
       {/* ── Business types ── */}
       <BusinessTypesSection />
 
-      {/* ── Tu equipo / Por qué Postty ──
-          3-col grid (1-col on mobile) with alternating quote cards and
-          team photo cards. Quote cards have a neutral gray bg with the
-          quote in Jakarta + author in Outfit bold; photo cards have a
-          dark bottom-gradient overlay so the name (Outfit) and role
-          (Outfit lighter) stay readable on top of the photo.
-          Padding is uniform — gap-4/6, p-5/6 inside cards, px-4/6
-          around the section — so the visual rhythm stays consistent. */}
+      {/* ── Tu equipo / ¿Por qué Postty? ──
+          One white glass card per person: framed photo on top (name + role
+          over a bottom gradient, the whole photo links to their LinkedIn)
+          and that person's quote underneath, on the same card. Replaced a
+          staggered grid that split each person across a photo cell and a
+          separate grey quote cell. */}
       <section id="equipo" className="px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-6xl">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.4 }}
-            className="text-center text-sm font-normal text-[#0D1522]/40 sm:text-base"
-          >
-            Tu equipo
-          </motion.p>
+          {/* Same rhythm as the other sections: bold heading first, lighter
+              line underneath. */}
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5 }}
-            className="mt-3 font-heading text-center text-3xl font-black tracking-tight sm:text-4xl md:text-5xl"
+            className="font-heading text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl"
           >
-            Por qué Postty?
+            ¿Por qué Postty?
           </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="mt-3 text-center text-base font-normal text-[#0D1522]/55 sm:text-lg"
+          >
+            Tu equipo
+          </motion.p>
 
-          {/* Asymmetric staggered grid (md+):
-              - Quote cells aspect-[8/5] (landscape, h = 0.625W)
-              - Photo cells aspect-[4/5] (portrait, h = 1.25W) + row-span-2
-              - Photo h = 2 × quote h → photos span exactly 2 grid rows
-              - Each grid row = quote height, so cells line up at row
-                boundaries (no empty space, no stretching). Gap-6 between
-                rows AND columns means the spacing between every pair of
-                cards is identical — Dari↔Juan photo = Juan photo↔Agus =
-                Dari↔Dario = etc.
-              JSX order matters for auto-placement; Agustina photo is
-              before Juan quote so the quote lands at (row 3, col 2). */}
-          <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:mt-14 md:grid-cols-3 md:grid-rows-3">
-            {([
-              { kind: "quote", text: "Queremos que la IA esté al servicio de quien vende, no que sume una complejidad más.", author: "Dari" },
-              { kind: "photo", name: "Juan Beines", role: "CEO", image: "/team/juan.webp", link: "https://www.linkedin.com/in/juanbeines/" },
-              { kind: "quote", text: "Para que cada marca pueda enfocarse en su estrategia mientras la ejecución del contenido se resuelve sola.", author: "Agus" },
-              { kind: "photo", name: "Dario Soria", role: "CTO", image: "/team/dari.webp", link: "https://www.linkedin.com/in/dario-soria-11198324/" },
-              { kind: "photo", name: "Agustina Tobias", role: "CMO", image: "/team/agustina.webp", link: "https://www.linkedin.com/in/agustobias/" },
-              { kind: "quote", text: "Nacimos para que vender de forma digital deje de ser un problema y vuelva a ser una oportunidad.", author: "Juan" },
-            ] as const).map((cell, i) => {
-              // Mobile-only reorder: pair each person's photo with their
-              // quote right below it (Juan photo → Juan quote → Dario photo
-              // → Dari quote → Agustina photo → Agus quote). `md:order-none`
-              // resets so the desktop grid uses DOM order for the
-              // staggered layout.
-              const mobileOrderClasses = ["order-4", "order-1", "order-6", "order-3", "order-5", "order-2"];
-              const orderClass = `${mobileOrderClasses[i]} md:order-none`;
-              return (
+          <div className="mx-auto mt-12 grid max-w-md grid-cols-1 gap-6 md:mt-14 md:max-w-none md:grid-cols-3">
+            {teamMembers.map((member, i) => (
               <motion.div
-                key={i}
+                key={member.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.45, delay: (i % 3) * 0.08 }}
-                className={
-                  cell.kind === "quote"
-                    // Mobile: smaller quote box — width 80% centered, aspect
-                    // [5/2] (much shorter), reduced padding. sm+ reverts to
-                    // the full-width staggered-grid sizing.
-                    ? `${orderClass} mx-auto flex aspect-[5/2] w-4/5 flex-col justify-between rounded-2xl bg-[#F1F2F4] p-4 sm:mx-0 sm:aspect-[8/5] sm:w-full sm:p-6${
-                        // Juan quote sits at the bottom of col 2 (under
-                        // his photo). Shift it up ~12px on md+ so it
-                        // visually "kisses" the photo instead of sitting
-                        // in the middle of an oversized gap.
-                        cell.author === "Juan" ? " md:-mt-3" : ""
-                      }`
-                    : `${orderClass} relative aspect-[4/5] overflow-hidden rounded-2xl md:row-span-2`
-                }
+                transition={{ duration: 0.45, delay: i * 0.08 }}
+                className={`flex flex-col rounded-3xl border border-white/70 bg-white/75 p-3 shadow-[0_10px_40px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl backdrop-saturate-150 ${
+                  member.role === "CEO" ? "order-first md:order-none" : ""
+                }`}
               >
-                {cell.kind === "quote" ? (
-                  <>
-                    <p className="text-sm leading-relaxed text-[#0D1522]/85 sm:text-base">
-                      &ldquo;{cell.text}&rdquo;
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[20px]">
+                  <Image
+                    src={member.image}
+                    alt={member.name}
+                    fill
+                    sizes="(max-width: 768px) 90vw, 33vw"
+                    // scale-[2] zooms 2× from the center; translate-x nudges
+                    // Juan + Dari to the right so their bodies are better
+                    // centered after the 2x crop.
+                    className={`scale-[2] object-cover ${
+                      member.name === "Dario Soria"
+                        ? "translate-x-10"
+                        : member.name === "Juan Beines"
+                          ? "translate-x-3"
+                          : ""
+                    }`}
+                  />
+                  {/* Black bottom gradient — concentrated in the bottom ~30%
+                      so the name stays readable and most of the photo does
+                      not get muddied. */}
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 15%, rgba(0,0,0,0) 32%)",
+                    }}
+                  />
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <p className="font-heading text-xl font-medium leading-tight text-white sm:text-2xl">
+                      {member.name}
                     </p>
-                    <p className="mt-4 font-heading text-sm font-bold text-[#0D1522] sm:text-base">
-                      {cell.author}
+                    <p className="mt-1 font-heading text-base font-normal leading-tight text-white/80">
+                      {member.role}
                     </p>
-                  </>
-                ) : (
-                  <>
-                    <Image
-                      src={cell.image}
-                      alt={cell.name}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-                      // scale-[2] zooms 2× from the center; translate-x
-                      // nudges Juan + Dari to the right so their bodies are
-                      // better-centered after the 2x crop. Dari needs a
-                      // larger shift than Juan because the new "dari 2"
-                      // source has him further off-center.
-                      className={`scale-[2] object-cover ${
-                        cell.name === "Dario Soria"
-                          ? "translate-x-10"
-                          : cell.name === "Juan Beines"
-                            ? "translate-x-3"
-                            : ""
-                      }`}
-                    />
-                    {/* Black bottom gradient — concentrated in the BOTTOM
-                        ~30% of the photo (was 55%). Heavier black at the
-                        very bottom for legibility, fades to transparent
-                        quickly so most of the photo stays unobscured. */}
-                    <div
-                      className="pointer-events-none absolute inset-0"
-                      style={{
-                        background:
-                          "linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.35) 15%, rgba(0,0,0,0) 32%)",
-                      }}
-                    />
-                    <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                      <p className="font-heading text-xl font-bold leading-tight text-white sm:text-2xl">
-                        {cell.name}
-                      </p>
-                      <p className="mt-1 font-heading text-base font-normal leading-tight text-white/80 sm:text-lg">
-                        {cell.role}
-                      </p>
-                    </div>
-                    {/* Invisible full-card link to the member's LinkedIn.
-                        Sits on top (z-10) so the whole photo + name is
-                        clickable; no visible affordance beyond the cursor. */}
-                    <a
-                      href={cell.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`LinkedIn de ${cell.name}`}
-                      className="absolute inset-0 z-10 cursor-pointer"
-                    />
-                  </>
-                )}
+                  </div>
+                  {/* Invisible full-photo link to the member's LinkedIn. */}
+                  <a
+                    href={member.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`LinkedIn de ${member.name}`}
+                    className="absolute inset-0 z-10 cursor-pointer"
+                  />
+                </div>
+
+                <p className="px-3 pb-3 pt-5 text-sm leading-relaxed text-[#0D1522]/85 sm:text-[15px]">
+                  &ldquo;{member.quote}&rdquo;
+                </p>
               </motion.div>
-              );
-            })}
+            ))}
           </div>
         </div>
       </section>
@@ -1900,7 +1681,7 @@ export default function Home() {
       {/* ── FAQ ── */}
       <section id="faq" className="px-4 py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="font-heading text-center text-3xl font-black sm:text-4xl">Preguntas frecuentes</h2>
+          <h2 className="font-heading text-center text-3xl font-semibold sm:text-4xl">Preguntas frecuentes</h2>
           <div className="mt-10">
             {faqItems.map((item) => (
               <FAQItem key={item.q} item={item} />
@@ -1929,14 +1710,14 @@ export default function Home() {
             className="hidden object-cover object-center sm:block sm:[transform:scale(2)_translate(57.5px,-15px)]"
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
-            <h2 className="font-heading text-xl font-black text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl lg:text-4xl">
+            <h2 className="font-heading text-xl font-semibold text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl lg:text-4xl">
               ¿Listo para no estresarte más con tus redes?
             </h2>
             <div className="mt-5">
               <motion.a
                 href={appUrl}
                 onClick={() => trackEvent("Lead", { content_name: "final_cta_empezar_gratis" })}
-                className="group inline-flex items-center gap-2 rounded-full bg-white/15 px-8 py-3.5 text-base font-black text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
+                className="group inline-flex items-center gap-2 rounded-full bg-white/15 px-8 py-3.5 text-base font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
@@ -1964,7 +1745,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => trackEvent("Lead", { content_name: "footer_whatsapp" })}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-[#0D1522] transition hover:border-gray-300 hover:bg-gray-50"
+              className="mt-3 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#0D1522] transition hover:border-gray-300 hover:bg-gray-50"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
@@ -1974,7 +1755,7 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
             <div>
-              <p className="mb-2 font-bold text-[#0D1522]/40">Legal</p>
+              <p className="mb-2 font-medium text-[#0D1522]/40">Legal</p>
               <a
                 href="/privacy"
                 onClick={(e) => { e.preventDefault(); setLegalModal("privacy"); }}
@@ -1991,12 +1772,12 @@ export default function Home() {
               </a>
             </div>
             <div>
-              <p className="mb-2 font-bold text-[#0D1522]/40">Empresa</p>
+              <p className="mb-2 font-medium text-[#0D1522]/40">Empresa</p>
               <a href="#como-funciona" className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">Cómo funciona</a>
               <a href="#testimonios" className="mt-1 block text-[#0D1522]/60 transition hover:text-[#0D1522]">Testimonios</a>
             </div>
             <div>
-              <p className="mb-2 font-bold text-[#0D1522]/40">Recursos</p>
+              <p className="mb-2 font-medium text-[#0D1522]/40">Recursos</p>
               <a href="#faq" className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">FAQ</a>
             </div>
           </div>

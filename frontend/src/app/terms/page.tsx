@@ -50,7 +50,7 @@ export default function TermsPage() {
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/mascot.png" alt="Postty" width={32} height={32} priority />
-            <span className="font-heading text-lg font-black tracking-tight">Postty</span>
+            <span className="font-heading text-lg font-semibold tracking-tight">Postty</span>
           </Link>
           <Link
             href="/"
@@ -62,10 +62,10 @@ export default function TermsPage() {
       </header>
 
       <article className="mx-auto max-w-3xl px-6 py-12">
-        <h1 className="font-heading mb-6 text-3xl font-black tracking-tight text-[#0D1522]">
+        <h1 className="font-heading mb-6 text-3xl font-semibold tracking-tight text-[#0D1522]">
           Términos y Condiciones de Uso
         </h1>
-        <div className="prose prose-sm max-w-none text-[#0D1522]/80 [&_h2]:font-heading [&_h2]:text-lg [&_h2]:font-black [&_h2]:text-[#0D1522] [&_h2]:mt-8 [&_h2]:mb-3 [&_h3]:font-heading [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-[#0D1522] [&_h3]:mt-6 [&_h3]:mb-2 [&_strong]:text-[#0D1522] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_p]:leading-relaxed [&_p]:mb-3 [&_a]:text-[#1881F1] [&_a]:underline">
+        <div className="prose prose-sm max-w-none text-[#0D1522]/80 [&_h2]:font-heading [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-[#0D1522] [&_h2]:mt-8 [&_h2]:mb-3 [&_h3]:font-heading [&_h3]:text-base [&_h3]:font-medium [&_h3]:text-[#0D1522] [&_h3]:mt-6 [&_h3]:mb-2 [&_strong]:text-[#0D1522] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_p]:leading-relaxed [&_p]:mb-3 [&_a]:text-[#1881F1] [&_a]:underline">
           <TermsContent />
         </div>
       </article>
