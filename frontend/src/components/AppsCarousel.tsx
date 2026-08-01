@@ -22,7 +22,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { trackEvent, useAppUrl } from "@/lib/pixel";
 
 type App = {
@@ -114,19 +114,37 @@ const RING_OPACITY = [1, 1, 0.9];
 export default function AppsCarousel() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [inView, setInView] = useState(false);
+  const rootRef = useRef<HTMLElement>(null);
 
-  // Advances on its own; `active` in the deps means any manual click also
-  // restarts the countdown instead of cutting the next hold short. Users
-  // who asked the OS for less motion get a deck that only moves on click.
+  /* Autoplay only runs while the section is actually on screen. It used to
+     start at page load, so the deck was already mid-cycle by the time anyone
+     scrolled down — whichever app happened to be showing then appeared to
+     hold far longer than the rest (usually Instagram, the one it starts on).
+     Gating on visibility makes every app get the same, visible hold. */
   useEffect(() => {
-    if (paused) return;
+    const el = rootRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.2 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // One timer per slide (not a re-created interval), so a hover that ends
+  // mid-slide resumes the remaining time instead of granting a fresh full
+  // hold. Users who asked the OS for less motion get a static deck.
+  useEffect(() => {
+    if (paused || !inView) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(
+    const id = window.setTimeout(
       () => setActive((prev) => (prev + 1) % APPS.length),
       AUTOPLAY_MS,
     );
-    return () => window.clearInterval(id);
-  }, [paused, active]);
+    return () => window.clearTimeout(id);
+  }, [paused, inView, active]);
 
   // Shortest signed distance from the active tile, so the deck wraps in
   // both directions instead of scrolling back through the whole list.
@@ -143,7 +161,7 @@ export default function AppsCarousel() {
   const appUrl = useAppUrl();
 
   return (
-    <section id="plataformas" className="px-4 py-16 md:py-24">
+    <section ref={rootRef} id="plataformas" className="px-4 py-16 md:py-24">
       <div className="mx-auto max-w-[900px]">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}

@@ -47,7 +47,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/pixel";
 import { applyGiftDiscount, markGiftOverlayClosed } from "@/lib/giftDiscount";
 import { buildGiftWhatsAppUrl } from "@/lib/whatsapp";
@@ -131,18 +131,33 @@ export default function GiftOverlay() {
     }
   }, [step]);
 
+  /* Closing always lands the user on the pricing cards.
+     PricingSection fires its confetti on the Pro badge ~200ms after this,
+     reading the badge's on-screen rect — so if the user had scrolled away
+     during the 8s trigger delay, the burst would go off somewhere they
+     aren't looking (or off-screen entirely). The jump is done WHILE the
+     overlay still covers the viewport, so it's invisible: the modal lifts
+     and the discounted Pro card is simply there. Scroll is unlocked first
+     because the body lock would otherwise swallow the programmatic scroll. */
+  const close = useCallback(() => {
+    document.body.style.overflow = "";
+    document.querySelector("#pricing")?.scrollIntoView({
+      behavior: "auto",
+      block: "center",
+    });
+    setStep(0);
+    markGiftOverlayClosed();
+  }, []);
+
   /* ESC to close */
   useEffect(() => {
     if (step === 0) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setStep(0);
-        markGiftOverlayClosed();
-      }
+      if (e.key === "Escape") close();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [step]);
+  }, [step, close]);
 
   /* Notices the user coming back from WhatsApp, purely to reward it — the
      number is already stored, so nothing depends on this firing. It won't
@@ -200,15 +215,6 @@ export default function GiftOverlay() {
     // The discount was already applied when the overlay opened (per spec —
     // the gift itself is the trigger). Nothing here gates it.
     setSubmitted(true);
-  };
-
-  const close = () => {
-    setStep(0);
-    // Signal to PricingSection that the overlay just closed → it fires
-    // the confetti on the Pro 60% OFF badge. Per spec the burst should
-    // land the moment the user sees the discount, not while the overlay
-    // is still covering the pricing cards.
-    markGiftOverlayClosed();
   };
 
   return (
