@@ -6,9 +6,10 @@
  * inert and hidden from assistive tech). Under it, the app's name, then
  * the two lines that carry the section — what Postty does inside that app
  * and the pain that disappears — and a CTA phrased for that platform. The
- * deck advances on its own every AUTOPLAY_MS and pauses while hovered;
- * there are no manual controls by design. A second, empty card rests
- * behind the whole thing for depth.
+ * deck advances on its own every AUTOPLAY_MS while the section is on
+ * screen, and only pauses while the CTA itself is hovered; there are no
+ * manual controls by design. A second, empty card rests behind the whole
+ * thing for depth.
  *
  * `live` no longer renders a "Disponible hoy"/"Próximamente" chip (the
  * chips were dropped from the design). The Google Ads developer-token
@@ -99,7 +100,7 @@ const APPS: ReadonlyArray<App> = [
 ];
 
 /** How long each app holds before the deck advances on its own. */
-const AUTOPLAY_MS = 4000;
+const AUTOPLAY_MS = 3000;
 
 /** Tiles further than this from the active one are not rendered. */
 const VISIBLE = 2;
@@ -193,8 +194,6 @@ export default function AppsCarousel() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => setPaused(false)}
           className="relative mx-auto mt-12 max-w-[500px]"
         >
           {/* Card behind — wider but vertically inset, so it only shows at
@@ -285,6 +284,14 @@ export default function AppsCarousel() {
                   </p>
                   <a
                     href={appUrl}
+                    /* The ONLY hover pause. It used to sit on the whole card,
+                       which froze the deck whenever the cursor merely rested
+                       there — scrolling down with the pointer mid-screen was
+                       enough, and the deck sat on Instagram until the mouse
+                       moved. Here it just stops the label changing out from
+                       under a click. */
+                    onMouseEnter={() => setPaused(true)}
+                    onMouseLeave={() => setPaused(false)}
                     onClick={() =>
                       trackEvent("Lead", {
                         content_name: `apps_carousel_${current.logo}`,

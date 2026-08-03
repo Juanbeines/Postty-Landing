@@ -427,15 +427,12 @@ export default function HowItWorksFlow() {
             <Rail d={M_RAIL_OUT_VISUAL} gradient="rail-out-v" delay={0.25} />
           </svg>
 
-          {/* Step labels — above the funnel and below the stream. */}
+          {/* Step label — only the opening one on mobile. The closing
+              "Postty optimiza tus redes y campañas" line is desktop-only:
+              at this width it landed on the fold and read as clutter. */}
           <div className="absolute inset-x-0 top-0 text-center">
             <p className="font-heading text-[15px] font-semibold tracking-tight text-[#0D1522]/75">
               Conectás Postty con tu tienda y redes
-            </p>
-          </div>
-          <div className="absolute inset-x-0 text-center" style={{ top: 716 }}>
-            <p className="font-heading text-[15px] font-semibold tracking-tight text-[#0D1522]/75">
-              Postty optimiza tus redes y campañas
             </p>
           </div>
 
