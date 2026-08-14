@@ -14,6 +14,8 @@ import AppsCarousel from "@/components/AppsCarousel";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { useGiftDiscount, useGiftOverlayClosed } from "@/lib/giftDiscount";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
+// Untitled UI icons (MIT) — the credit allowance lines.
+import { Image01 as ImageIcon, VideoRecorder as VideoIcon } from "@untitledui/icons";
 
 // Agencia "Agendar reunión" opens this Calendly booking page in a new tab,
 // mirroring the in-app /trial pricing modal (TrialPricingModal.tsx).
@@ -157,7 +159,7 @@ const faqItems = [
   },
   {
     q: "¿Cuántas imágenes y videos puedo hacer por mes?",
-    a: "Depende de cómo repartas tus créditos, y esa es la gracia: los usás como quieras. Basic incluye 200 créditos por mes, equivalentes a 100 imágenes terminadas o 3 videos de 20 segundos. Pro incluye 400 créditos, equivalentes a 200 imágenes o 6 videos de 40 segundos, y suma los modelos Pro de video. Podés hacer cualquier mezcla entre las dos cosas.",
+    a: "Basic incluye 200 créditos por mes, que alcanzan para 60 imágenes terminadas más 1 video de 20 segundos. Pro incluye 400 créditos: 120 imágenes más 4 videos de 20 segundos, y suma los modelos Pro de video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís entre imágenes y videos como te sirva.",
   },
   {
     q: "¿Los créditos que no uso se acumulan para el mes siguiente?",
@@ -666,14 +668,14 @@ function PricingSection() {
      separate quotas, which is the wrong mental model. */
   const basicCredits = {
     total: "200 créditos por mes equivalentes a:",
-    images: "100 imágenes terminadas",
-    videos: "3 videos de 20 segundos",
+    images: "60 imágenes terminadas",
+    videos: "1 video de 20 segundos",
   };
 
   const proCredits = {
     total: "400 créditos por mes equivalentes a:",
-    images: "200 imágenes terminadas",
-    videos: "6 videos de 40 segundos",
+    images: "120 imágenes terminadas",
+    videos: "4 videos de 20 segundos",
   };
 
   const basicFeatures = [
@@ -911,10 +913,24 @@ function PricingSection() {
               {/* Credits — its own glass block. No tick here: an allowance
                   is a quantity, not a yes/no feature like the bullets below. */}
               <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
-                <p className="text-[0.78rem] font-medium text-[#0D1522]/75">{basicCredits.total}</p>
-                <p className="mt-2 font-heading text-[0.92rem] font-semibold text-[#0D1522]">{basicCredits.images}</p>
-                <p className="my-[0.15rem] text-[0.72rem] font-medium text-[#0D1522]/40">o</p>
-                <p className="font-heading text-[0.92rem] font-semibold text-[#0D1522]">{basicCredits.videos}</p>
+                <p className="text-center text-[0.78rem] font-medium text-[#0D1522]/75">{basicCredits.total}</p>
+                {/* Two columns joined by a "+": the allowance is one bundle
+                    the user gets in full, not a choice between two options. */}
+                <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-x-2.5">
+                  <div className="flex flex-col items-center text-center text-[#0D1522]">
+                    <ImageIcon className="size-[18px]" />
+                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
+                      {basicCredits.images}
+                    </p>
+                  </div>
+                  <span className="font-heading text-[1.1rem] font-semibold text-[#0D1522]/45">+</span>
+                  <div className="flex flex-col items-center text-center text-[#0D1522]">
+                    <VideoIcon className="size-[18px]" />
+                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
+                      {basicCredits.videos}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Feature list */}
@@ -1035,10 +1051,24 @@ function PricingSection() {
               {/* Credits — its own glass block. No tick here: an allowance
                   is a quantity, not a yes/no feature like the bullets below. */}
               <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
-                <p className="text-[0.78rem] font-medium text-white/90">{proCredits.total}</p>
-                <p className="mt-2 font-heading text-[0.92rem] font-semibold text-white">{proCredits.images}</p>
-                <p className="my-[0.15rem] text-[0.72rem] font-medium text-white/50">o</p>
-                <p className="font-heading text-[0.92rem] font-semibold text-white">{proCredits.videos}</p>
+                <p className="text-center text-[0.78rem] font-medium text-white/90">{proCredits.total}</p>
+                {/* Two columns joined by a "+": the allowance is one bundle
+                    the user gets in full, not a choice between two options. */}
+                <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-x-2.5">
+                  <div className="flex flex-col items-center text-center text-white">
+                    <ImageIcon className="size-[18px]" />
+                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
+                      {proCredits.images}
+                    </p>
+                  </div>
+                  <span className="font-heading text-[1.1rem] font-semibold text-white/60">+</span>
+                  <div className="flex flex-col items-center text-center text-white">
+                    <VideoIcon className="size-[18px]" />
+                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
+                      {proCredits.videos}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Feature list */}

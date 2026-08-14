@@ -40,13 +40,13 @@ export default function TermsContent() {
       <h3>4.2. Plan Básico</h3>
       <p>El abono mensual del Plan Básico incluye un cupo de <strong>200 créditos por ciclo de facturación</strong>, una (1) marca vinculada y acceso a los formatos de generación habilitados para el plan.</p>
       <p>Los créditos son la unidad de medida del servicio: cada acción de generación consume una cantidad determinada de créditos según la Tabla de Conversión vigente (cláusula 4.6), que se informa al Usuario antes de confirmar cada generación.</p>
-      <p>A título orientativo y sin que ello constituya una garantía de resultado, 200 créditos permiten generar aproximadamente 100 imágenes terminadas o 3 videos de 20 segundos, o cualquier combinación entre ambos.</p>
+      <p>A título orientativo y sin que ello constituya una garantía de resultado, 200 créditos permiten generar aproximadamente 60 imágenes terminadas y 1 video de 20 segundos, o cualquier otra combinación entre ambos formatos.</p>
       <p>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</p>
 
       <h3>4.3. Plan Pro</h3>
       <p>El abono mensual del Plan Pro incluye un cupo de <strong>400 créditos por ciclo de facturación</strong>, hasta <strong>tres (3) marcas vinculadas</strong>, acceso a los modelos Pro de IA, a los formatos de video premium y a la optimización de campañas.</p>
       <p><strong>Los créditos corresponden a la cuenta, no a cada marca</strong>: las tres marcas comparten el mismo cupo mensual.</p>
-      <p>A título orientativo, 400 créditos permiten generar aproximadamente 200 imágenes terminadas o 6 videos de 40 segundos, o cualquier combinación entre ambos.</p>
+      <p>A título orientativo, 400 créditos permiten generar aproximadamente 120 imágenes terminadas y 4 videos de 20 segundos, o cualquier otra combinación entre ambos formatos.</p>
       <p>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</p>
 
       <h3>4.4. Facturación y Pagos</h3>
@@ -166,9 +166,9 @@ export default function TermsContent() {
       </ul>
       <p>Postty queda exento de toda responsabilidad por rechazos, suspensiones de cuenta, o cualquier otra acción tomada por Meta, Google u otras plataformas publicitarias contra el Usuario o sus anuncios. Postty se reserva el derecho de suspender el acceso a la integración con una plataforma si detecta patrones de uso que violen las políticas de dicha plataforma y que puedan poner en riesgo el acceso de Postty a la API correspondiente.</p>
       <h3>8.3. Disponibilidad</h3>
-      <p>Postty no garantiza que el Servicio estará disponible de forma ininterrumpida o libre de errores. Nos reservamos el derecho de realizar mantenimientos, actualizaciones o modificaciones al Servicio sin previo aviso.</p>
+      <p>Postty no garantiza que el Servicio estará disponible de forma ininterrumpida o libre de errores. Postty puede realizar tareas de mantenimiento y actualizaciones técnicas; cuando estas afecten de manera sustancial y desfavorable las prestaciones del plan contratado, rige el preaviso previsto en la cláusula 10.1.</p>
       <h3>8.4. Límites de uso</h3>
-      <p>El Servicio está sujeto a límites de uso (rate limits) por usuario, por minuto y por día, según el plan contratado. Estos límites pueden modificarse en cualquier momento.</p>
+      <p>El Servicio está sujeto a límites técnicos de uso (rate limits) por usuario, por minuto y por día, destinados a preservar la estabilidad de la Plataforma. Estos límites no reducen el cupo de créditos incluido en el plan contratado; cualquier modificación que sí lo afecte se rige por la cláusula 10.1.</p>
 
       <h2>9. Limitación de Responsabilidad</h2>
       <p>En la máxima medida permitida por la ley aplicable:</p>
@@ -186,7 +186,7 @@ export default function TermsContent() {
 
       <h2>11. Terminación</h2>
       <h3>11.1. Por el Usuario</h3>
-      <p>El Usuario puede dejar de utilizar el Servicio y cancelar su cuenta en cualquier momento.</p>
+      <p>El Usuario puede dejar de utilizar el Servicio y dar de baja su suscripción en cualquier momento, conforme al procedimiento de la cláusula 4.8.</p>
       <h3>11.2. Por Postty</h3>
       <p>Postty se reserva el derecho de suspender o cancelar la cuenta de cualquier Usuario que:</p>
       <ul>
