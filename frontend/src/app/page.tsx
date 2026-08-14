@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion, useMotionValue, useScroll, useSpring } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
 import GiftOverlay from "@/components/GiftOverlay";
@@ -60,15 +60,62 @@ const teamMembers = [
   },
 ];
 
-const businessTypes = [
-  { name: "Agencias", emoji: "🏢", top: "8%", left: "4%", rotate: -6 },
-  { name: "Productos digitales", emoji: "🖥️", top: "2%", left: "30%", rotate: 4 },
-  { name: "Fitness", emoji: "💪", top: "4%", left: "62%", rotate: -2 },
-  { name: "Servicios", emoji: "💼", top: "14%", left: "80%", rotate: 5 },
-  { name: "SaaS", emoji: "🚀", top: "72%", left: "2%", rotate: -4 },
-  { name: "Gastronomía", emoji: "🍽️", top: "76%", left: "28%", rotate: -3 },
-  { name: "E-commerce", emoji: "🛍️", top: "74%", left: "56%", rotate: 3 },
-  { name: "Apps móviles", emoji: "📱", top: "70%", left: "80%", rotate: -5 },
+/* Industry pills for BusinessTypesSection. Laid out as staggered rows —
+   the row split is authored, not computed, so the silhouette stays balanced
+   and the middle rows leave a clear channel for the headline. */
+const businessRows: ReadonlyArray<ReadonlyArray<{ name: string; emoji: string }>> = [
+  [
+    { name: "Gastronomía", emoji: "🍽️" },
+    { name: "Indumentaria", emoji: "👗" },
+    { name: "Fitness", emoji: "💪" },
+    { name: "Cafeterías", emoji: "☕" },
+    { name: "Joyería", emoji: "💍" },
+    { name: "Petshop", emoji: "🐶" },
+  ],
+  [
+    { name: "E-commerce", emoji: "🛍️" },
+    { name: "Belleza", emoji: "💄" },
+    { name: "Inmobiliarias", emoji: "🏘️" },
+    { name: "Panadería", emoji: "🥐" },
+    { name: "Barbería", emoji: "💈" },
+    { name: "Turismo", emoji: "✈️" },
+  ],
+  [
+    { name: "SaaS", emoji: "🚀" },
+    { name: "Agencias", emoji: "🏢" },
+    { name: "Deco y muebles", emoji: "🛋️" },
+    { name: "Nutrición", emoji: "🥗" },
+    { name: "Calzado", emoji: "👟" },
+  ],
+  [
+    { name: "Odontología", emoji: "🦷" },
+    { name: "Heladerías", emoji: "🍦" },
+    { name: "Eventos", emoji: "🎉" },
+    { name: "Bazar", emoji: "🍳" },
+  ],
+  [
+    { name: "Gimnasios", emoji: "🏋️" },
+    { name: "Vinotecas", emoji: "🍷" },
+    { name: "Fotografía", emoji: "📷" },
+    { name: "Skincare", emoji: "✨" },
+    { name: "Autos", emoji: "🚗" },
+  ],
+  [
+    { name: "Educación", emoji: "📚" },
+    { name: "Veterinarias", emoji: "🐾" },
+    { name: "Marketing", emoji: "📣" },
+    { name: "Peluquería", emoji: "💇" },
+    { name: "Bicicletas", emoji: "🚲" },
+    { name: "Floristería", emoji: "🌸" },
+  ],
+  [
+    { name: "Apps móviles", emoji: "📱" },
+    { name: "Arquitectura", emoji: "📐" },
+    { name: "Psicología", emoji: "🧠" },
+    { name: "Suplementos", emoji: "💊" },
+    { name: "Librerías", emoji: "📖" },
+    { name: "Seguros", emoji: "🛡️" },
+  ],
 ];
 
 const faqItems = [
@@ -90,7 +137,7 @@ const faqItems = [
   },
   {
     q: "¿Tienen prueba gratuita?",
-    a: "Sí. En la prueba gratuita Postty te genera contenido para tu perfil de Instagram y ads para tu perfil de Meta, sin tarjeta y sin compromiso. Para que salgan lo más personalizados posible conviene conectar tus cuentas de Instagram y Meta; si preferís no conectarlas, Postty igual genera a partir de la URL de tu página web, aunque el resultado es menos personalizado. Después podés elegir un plan y seguir creando.",
+    a: "Sí. En la prueba gratuita Postty te genera 6 ads o posts para tu perfil de Instagram y para tu perfil de Meta, sin tarjeta y sin compromiso. Para que salgan lo más personalizados posible conviene conectar tus cuentas de Instagram y Meta; si preferís no conectarlas, Postty igual genera a partir de la URL de tu página web, aunque el resultado es menos personalizado. Después podés elegir un plan y seguir creando.",
   },
   {
     q: "¿Necesito conectar mis redes para usar Postty?",
@@ -102,7 +149,31 @@ const faqItems = [
   },
   {
     q: "¿Puedo editar mis Ads generados?",
-    a: "Sí. Cada Ad que genera Postty se puede editar. En el plan Basic tenés 1 edit por Ad para ajustar lo que necesites. En el plan Pro, los edits son ilimitados: podés modificar tus Ads todas las veces que quieras hasta que queden perfectos.",
+    a: "Sí. Cada imagen o video que genera Postty se puede editar usando los créditos de tu plan: cada edit cuesta 6 créditos. Así ajustás lo que necesites hasta que quede perfecto, y tus créditos rinden como vos quieras.",
+  },
+  {
+    q: "¿Cómo funcionan los créditos?",
+    a: "Los créditos son la unidad con la que medimos todo lo que generás. Cada acción consume una cantidad distinta según lo que cuesta producirla: una imagen pesa mucho menos que un video, y cada edit cuesta 6 créditos. Antes de confirmar cada generación te mostramos cuántos créditos usa, así siempre sabés en qué los estás gastando.",
+  },
+  {
+    q: "¿Cuántas imágenes y videos puedo hacer por mes?",
+    a: "Depende de cómo repartas tus créditos, y esa es la gracia: los usás como quieras. Basic incluye 240 créditos por mes, equivalentes a 40 imágenes terminadas o 5 videos de 30 segundos. Pro incluye 600 créditos, equivalentes a 120 imágenes o 10 videos, y suma los modelos Pro de video. Podés hacer cualquier mezcla entre las dos cosas.",
+  },
+  {
+    q: "¿Los créditos que no uso se acumulan para el mes siguiente?",
+    a: "No. Los créditos corresponden al mes en curso y se renuevan enteros al empezar cada ciclo de facturación. Por eso conviene elegir el plan que se parezca a tu ritmo real de trabajo: si no estás seguro, escribinos por WhatsApp y te ayudamos a decidir.",
+  },
+  {
+    q: "¿Qué pasa si una generación falla?",
+    a: "No te cobramos los créditos. Si una imagen o un video falla por un problema técnico nuestro o de los modelos de IA, los créditos vuelven automáticamente a tu cuenta.",
+  },
+  {
+    q: "En el plan Pro, ¿cada marca tiene sus propios créditos?",
+    a: "No: los créditos son de la cuenta y las 3 marcas comparten el mismo cupo mensual. Podés usar todos tus créditos en una sola marca un mes y repartirlos entre las tres al siguiente.",
+  },
+  {
+    q: "¿Puedo cambiar de plan cuando quiera?",
+    a: "Sí. Si pasás a un plan superior te acreditamos la diferencia de créditos prorrateada por los días que queden del mes. Si bajás de plan, el cambio se aplica al empezar el ciclo siguiente y mientras tanto conservás los créditos que ya tenías.",
   },
   {
     q: "¿En qué plataformas puedo publicar mis campañas?",
@@ -585,23 +656,36 @@ function PricingSection() {
   const starterFeatures = [
     "Hasta 1 marca",
     "Sin personalización",
-    "Hasta 4 Ads de prueba",
+    "6 ads o posts de prueba",
     "Sin tarjeta de crédito",
   ];
 
+  /* The credit allowance is rendered as an EQUIVALENCE, not a bullet: the
+     total, then the two things it buys with an "o" between them. Images and
+     videos are alternatives for the same pool — a flat list read as two
+     separate quotas, which is the wrong mental model. */
+  const basicCredits = {
+    total: "240 créditos por mes equivalentes a:",
+    images: "40 imágenes terminadas",
+    videos: "5 videos de 30 segundos por mes",
+  };
+
+  const proCredits = {
+    total: "600 créditos por mes equivalentes a:",
+    images: "120 imágenes terminadas",
+    videos: "10 videos de 30 segundos por mes",
+  };
+
   const basicFeatures = [
     "Hasta 1 marca",
-    "Hasta 100 imágenes por mes",
     "Personalización absoluta",
-    "1 edit por imagen",
+    "Edits a 6 créditos",
   ];
 
   const proFeatures = [
-    "Hasta 1 marca",
-    "Hasta 400 imágenes por mes",
+    "Hasta 3 marcas",
     "Personalización absoluta",
-    "Edits infinitos por imagen",
-    "Modelos Pro de IA",
+    "Modelos Pro de video",
     "Optimización de Campañas",
   ];
 
@@ -780,8 +864,11 @@ function PricingSection() {
               </div>
 
               {/* Price — strikethrough + discounted only when the gift
-                  was claimed. Otherwise: plain $87.900 / $73.000 with no
-                  badge or strikethrough. */}
+                  was claimed. Otherwise: plain $87.900 / $79.100 with no
+                  badge or strikethrough. The gift-final prices are the real
+                  targets ($69.900 monthly, per the credits pricing sheet —
+                  deliberately the same as today's charge); the list price is
+                  back-derived from the 20%/30% badges. */}
               <div className="mt-2">
                 {giftDiscountApplied && (
                   <div className="text-[0.85rem] font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
@@ -821,7 +908,17 @@ function PricingSection() {
               </a>
 
               {/* Features — inner glass block */}
+              {/* Credits — its own glass block. No tick here: an allowance
+                  is a quantity, not a yes/no feature like the bullets below. */}
               <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
+                <p className="text-[0.78rem] font-medium text-[#0D1522]/75">{basicCredits.total}</p>
+                <p className="mt-2 font-heading text-[0.92rem] font-semibold text-[#0D1522]">{basicCredits.images}</p>
+                <p className="my-[0.15rem] text-[0.72rem] font-medium text-[#0D1522]/40">o</p>
+                <p className="font-heading text-[0.92rem] font-semibold text-[#0D1522]">{basicCredits.videos}</p>
+              </div>
+
+              {/* Feature list */}
+              <div className="mt-3 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
                 {basicFeatures.map((feat, i) => (
                   <div
                     key={feat}
@@ -884,12 +981,14 @@ function PricingSection() {
               </div>
 
               {/* Price — strikethrough + discounted price only when gift
-                  claimed. Otherwise: plain $249.900 / $199.900 full
-                  price, no strikethrough. */}
+                  claimed. Otherwise: plain $324.900 / $292.900 full
+                  price, no strikethrough. The gift-final prices are the real
+                  targets ($129.900 monthly); the list price is back-derived
+                  from the 60%/70% badges. */}
               <div className="mt-2">
                 {giftDiscountApplied && (
                   <div className="text-[0.85rem] font-semibold text-white/60 line-through decoration-2 decoration-white/70">
-                    $249.900
+                    $324.900
                   </div>
                 )}
                 <div className="mt-1 flex items-baseline gap-2">
@@ -902,8 +1001,8 @@ function PricingSection() {
                     }}
                   >
                     {giftDiscountApplied
-                      ? (billing === "monthly" ? "$99.900" : "$74.900")
-                      : (billing === "monthly" ? "$249.900" : "$224.900")}
+                      ? (billing === "monthly" ? "$129.900" : "$97.900")
+                      : (billing === "monthly" ? "$324.900" : "$292.900")}
                   </span>
                   <span className="text-[0.78rem] font-medium text-white/65">/mes</span>
                 </div>
@@ -911,7 +1010,7 @@ function PricingSection() {
 
               {/* Subtitle */}
               <p className="mt-3 text-[0.78rem] leading-relaxed text-white/85">
-                Optimiza tus campañas
+                Escalá tu marketing al próximo nivel: más marcas, más contenido y campañas que se optimizan solas
               </p>
 
               {/* CTA — chartreuse, only colored CTA on the page */}
@@ -922,8 +1021,8 @@ function PricingSection() {
                   content_ids: ["plan_pro"],
                   content_type: "product",
                   value: giftDiscountApplied
-                    ? (billing === "monthly" ? 99900 : 74900)
-                    : (billing === "monthly" ? 249900 : 224900),
+                    ? (billing === "monthly" ? 129900 : 97900)
+                    : (billing === "monthly" ? 324900 : 292900),
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-medium text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
@@ -933,7 +1032,17 @@ function PricingSection() {
               </a>
 
               {/* Features — inner glass block on the blue */}
+              {/* Credits — its own glass block. No tick here: an allowance
+                  is a quantity, not a yes/no feature like the bullets below. */}
               <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
+                <p className="text-[0.78rem] font-medium text-white/90">{proCredits.total}</p>
+                <p className="mt-2 font-heading text-[0.92rem] font-semibold text-white">{proCredits.images}</p>
+                <p className="my-[0.15rem] text-[0.72rem] font-medium text-white/50">o</p>
+                <p className="font-heading text-[0.92rem] font-semibold text-white">{proCredits.videos}</p>
+              </div>
+
+              {/* Feature list */}
+              <div className="mt-3 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
                 {proFeatures.map((feat, i) => (
                   <div
                     key={feat}
@@ -947,6 +1056,10 @@ function PricingSection() {
                     </div>
                   </div>
                 ))}
+                {/* Credits belong to the account, not to each brand. */}
+                <p className="pt-[0.6rem] text-[0.7rem] leading-relaxed text-white/55">
+                  Los créditos son de la cuenta, no de cada marca. Usalos como quieras.
+                </p>
               </div>
             </motion.div>
           </div>
@@ -1016,144 +1129,96 @@ function PricingSection() {
             </motion.div>
           </div>
         </div>
+
+        {/* Plan-picker escape hatch — glass pill, same language as the
+            header circles. Goes to the business WhatsApp. */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.4 }}
+          className="mt-12 flex justify-center"
+        >
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => trackEvent("Lead", { content_name: "pricing_whatsapp_help" })}
+            className="inline-flex items-center gap-2.5 rounded-full border border-white/70 bg-white/45 px-6 py-3 text-sm font-medium text-[#0D1522] shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/65 sm:text-base"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413" />
+            </svg>
+            <span>
+              ¿No sabés qué plan te conviene?{" "}
+              <span className="font-semibold">Mandanos un mensaje al WhatsApp</span>
+            </span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+          </a>
+        </motion.div>
       </div>
     </section>
   );
 }
 
 function BusinessTypesSection() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    setMousePos({ x: e.clientX, y: e.clientY });
-  }, []);
-  const handleMouseLeave = useCallback(() => {
-    setMousePos({ x: 0, y: 0 });
-  }, []);
-
   return (
-    <section className="px-4 py-28" onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}>
-      <div className="relative mx-auto max-w-5xl">
-        <div className="relative mx-auto min-h-[200px] md:min-h-[420px]">
-          {businessTypes.map((biz, i) => (
-            <RepelPill key={biz.name} biz={biz} i={i} mousePos={mousePos} />
-          ))}
-
-          <div className="pointer-events-none relative z-10 flex min-h-[200px] items-center justify-center md:min-h-[420px]">
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="font-heading text-center text-4xl font-semibold leading-tight sm:text-5xl md:text-6xl"
+    <section className="overflow-hidden px-4 py-24 md:py-32">
+      <div className="relative mx-auto max-w-6xl">
+        {/* Pill field — staggered rows, alternating offsets. Rows are wider
+            than the viewport on purpose so the field bleeds past both edges
+            and reads as a crowd rather than a list. */}
+        <div
+          aria-hidden="true"
+          className="flex flex-col items-center gap-2.5 sm:gap-3"
+        >
+          {businessRows.map((row, r) => (
+            <div
+              key={r}
+              className="flex shrink-0 gap-2.5 sm:gap-3"
+              /* Alternating nudge, deterministic per row — no randomness, so
+                 SSR and client agree. */
+              style={{ transform: `translateX(${(r % 2 === 0 ? -1 : 1) * (18 + (r % 3) * 22)}px)` }}
             >
-              Funciona para cualquier
-              <br />
-              tipo de negocio
-            </motion.h2>
-          </div>
+              {row.map((biz) => (
+                <div
+                  key={biz.name}
+                  className="group flex shrink-0 cursor-default items-center gap-2 rounded-full border border-white/70 bg-white/55 px-3.5 py-2.5 shadow-[0_6px_24px_rgba(13,21,34,0.07),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-xl backdrop-saturate-150 transition duration-300 ease-out hover:scale-[1.14] hover:bg-white/80 hover:shadow-[0_12px_36px_rgba(13,21,34,0.12),inset_0_1px_0_rgba(255,255,255,0.95)] sm:gap-2.5 sm:px-5 sm:py-3"
+                >
+                  <span className="text-base leading-none sm:text-lg">{biz.emoji}</span>
+                  <span className="whitespace-nowrap text-xs font-medium text-[#0D1522]/70 transition-colors duration-300 group-hover:text-[#0D1522] sm:text-[15px]">
+                    {biz.name}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
 
-          <div className="mt-3 flex flex-wrap justify-center gap-2 md:hidden">
-            {businessTypes.map((biz, i) => (
-              <motion.div
-                key={biz.name}
-                animate={{ y: [0, -4, 0] }}
-                transition={{ duration: 2.5 + i * 0.3, repeat: Infinity, ease: "easeInOut" }}
-                className="flex items-center gap-2 rounded-2xl bg-white px-3 py-2 shadow-[0_2px_12px_rgba(0,0,0,0.05)]"
-              >
-                <span className="text-base">{biz.emoji}</span>
-                <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
-              </motion.div>
-            ))}
-          </div>
+        {/* Headline — floats over the field. The radial wash behind it is
+            what keeps it readable: it fades the pills out toward the centre
+            instead of dimming the whole field. */}
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(50% 38% at 50% 50%, var(--background) 42%, color-mix(in srgb, var(--background) 88%, transparent) 68%, transparent 100%)",
+            }}
+          />
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="font-heading relative text-center text-3xl font-semibold leading-tight tracking-tight text-[#0D1522] sm:text-5xl md:text-6xl"
+          >
+            Funciona para cualquier
+            <br />
+            tipo de negocio
+          </motion.h2>
         </div>
       </div>
     </section>
-  );
-}
-
-function RepelPill({ biz, i, mousePos }: { biz: typeof businessTypes[0]; i: number; mousePos: { x: number; y: number } }) {
-  const pillRef = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 130, damping: 18 });
-  const springY = useSpring(y, { stiffness: 130, damping: 18 });
-
-  // Deterministic per-pill randomness (seeded by index) so SSR matches the client
-  // and each pill drifts on its own rhythm — no synchronized bobbing.
-  const seed = (n: number) => {
-    const v = Math.sin((i + 1) * n * 12.9898) * 43758.5453;
-    return v - Math.floor(v); // 0..1
-  };
-  const xAmp = 24 + seed(1) * 22;       // 24..46 px
-  const yAmp = 20 + seed(2) * 22;       // 20..42 px
-  const rotAmp = 4 + seed(3) * 5;        // 4..9 deg
-  const duration = 5.5 + seed(4) * 3.5;  // 5.5..9 s
-  const phase = seed(5) * 4;             // 0..4 s start delay so they desync
-
-  useEffect(() => {
-    if (!pillRef.current) return;
-    // Mouse left the section → release the repel offset back to neutral.
-    if (mousePos.x === 0 && mousePos.y === 0) {
-      x.set(0);
-      y.set(0);
-      return;
-    }
-    const rect = pillRef.current.getBoundingClientRect();
-    const pillCenterX = rect.left + rect.width / 2;
-    const pillCenterY = rect.top + rect.height / 2;
-    const dx = pillCenterX - mousePos.x;
-    const dy = pillCenterY - mousePos.y;
-    const dist = Math.sqrt(dx * dx + dy * dy);
-    const radius = 220;
-
-    if (dist < radius) {
-      const force = (1 - dist / radius) * 80;
-      const angle = Math.atan2(dy, dx);
-      x.set(Math.cos(angle) * force);
-      y.set(Math.sin(angle) * force);
-    } else {
-      x.set(0);
-      y.set(0);
-    }
-  }, [mousePos, x, y]);
-
-  return (
-    <motion.div
-      ref={pillRef}
-      initial={{ opacity: 0, scale: 0.7 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ delay: i * 0.08, duration: 0.5 }}
-      className="absolute hidden md:flex"
-      style={{ top: biz.top, left: biz.left, x: springX, y: springY }}
-    >
-      {/* Idle drift — animates x/y/rotate independently from the repel layer above.
-          The two transforms compose: outer = mouse repel, inner = autonomous drift. */}
-      <motion.div
-        animate={{
-          x: [0, xAmp, -xAmp * 0.7, xAmp * 0.4, 0],
-          y: [0, -yAmp, -yAmp * 0.4, yAmp * 0.6, 0],
-          rotate: [
-            biz.rotate,
-            biz.rotate + rotAmp,
-            biz.rotate - rotAmp * 0.7,
-            biz.rotate + rotAmp * 0.4,
-            biz.rotate,
-          ],
-        }}
-        transition={{
-          duration,
-          delay: phase,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-        className="cursor-default"
-      >
-        <div className="flex items-center gap-2.5 rounded-2xl bg-white px-5 py-3 shadow-[0_4px_20px_rgba(0,0,0,0.06),0_0_0_1px_rgba(0,0,0,0.03)]">
-          <span className="text-2xl drop-shadow-[0_2px_4px_rgba(0,0,0,0.12)]">{biz.emoji}</span>
-          <span className="text-sm font-semibold text-[#0D1522]/70">{biz.name}</span>
-        </div>
-      </motion.div>
-    </motion.div>
   );
 }
 
@@ -1234,7 +1299,6 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [legalModal, setLegalModal] = useState<"tyc" | "privacy" | null>(null);
   const [showHeroCTA, setShowHeroCTA] = useState(false);
-  const [showHeroPopups, setShowHeroPopups] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const appUrl = useAppUrl();
 
@@ -1317,7 +1381,6 @@ export default function Home() {
               WhatsApp + Iniciar sesión for compactness). */}
           <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
             <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
-            <a href="#testimonios" className="whitespace-nowrap transition hover:text-[#0D1522]">Clientes</a>
             <a href="#pricing" className="whitespace-nowrap transition hover:text-[#0D1522]">Precios</a>
           </nav>
           {/* WhatsApp glass circle — moved OUT of the desktop-only nav
@@ -1411,6 +1474,15 @@ export default function Home() {
           <video
             key={isMobile ? "mobile" : "desktop"}
             src={isMobile ? "/hero-mobile.mp4" : "/hero.mp4"}
+            /* Poster = the video's OWN closing frame, the one carrying "En
+               2026, dejale el marketing a Postty." Two reasons it's that
+               frame and not a designed image: it's the payoff, so ad traffic
+               reads the promise on the first pixel instead of the sepia
+               opening shot; and it's the same set and person as the video,
+               so there's no visual jump when playback finally starts.
+               Matters most inside the Instagram in-app browser, where a
+               3 MB video on mobile data takes seconds to buffer. */
+            poster={isMobile ? "/hero-poster-mobile.webp" : "/hero-poster.webp"}
             autoPlay
             muted
             playsInline
@@ -1419,15 +1491,6 @@ export default function Home() {
               const video = e.currentTarget;
               if (video.currentTime >= 11 && !showHeroCTA) {
                 setShowHeroCTA(true);
-              }
-              // Desktop: show notification popups in the last 2 seconds
-              if (
-                !isMobile &&
-                video.duration &&
-                video.currentTime >= video.duration - 2 &&
-                !showHeroPopups
-              ) {
-                setShowHeroPopups(true);
               }
               // On mobile, pause 0.5s before the natural end so the final
               // text frame stays visible (otherwise it fades out).
@@ -1442,68 +1505,6 @@ export default function Home() {
             className="absolute inset-0 h-full w-full object-cover"
           />
         )}
-        {/* ── Hero notification popups — desktop only.
-            Glass pills with circular avatar + quoted pain point.
-            Triggered by video time (last 2 seconds), staggered, then stay static. ── */}
-        {/* ── Hero notification popups — desktop only.
-            Outer div = absolute position + mouse parallax via CSS vars.
-            Inner motion.div = entrance animation + glass styling.
-            María above the title, Juan top-right. ── */}
-        {/* Floating testimonial pills — stacked vertically, low in the
-            hero (almost touching the bottom edge). Order top → bottom:
-            Juan (biggest) → Pilar (medium) → Sofía (smallest). Each
-            slides up + fades in with sequential delays
-            (0s / 0.5s / 1.0s). */}
-        <AnimatePresence>
-          {showHeroPopups && !isMobile && (
-            <div className="pointer-events-none absolute inset-x-0 bottom-[1%] z-20 hidden flex-col items-center gap-2 md:flex md:bottom-[3%]">
-              {/* TOP — Juan, BIGGEST. z-10 so it sits IN FRONT of Sofía
-                  who overlaps slightly from below. */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                className="relative z-10 flex items-center gap-3.5 rounded-full bg-white/10 px-7 py-4 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
-              >
-                <Image
-                  src="https://i.pravatar.cc/80?img=12"
-                  alt="Juan"
-                  width={52}
-                  height={52}
-                  className="h-13 w-13 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
-                  style={{ width: 52, height: 52 }}
-                />
-                <div>
-                  <p className="text-base font-medium text-white">Juan, 32 años, Dueño de una marca de ropa</p>
-                  <p className="text-sm text-white/80">&ldquo;Cansado de pagar agencias de marketing que no rinden&rdquo;</p>
-                </div>
-              </motion.div>
-
-              {/* MIDDLE — Sofía (formerly Pilar — kept the original
-                  Pilar age/role/quote, only swapped the NAME and PHOTO).
-                  -mt-4 makes this pill sit slightly behind Juan, z-0
-                  pushes it behind in the stacking order. */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5, duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
-                className="relative z-0 -mt-4 flex items-center gap-3 rounded-full bg-white/10 px-6 py-3.5 shadow-[0_8px_32px_rgba(0,0,0,0.15),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-xl backdrop-saturate-150"
-              >
-                <Image
-                  src="https://i.pravatar.cc/80?img=47"
-                  alt="Sofía"
-                  width={44}
-                  height={44}
-                  className="h-11 w-11 inline-flex shrink-0 items-center justify-center rounded-full leading-none object-cover"
-                />
-                <div>
-                  <p className="text-sm font-medium text-white">Sofía, 37 años, Community Manager</p>
-                  <p className="text-xs text-white/80">&ldquo;Siempre me quedo atrás con las tendencias de Meta&rdquo;</p>
-                </div>
-              </motion.div>
-            </div>
-          )}
-        </AnimatePresence>
 
         <AnimatePresence>
           {showHeroCTA && (
@@ -1774,7 +1775,6 @@ export default function Home() {
             <div>
               <p className="mb-2 font-medium text-[#0D1522]/40">Empresa</p>
               <a href="#como-funciona" className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">Cómo funciona</a>
-              <a href="#testimonios" className="mt-1 block text-[#0D1522]/60 transition hover:text-[#0D1522]">Testimonios</a>
             </div>
             <div>
               <p className="mb-2 font-medium text-[#0D1522]/40">Recursos</p>

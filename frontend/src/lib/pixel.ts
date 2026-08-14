@@ -21,10 +21,13 @@ const CAPI_ENDPOINT =
   process.env.NEXT_PUBLIC_META_CAPI_ENDPOINT ||
   'https://app.posttyai.com/api/pixel-event';
 
-// QA TESTING — hardcoded fallback so events route to Meta Test Events panel.
-// ⚠️ REMOVE the fallback ('TEST17139') once Test Events validation passes; otherwise
-// every production conversion is flagged as test and Meta won't optimize against them.
-const TEST_EVENT_CODE = process.env.NEXT_PUBLIC_META_TEST_EVENT_CODE || 'TEST17139';
+// Meta Test Events. Opt-IN only: with a hardcoded fallback here (there used to
+// be one, 'TEST17139') every production conversion shipped a test_event_code,
+// so Meta filed them under Test Events and never optimised delivery against
+// them — real ad spend against events the algorithm was ignoring. Leave this
+// unset in prod; set NEXT_PUBLIC_META_TEST_EVENT_CODE locally when you need
+// the Test Events panel.
+const TEST_EVENT_CODE = process.env.NEXT_PUBLIC_META_TEST_EVENT_CODE || '';
 
 const APP_BASE_URL = 'https://app.posttyai.com';
 const FBCLID_TTL_MS = 90 * 24 * 60 * 60 * 1000;

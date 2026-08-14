@@ -1,7 +1,7 @@
 export default function TermsContent() {
   return (
     <>
-      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 21 de julio de 2026</p>
+      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 13 de agosto de 2026</p>
 
       <h2>1. Introducción</h2>
       <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias multi-canal asistida por inteligencia artificial, con soporte para Meta Ads y Google Ads (integración con TikTok Ads planificada), operada bajo la marca registrada &quot;Postty&quot;, titularidad de Darío Soria (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;el Operador&quot;), con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
@@ -32,30 +32,23 @@ export default function TermsContent() {
       <p>Postty ofrece un plan gratuito con las siguientes limitaciones:</p>
       <ul>
         <li>1 marca (URL de tienda) vinculada a la cuenta.</li>
-        <li>Hasta 4 piezas publicitarias generadas por prueba.</li>
+        <li>Hasta 6 piezas publicitarias (ads o posts) generadas por prueba.</li>
         <li>La prueba genera contenido para el perfil de Instagram y anuncios para el perfil de Meta del Usuario. Para obtener resultados más personalizados, el Usuario puede conectar sus cuentas de Instagram y Meta; de no conectarlas, la generación se basa en la URL de su sitio web, con un menor grado de personalización.</li>
         <li>Límites diarios en generación de Brand DNA, campañas y ediciones.</li>
         <li>La URL de la tienda utilizada en la prueba gratuita queda vinculada a la cuenta (&quot;brand lock&quot;).</li>
       </ul>
       <h3>4.2. Plan Básico</h3>
-      <ul>
-        <li>1 marca vinculada.</li>
-        <li>Hasta 100 piezas publicitarias (imágenes) generadas por mes.</li>
-        <li>1 edición por pieza publicitaria.</li>
-        <li>Hasta 4 borradores de campañas guardados.</li>
-        <li>Límites diarios ampliados en generación de campañas y ediciones.</li>
-        <li>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</li>
-      </ul>
+      <p>El abono mensual del Plan Básico incluye un cupo de <strong>240 créditos por ciclo de facturación</strong>, una (1) marca vinculada y acceso a los formatos de generación habilitados para el plan.</p>
+      <p>Los créditos son la unidad de medida del servicio: cada acción de generación consume una cantidad determinada de créditos según la Tabla de Conversión vigente (cláusula 4.6), que se informa al Usuario antes de confirmar cada generación.</p>
+      <p>A título orientativo y sin que ello constituya una garantía de resultado, 240 créditos permiten generar aproximadamente 40 imágenes terminadas o 5 videos de 30 segundos, o cualquier combinación entre ambos.</p>
+      <p>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</p>
+
       <h3>4.3. Plan Pro</h3>
-      <ul>
-        <li>1 marca vinculada.</li>
-        <li>Hasta 400 piezas publicitarias (imágenes) generadas por mes.</li>
-        <li>Ediciones ilimitadas por pieza publicitaria.</li>
-        <li>Acceso a los modelos Pro de IA y a la optimización de campañas.</li>
-        <li>Hasta 20 borradores de campañas guardados.</li>
-        <li>Límites diarios significativamente mayores.</li>
-        <li>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</li>
-      </ul>
+      <p>El abono mensual del Plan Pro incluye un cupo de <strong>600 créditos por ciclo de facturación</strong>, hasta <strong>tres (3) marcas vinculadas</strong>, acceso a los modelos Pro de IA, a los formatos de video premium y a la optimización de campañas.</p>
+      <p><strong>Los créditos corresponden a la cuenta, no a cada marca</strong>: las tres marcas comparten el mismo cupo mensual.</p>
+      <p>A título orientativo, 600 créditos permiten generar aproximadamente 120 imágenes terminadas o 10 videos de 30 segundos, o cualquier combinación entre ambos.</p>
+      <p>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</p>
+
       <h3>4.4. Facturación y Pagos</h3>
       <p>Los pagos se procesan a través de MercadoPago. Al suscribirse a un plan pago, el Usuario:</p>
       <ul>
@@ -63,8 +56,34 @@ export default function TermsContent() {
         <li>Acepta los Términos y Condiciones de MercadoPago.</li>
         <li>Entiende que Postty no almacena datos de tarjetas de crédito o débito; estos son gestionados exclusivamente por MercadoPago.</li>
       </ul>
-      <h3>4.5. Cancelación</h3>
-      <p>El Usuario puede cancelar su suscripción en cualquier momento. La cancelación será efectiva al finalizar el período de facturación vigente. No se otorgan reembolsos por períodos parciales ya cobrados, salvo que la legislación aplicable disponga lo contrario.</p>
+
+      <h3>4.5. Créditos: naturaleza, consumo y vigencia</h3>
+      <p><strong>4.5.1. Naturaleza.</strong> Los créditos son una unidad de medida interna del servicio contratado. <strong>No constituyen dinero, saldo, moneda ni instrumento de valor</strong>, no son convertibles en dinero, no son transferibles entre cuentas ni entre usuarios, y no generan intereses ni derecho a devolución en efectivo.</p>
+      <p><strong>4.5.2. Consumo.</strong> Los créditos se debitan al momento de entregarse el resultado de la generación. Si una generación falla por causas técnicas atribuibles a Postty o a sus proveedores de inteligencia artificial, <strong>los créditos correspondientes no se debitan o son reintegrados automáticamente</strong> al cupo del ciclo en curso. Las ediciones, variantes de tamaño solicitadas por el Usuario y regeneraciones consumen créditos conforme a la Tabla de Conversión.</p>
+      <p><strong>4.5.3. Vigencia y no acumulación.</strong> El cupo de créditos corresponde al ciclo de facturación en curso y se renueva íntegramente al inicio de cada ciclo. Los créditos no consumidos no se acumulan para períodos posteriores. Esta condición forma parte de la definición del servicio contratado y de su precio, y se informa al Usuario en el momento de la contratación.</p>
+      <p><strong>4.5.4. Sin conversión en dinero.</strong> Los créditos no consumidos no dan derecho a reembolso, compensación ni crédito a favor, salvo en los supuestos de revocación previstos en la cláusula 4.7.</p>
+      <p><strong>4.5.5. Cambio de plan.</strong> Al pasar a un plan superior durante un ciclo en curso, el Usuario recibe la diferencia de créditos correspondiente al nuevo plan, prorrateada por los días restantes del ciclo. Al pasar a un plan inferior, el cambio se hace efectivo al inicio del ciclo siguiente y el cupo vigente se mantiene hasta esa fecha.</p>
+
+      <h3>4.6. Tabla de Conversión</h3>
+      <p><strong>4.6.1.</strong> La cantidad de créditos que consume cada acción se muestra al Usuario en la interfaz, antes de confirmar cada generación.</p>
+      <p><strong>4.6.2. Vigencia por ciclo.</strong> La Tabla de Conversión vigente al inicio de cada ciclo de facturación rige durante todo ese ciclo. Postty no modifica el costo en créditos de las acciones dentro de un ciclo ya contratado.</p>
+      <p><strong>4.6.3. Cambios para ciclos futuros.</strong> Postty puede actualizar la Tabla de Conversión para ciclos futuros cuando varíen los costos de los proveedores de inteligencia artificial. En tal caso:</p>
+      <ul>
+        <li>Se notificará al Usuario de forma individual y directa por correo electrónico, con una antelación no menor a treinta (30) días corridos a su entrada en vigencia.</li>
+        <li>La notificación indicará expresamente qué acción cambia y cuál es su nuevo costo en créditos, sin remitir al Usuario a consultar el sitio web para conocer el alcance del cambio.</li>
+        <li>La notificación informará el derecho del Usuario a rescindir la suscripción sin cargo alguno antes de la entrada en vigencia del cambio.</li>
+        <li>Los créditos ya acreditados al Usuario conservan la Tabla de Conversión vigente al momento de su acreditación.</li>
+      </ul>
+
+      <h3>4.7. Derecho de revocación (arrepentimiento)</h3>
+      <p><strong>4.7.1.</strong> Conforme al art. 34 de la Ley 24.240 y a los arts. 1110 y siguientes del Código Civil y Comercial, el Usuario puede <strong>revocar la contratación dentro de los DIEZ (10) DÍAS CORRIDOS</strong> contados desde la celebración del contrato, <strong>sin expresión de causa y sin costo alguno</strong>. Este derecho es <strong>irrenunciable</strong>.</p>
+      <p><strong>4.7.2. Cómo ejercerlo.</strong> Desde el <strong>&quot;BOTÓN DE ARREPENTIMIENTO&quot;</strong> disponible en la página principal de Postty, sin necesidad de registro previo ni trámite adicional. Postty acusará recibo e informará el código de identificación de la solicitud dentro de las 24 horas y por el mismo medio.</p>
+      <p><strong>4.7.3. Efectos.</strong> Si el Usuario no consumió créditos durante el período, se reintegra el importe abonado en su totalidad, sin retención ni cargo de ningún tipo. Si el Usuario consumió parte de los créditos, el reintegro es proporcional a los créditos no consumidos. No se aplica cargo administrativo, gasto de gestión ni penalidad alguna.</p>
+      <p><strong>4.7.4. Supuestos excluidos.</strong> Conforme al art. 3 de la Disposición 954/2025 y al art. 1116 del Código Civil y Comercial, el derecho de revocación no alcanza a los contenidos digitales ya generados y puestos a disposición del Usuario para su descarga y uso permanente, ni a los servicios efectivamente consumidos, por tratarse de contenido personalizado producido según las especificaciones del Usuario.</p>
+
+      <h3>4.8. Baja del servicio</h3>
+      <p>El Usuario puede dar de baja su suscripción en cualquier momento desde el <strong>&quot;BOTÓN DE BAJA DE SERVICIO&quot;</strong> disponible en la página principal de Postty, sin necesidad de registro previo ni trámite adicional más allá de la verificación de identidad razonable prevista en la Disposición 3/2026.</p>
+      <p>Postty informará el código de identificación de la solicitud dentro de las 24 horas y por el mismo medio. La baja surte efecto al finalizar el ciclo de facturación en curso, durante el cual el Usuario conserva el acceso y el cupo de créditos vigente.</p>
 
       <h2>5. Uso Aceptable</h2>
       <p>El Usuario se compromete a:</p>
@@ -161,9 +180,9 @@ export default function TermsContent() {
 
       <h2>10. Modificaciones</h2>
       <h3>10.1. Modificaciones al Servicio</h3>
-      <p>Postty se reserva el derecho de modificar, suspender o discontinuar cualquier aspecto del Servicio en cualquier momento, incluyendo funcionalidades, planes, precios y límites de uso.</p>
+      <p>Postty puede incorporar, modificar o discontinuar funcionalidades del Servicio. Cuando una modificación afecte de manera sustancial y desfavorable las prestaciones incluidas en el plan contratado, se notificará al Usuario de forma individual y directa con no menos de treinta (30) días corridos de antelación, y el Usuario podrá rescindir sin cargo antes de su entrada en vigencia. Las modificaciones no se aplican retroactivamente al ciclo de facturación en curso.</p>
       <h3>10.2. Modificaciones a los Términos</h3>
-      <p>Postty podrá actualizar estos Términos en cualquier momento. Las modificaciones serán notificadas al Usuario a través de la Plataforma o por correo electrónico. El uso continuado del Servicio después de la notificación constituye aceptación de los Términos modificados.</p>
+      <p>Postty podrá actualizar estos Términos. Las modificaciones sustanciales se notificarán de forma individual y directa por correo electrónico con no menos de treinta (30) días corridos de antelación, indicando el contenido concreto del cambio. El Usuario podrá rechazarlas rescindiendo la suscripción sin cargo antes de su entrada en vigencia.</p>
 
       <h2>11. Terminación</h2>
       <h3>11.1. Por el Usuario</h3>
@@ -178,7 +197,7 @@ export default function TermsContent() {
       <p>La terminación no exime al Usuario de las obligaciones adquiridas durante el período de vigencia.</p>
 
       <h2>12. Ley Aplicable y Jurisdicción</h2>
-      <p>Estos Términos se regirán e interpretarán conforme a las leyes de la República Argentina. Cualquier controversia derivada de estos Términos será sometida a la jurisdicción de los tribunales ordinarios competentes del Partido de Vicente López, Provincia de Buenos Aires, renunciando las partes a cualquier otro fuero que pudiera corresponderles.</p>
+      <p>Estos Términos se rigen por las leyes de la República Argentina. Conforme al art. 1109 del Código Civil y Comercial, en los contratos celebrados a distancia por medios electrónicos se considera lugar de cumplimiento aquel en el que el Usuario recibió o debió recibir la prestación, y esa jurisdicción es la aplicable. Postty no impone prórroga de jurisdicción alguna.</p>
 
       <h2>13. Contacto</h2>
       <p>Para cualquier consulta, reclamo o solicitud relacionada con estos Términos o el Servicio, el Usuario puede comunicarse a:</p>
