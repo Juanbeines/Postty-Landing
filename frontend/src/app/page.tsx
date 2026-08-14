@@ -149,15 +149,15 @@ const faqItems = [
   },
   {
     q: "¿Puedo editar mis Ads generados?",
-    a: "Sí. Cada imagen o video que genera Postty se puede editar usando los créditos de tu plan: cada edit cuesta 6 créditos. Así ajustás lo que necesites hasta que quede perfecto, y tus créditos rinden como vos quieras.",
+    a: "Sí. Cada imagen o video que genera Postty se puede editar usando los créditos de tu plan, y editar consume bastante menos que generar de cero. Así ajustás lo que necesites hasta que quede perfecto, y tus créditos rinden como vos quieras.",
   },
   {
     q: "¿Cómo funcionan los créditos?",
-    a: "Los créditos son la unidad con la que medimos todo lo que generás. Cada acción consume una cantidad distinta según lo que cuesta producirla: una imagen pesa mucho menos que un video, y cada edit cuesta 6 créditos. Antes de confirmar cada generación te mostramos cuántos créditos usa, así siempre sabés en qué los estás gastando.",
+    a: "Los créditos son la unidad con la que medimos todo lo que generás. Cada acción consume una cantidad distinta según lo que cuesta producirla: una imagen pesa mucho menos que un video, y editar cuesta bastante menos que generar de cero. Antes de confirmar cada generación te mostramos cuántos créditos usa, así siempre sabés en qué los estás gastando.",
   },
   {
     q: "¿Cuántas imágenes y videos puedo hacer por mes?",
-    a: "Depende de cómo repartas tus créditos, y esa es la gracia: los usás como quieras. Basic incluye 240 créditos por mes, equivalentes a 40 imágenes terminadas o 5 videos de 30 segundos. Pro incluye 600 créditos, equivalentes a 120 imágenes o 10 videos, y suma los modelos Pro de video. Podés hacer cualquier mezcla entre las dos cosas.",
+    a: "Depende de cómo repartas tus créditos, y esa es la gracia: los usás como quieras. Basic incluye 200 créditos por mes, equivalentes a 100 imágenes terminadas o 3 videos de 20 segundos. Pro incluye 400 créditos, equivalentes a 200 imágenes o 6 videos de 40 segundos, y suma los modelos Pro de video. Podés hacer cualquier mezcla entre las dos cosas.",
   },
   {
     q: "¿Los créditos que no uso se acumulan para el mes siguiente?",
@@ -665,21 +665,21 @@ function PricingSection() {
      videos are alternatives for the same pool — a flat list read as two
      separate quotas, which is the wrong mental model. */
   const basicCredits = {
-    total: "240 créditos por mes equivalentes a:",
-    images: "40 imágenes terminadas",
-    videos: "5 videos de 30 segundos por mes",
+    total: "200 créditos por mes equivalentes a:",
+    images: "100 imágenes terminadas",
+    videos: "3 videos de 20 segundos",
   };
 
   const proCredits = {
-    total: "600 créditos por mes equivalentes a:",
-    images: "120 imágenes terminadas",
-    videos: "10 videos de 30 segundos por mes",
+    total: "400 créditos por mes equivalentes a:",
+    images: "200 imágenes terminadas",
+    videos: "6 videos de 40 segundos",
   };
 
   const basicFeatures = [
     "Hasta 1 marca",
     "Personalización absoluta",
-    "Edits a 6 créditos",
+    "Edición de imágenes",
   ];
 
   const proFeatures = [

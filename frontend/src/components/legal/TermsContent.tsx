@@ -38,15 +38,15 @@ export default function TermsContent() {
         <li>La URL de la tienda utilizada en la prueba gratuita queda vinculada a la cuenta (&quot;brand lock&quot;).</li>
       </ul>
       <h3>4.2. Plan Básico</h3>
-      <p>El abono mensual del Plan Básico incluye un cupo de <strong>240 créditos por ciclo de facturación</strong>, una (1) marca vinculada y acceso a los formatos de generación habilitados para el plan.</p>
+      <p>El abono mensual del Plan Básico incluye un cupo de <strong>200 créditos por ciclo de facturación</strong>, una (1) marca vinculada y acceso a los formatos de generación habilitados para el plan.</p>
       <p>Los créditos son la unidad de medida del servicio: cada acción de generación consume una cantidad determinada de créditos según la Tabla de Conversión vigente (cláusula 4.6), que se informa al Usuario antes de confirmar cada generación.</p>
-      <p>A título orientativo y sin que ello constituya una garantía de resultado, 240 créditos permiten generar aproximadamente 40 imágenes terminadas o 5 videos de 30 segundos, o cualquier combinación entre ambos.</p>
+      <p>A título orientativo y sin que ello constituya una garantía de resultado, 200 créditos permiten generar aproximadamente 100 imágenes terminadas o 3 videos de 20 segundos, o cualquier combinación entre ambos.</p>
       <p>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</p>
 
       <h3>4.3. Plan Pro</h3>
-      <p>El abono mensual del Plan Pro incluye un cupo de <strong>600 créditos por ciclo de facturación</strong>, hasta <strong>tres (3) marcas vinculadas</strong>, acceso a los modelos Pro de IA, a los formatos de video premium y a la optimización de campañas.</p>
+      <p>El abono mensual del Plan Pro incluye un cupo de <strong>400 créditos por ciclo de facturación</strong>, hasta <strong>tres (3) marcas vinculadas</strong>, acceso a los modelos Pro de IA, a los formatos de video premium y a la optimización de campañas.</p>
       <p><strong>Los créditos corresponden a la cuenta, no a cada marca</strong>: las tres marcas comparten el mismo cupo mensual.</p>
-      <p>A título orientativo, 600 créditos permiten generar aproximadamente 120 imágenes terminadas o 10 videos de 30 segundos, o cualquier combinación entre ambos.</p>
+      <p>A título orientativo, 400 créditos permiten generar aproximadamente 200 imágenes terminadas o 6 videos de 40 segundos, o cualquier combinación entre ambos.</p>
       <p>Precio: según lo indicado en la página de precios de la Plataforma (con opción de facturación mensual o anual).</p>
 
       <h3>4.4. Facturación y Pagos</h3>
