@@ -15,7 +15,7 @@
  *       centered → left automatically (no x-pixel calculations).
  *     - "Ver regalo" is absolute on top of the gift; it fades out on
  *       step → 2 via AnimatePresence.
- *     - "60% OFF" pill mounts as a flex sibling of the gift at step 2,
+ *     - "50% OFF" pill mounts as a flex sibling of the gift at step 2,
  *       sliding in from the right with a slight delay so the gift's
  *       layout shift can lead the choreography.
  *
@@ -55,7 +55,19 @@ import Confetti from "@/components/Confetti";
 
 const SESSION_KEY = "postty_gift_overlay_seen";
 const TRIGGER_SELECTOR = "#pricing";
-const TRIGGER_DELAY_MS = 8000;
+/* Two triggers race; whichever resolves first opens the overlay and cancels
+   the other. Both are tuned around one goal: the visitor should be looking at
+   the discounted price, not the list price.
+     - PRICING_DELAY_MS covers the fast scroller who jumps straight to pricing.
+       One second, just long enough not to feel like a trap door — it used to
+       be 8s, which left them staring at full price the whole time.
+     - PAGE_LOAD_DELAY_MS covers the slow reader who is still up the page. It
+       fires regardless of scroll position so the discount is already applied
+       by the time they arrive. 20s interrupted people mid-carousel, well
+       before they had any reason to care about a discount; 35s lands closer
+       to pricing without waiting so long that it never fires. */
+const PRICING_DELAY_MS = 1000;
+const PAGE_LOAD_DELAY_MS = 35000;
 
 type Step = 0 | 1 | 2; // 0 = hidden
 
@@ -72,11 +84,9 @@ export default function GiftOverlay() {
      them (see the cleanup effect below). */
   const revealTimers = useRef<number[]>([]);
 
-  /* Trigger — when #pricing intersects the viewport, wait TRIGGER_DELAY_MS
-     before opening the overlay. The delay lets the user read pricing for a
-     few seconds (and starts to think about it) before the gift interrupts.
-     If they scroll away during the wait, the timer still completes — the
-     intent is a single, predictable nudge per session. */
+  /* Trigger — a page-load timer and a pricing-visibility timer race each
+     other; the first to fire opens the overlay once and tears the other down.
+     Either way it is a single, predictable nudge per session. */
   useEffect(() => {
     try {
       if (sessionStorage.getItem(SESSION_KEY)) {
@@ -87,38 +97,53 @@ export default function GiftOverlay() {
         return;
       }
     } catch { /* ignore */ }
+
+    let pricingTimer: number | undefined;
+    let observer: IntersectionObserver | undefined;
+    let fired = false;
+
+    const open = () => {
+      if (fired) return;
+      fired = true;
+      // Mark seen before anything else, so a reload mid-animation can't
+      // queue a second run.
+      try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
+      // Whichever timer lost the race must not fire afterwards.
+      window.clearTimeout(loadTimer);
+      if (pricingTimer !== undefined) window.clearTimeout(pricingTimer);
+      observer?.disconnect();
+      setStep(1);
+      // Apply the discount the MOMENT the overlay opens — the gift itself
+      // is the trigger, not the submit. The user gets the discount whether
+      // they submit, close with the X, or just dismiss.
+      // Load-bearing for the confetti: PricingSection's burst reads
+      // giftBadgeRef, and that pill only mounts once the discount is
+      // applied. Deferring this to submit would silently kill it.
+      applyGiftDiscount();
+    };
+
+    const loadTimer = window.setTimeout(open, PAGE_LOAD_DELAY_MS);
+
     const target = document.querySelector<HTMLElement>(TRIGGER_SELECTOR);
-    if (!target) return;
-    let timer: number | undefined;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          // Mark seen immediately so the page reload / rapid re-scroll
-          // can't queue up a second timer.
-          try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
-          timer = window.setTimeout(() => {
-            setStep(1);
-            // Apply the discount the MOMENT the overlay opens — per spec
-            // the gift itself is the trigger, not the submit. The user
-            // gets the discount regardless of whether they submit, close
-            // with the X, or just dismiss.
-            // Load-bearing for the confetti: PricingSection's burst reads
-            // proBadgeRef, and that badge only mounts once the discount is
-            // applied. Deferring this to submit would silently kill it.
-            applyGiftDiscount();
-          }, TRIGGER_DELAY_MS);
-          observer.disconnect();
-        }
-      },
-      // Fires as soon as 10% of the pricing section is visible — on
-      // mobile the section is tall, a higher threshold meant the user
-      // had to scroll deep before the timer even started.
-      { threshold: 0.1 },
-    );
-    observer.observe(target);
+    if (target) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting || pricingTimer !== undefined) return;
+          pricingTimer = window.setTimeout(open, PRICING_DELAY_MS);
+          observer?.disconnect();
+        },
+        // Fires as soon as 10% of the pricing section is visible — on
+        // mobile the section is tall, a higher threshold meant the user
+        // had to scroll deep before the timer even started.
+        { threshold: 0.1 },
+      );
+      observer.observe(target);
+    }
+
     return () => {
-      observer.disconnect();
-      if (timer !== undefined) window.clearTimeout(timer);
+      observer?.disconnect();
+      window.clearTimeout(loadTimer);
+      if (pricingTimer !== undefined) window.clearTimeout(pricingTimer);
     };
   }, []);
 
@@ -205,11 +230,10 @@ export default function GiftOverlay() {
   const handleWhatsAppClick = () => {
     if (!submitted) {
       trackEvent("Lead", {
-        content_category: "gift_overlay",
-        content_ids: ["gift_60pct_off"],
-        content_type: "lead_magnet",
         content_name: "gift_overlay_whatsapp",
-        currency: "ARS",
+        content_category: "contacto_whatsapp",
+        content_ids: ["gift_50pct_off_basic"],
+        content_type: "lead_magnet",
       });
     }
     // The discount was already applied when the overlay opened (per spec —
@@ -238,7 +262,7 @@ export default function GiftOverlay() {
           ¡Te ganaste un regalo!
         </h2>
 
-        {/* Gift + (Ver regalo | 60% OFF pill). Same side-by-side flex-row
+        {/* Gift + (Ver regalo | 50% OFF pill). Same side-by-side flex-row
             at every breakpoint — gift on the left, pill on the right with
             a negative-ml overlap and the gift on top (z-10) at the overlap
             zone. To fit on a 360-wide viewport we shrink the gift to
@@ -284,7 +308,7 @@ export default function GiftOverlay() {
             </AnimatePresence>
           </motion.div>
 
-          {/* 60% OFF pill — step 2 only. Static flex sibling at all
+          {/* 50% OFF pill — step 2 only. Static flex sibling at all
               breakpoints; slides in from the right and overlaps the gift's
               right edge via negative ml. z-0 so the gift (z-10) covers the
               pill at the overlap zone. */}
@@ -301,7 +325,7 @@ export default function GiftOverlay() {
                   background: "linear-gradient(160deg, #1881F1, #49D3F8)",
                 }}
               >
-                {/* "60% OFF" — chartreuse gradient */}
+                {/* "50% OFF" — chartreuse gradient */}
                 <p
                   className="font-heading text-3xl font-semibold leading-none tracking-tight sm:text-6xl"
                   style={{
@@ -311,9 +335,9 @@ export default function GiftOverlay() {
                     backgroundClip: "text",
                   }}
                 >
-                  60% OFF
+                  50% OFF
                 </p>
-                {/* "en plan Pro" — soft white→light-blue gradient */}
+                {/* "en plan Basic" — soft white→light-blue gradient */}
                 <p
                   className="mt-2 text-base font-medium sm:text-xl"
                   style={{
@@ -323,7 +347,7 @@ export default function GiftOverlay() {
                     backgroundClip: "text",
                   }}
                 >
-                  en plan Pro
+                  en plan Basic
                 </p>
               </motion.div>
             )}
@@ -355,7 +379,7 @@ export default function GiftOverlay() {
                     {submitted
                       ? returned
                         ? "¡Volviste! Cerrá y mirá tu nuevo precio"
-                        : "¡Listo! Ya aplicamos tu descuento al plan Pro"
+                        : "¡Listo! Ya aplicamos tu descuento al plan Basic"
                       : "Escribinos por WhatsApp para reclamarlo"}
                   </motion.p>
                 </AnimatePresence>

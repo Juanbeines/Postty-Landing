@@ -17,10 +17,6 @@ import { WHATSAPP_URL } from "@/lib/whatsapp";
 // Untitled UI icons (MIT) — the credit allowance lines.
 import { Image01 as ImageIcon, VideoRecorder as VideoIcon } from "@untitledui/icons";
 
-// Agencia "Agendar reunión" opens this Calendly booking page in a new tab,
-// mirroring the in-app /trial pricing modal (TrialPricingModal.tsx).
-const AGENCY_CALENDLY = "https://calendly.com/soporte-posttyai/30min";
-
 const avatars = [
   "https://i.pravatar.cc/80?img=12",
   "https://i.pravatar.cc/80?img=32",
@@ -123,19 +119,23 @@ const businessRows: ReadonlyArray<ReadonlyArray<{ name: string; emoji: string }>
 const faqItems = [
   {
     q: "¿Qué es Postty?",
-    a: "Postty es tu herramienta todo-en-uno para crear contenido. Genera posts, historias y publicidad que se ven y suenan como si los hubiera hecho tu propio equipo. Sin templates genéricos. Contenido perfecto para tu marca, listo para publicar.",
+    a: "Un agente de marketing con IA. Aprende tu marca una vez y después produce todos los meses el contenido y las campañas que tu negocio necesita: videos, posts, historias y ads, con tu identidad, publicados en Instagram y Meta y optimizados solos. Hace el trabajo que hoy hacés vos, un community manager o una agencia.",
+  },
+  {
+    q: "¿Por qué Postty y no una agencia o un community manager?",
+    a: "Por volumen, velocidad y control. Una agencia te entrega unas pocas piezas por mes, con briefs, rondas de correcciones y tiempos de espera de por medio; Postty produce decenas en el mismo día y las publica sin que tengas que perseguir a nadie. Y si ya contrataste una y no te movió la aguja, acá ves el resultado antes de pagar: la prueba gratuita genera 6 piezas con tu marca real.",
   },
   {
     q: "¿En qué se diferencia Postty de otras herramientas de IA?",
-    a: "Postty fue construido para dueños de negocio reales, no para marketers expertos. Aprende tu estilo, entiende a tus clientes y genera contenido que convierte. No necesitás saber nada de marketing ni diseño.",
+    a: "Postty aprende tu marca una vez y después produce con ese criterio, sin briefs ni idas y vueltas. Un e-commerce que hoy paga una agencia o un community manager saca en una tarde el volumen de contenido y campañas que antes le llevaba un mes.",
   },
   {
-    q: "¿Necesito saber de marketing o diseño para usarlo?",
-    a: "No. Postty fue hecho para personas que quieren resultados rápidos, no una curva de aprendizaje. Subís una foto y listo.",
+    q: "¿Tengo que aprender a usar el Administrador de Meta?",
+    a: "No. Postty crea las piezas, arma la campaña y la publica en tu cuenta publicitaria, y después la optimiza sola. Vos aprobás y ves los resultados; no tenés que entrar al Administrador de Anuncios ni una vez.",
   },
   {
     q: "¿Qué tipo de contenido puede generar Postty?",
-    a: "Todo lo que necesitás para crecer: posts para feed, historias, publicidad pagada, carruseles y más. Siempre alineado con el estilo de tu marca.",
+    a: "Videos, posts para feed, historias, carruseles y ads para campañas pagas. El video es el formato que más pesa hoy en Meta, así que es el que Postty prioriza: Basic incluye 15 por mes y Pro 35. Todo sale con la identidad de tu marca, listo para publicar.",
   },
   {
     q: "¿Tienen prueba gratuita?",
@@ -147,11 +147,11 @@ const faqItems = [
   },
   {
     q: "¿Es adecuado para mi tipo de negocio?",
-    a: "Sí. Postty funciona para cualquier negocio. Es especialmente efectivo para marcas con productos físicos que quieren crear contenido de calidad de forma rápida y consistente.",
+    a: "Donde más rinde es en e-commerce que ya venden y ya invierten en Meta, sobre todo marcas con catálogo de producto físico que necesitan volumen constante de contenido. También funciona bien en servicios y locales con presencia fuerte en redes. Lo que importa no es el rubro: es que ya tengas ventas andando, porque Postty escala lo que funciona.",
   },
   {
     q: "¿Puedo editar mis Ads generados?",
-    a: "Sí. Cada imagen o video que genera Postty se puede editar usando los créditos de tu plan, y editar consume bastante menos que generar de cero. Así ajustás lo que necesites hasta que quede perfecto, y tus créditos rinden como vos quieras.",
+    a: "Sí, las veces que haga falta hasta que quede como querés. En Basic las ediciones usan créditos de tu plan, bastante menos que generar de cero. En Pro la edición de imágenes es sin límite: no te descuenta créditos.",
   },
   {
     q: "¿Cómo funcionan los créditos?",
@@ -159,7 +159,7 @@ const faqItems = [
   },
   {
     q: "¿Cuántas imágenes y videos puedo hacer por mes?",
-    a: "Basic incluye 200 créditos por mes, que alcanzan para 60 imágenes terminadas más 1 video de 20 segundos. Pro incluye 400 créditos: 120 imágenes más 4 videos de 20 segundos, y suma los modelos Pro de video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís entre imágenes y videos como te sirva.",
+    a: "Basic incluye 200 créditos por mes, que alcanzan para 15 videos más 30 imágenes. Pro incluye 400 créditos: 35 videos más 70 imágenes, y suma los modelos Pro de IA para video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís entre imágenes y videos como te sirva.",
   },
   {
     q: "¿Los créditos que no uso se acumulan para el mes siguiente?",
@@ -168,10 +168,6 @@ const faqItems = [
   {
     q: "¿Qué pasa si una generación falla?",
     a: "No te cobramos los créditos. Si una imagen o un video falla por un problema técnico nuestro o de los modelos de IA, los créditos vuelven automáticamente a tu cuenta.",
-  },
-  {
-    q: "En el plan Pro, ¿cada marca tiene sus propios créditos?",
-    a: "No: los créditos son de la cuenta y las 3 marcas comparten el mismo cupo mensual. Podés usar todos tus créditos en una sola marca un mes y repartirlos entre las tres al siguiente.",
   },
   {
     q: "¿Puedo cambiar de plan cuando quiera?",
@@ -291,17 +287,17 @@ const whatPosttyDoesItems: ReadonlyArray<{
 }> = [
   {
     title: "Contenido para redes",
-    subtitle: ["Para que no gastes más tiempo", "pensando tu próximo posteo"],
+    subtitle: ["Se publica solo.", "Vos no subís nada."],
     video: "/videos/feed.mp4",
   },
   {
     title: "Campañas con Ads",
-    subtitle: ["Para que no gastes dinero", "en agencias de marketing"],
+    subtitle: ["Sin abrir el Administrador", "de Meta ni una vez."],
     video: "/videos/campagin.mp4",
   },
   {
     title: "Photoshoot de producto",
-    subtitle: ["Para que no gastes dinero", "en un estudio y fotografía"],
+    subtitle: ["Sin estudio, sin fotógrafo,", "sin esperar la entrega."],
     video: "/videos/product.mp4",
   },
 ];
@@ -376,7 +372,7 @@ function WhatPosttyDoesSection() {
         <div className="relative aspect-[5/7] overflow-hidden rounded-xl md:aspect-[7/6]">
           <Image
             src="/blonde.webp"
-            alt="Dejá de estresarte por las redes y disfrutá tu domingo"
+            alt="Dejá de pagarle a una agencia que no te da resultados"
             fill
             sizes="(max-width: 767px) 100vw, 50vw"
             className="object-cover object-center"
@@ -387,9 +383,9 @@ function WhatPosttyDoesSection() {
               than a heading shout. */}
           <div className="absolute inset-x-0 top-12 px-4 sm:top-20 sm:px-8">
             <h3 className="font-heading text-center text-xl font-medium leading-tight tracking-tight text-[#0D1522] sm:text-2xl md:text-3xl">
-              Dejá de estresarte por las
+              Dejá de pagarle a una agencia
               <br />
-              redes y disfrutá tu domingo
+              que no te da resultados
             </h3>
           </div>
           {/* Glass CTA — vertically centered, with arrow that nudges right on
@@ -397,14 +393,12 @@ function WhatPosttyDoesSection() {
           <a
             href={appUrl}
             onClick={() => trackEvent("Lead", {
-              content_category: "free_trial_section",
-              content_ids: ["free_trial_cta"],
-              content_type: "product",
-              currency: "ARS",
+              content_name: "bento_quiero_probar",
+              content_category: "trial_intent",
             })}
             className="group absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2.5 rounded-full border border-white/60 bg-white/30 px-7 py-3.5 text-base font-semibold text-[#0D1522] shadow-[0_4px_24px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_36px_rgba(13,21,34,0.18),inset_0_1px_0_rgba(255,255,255,0.85)] hover:-translate-y-[calc(50%+2px)]"
           >
-            Probar gratis
+            Quiero probar
             <svg
               width="18"
               height="18"
@@ -583,20 +577,20 @@ function BrandTestimonialsSection() {
 }
 
 function PricingSection() {
-  const [hoveredCard, setHoveredCard] = useState<"starter" | "basic" | "pro" | "agency" | null>("pro");
+  const [hoveredCard, setHoveredCard] = useState<"starter" | "basic" | "pro" | null>("basic");
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   // Whether the user already claimed their gift via the GiftOverlay.
-  // The Pro card only shows the 60% OFF badge + strikethrough when this
-  // is true; otherwise it renders the plain undiscounted price.
+  // Cards only show their OFF pill + strikethrough when this is true;
+  // otherwise they render the plain list price.
   const giftDiscountApplied = useGiftDiscount();
-  // Confetti fires the instant the GiftOverlay closes (X, ESC, Cerrar
-  // link, backdrop click). Origin = Pro 60% OFF badge center. Watching
-  // overlayClosed instead of giftDiscountApplied is important: the
-  // discount is applied the moment the overlay OPENS (so the badge is
-  // already visible "underneath"), but the user can't see the confetti
-  // while the overlay covers the page.
+  // Confetti fires the instant the GiftOverlay closes (X, ESC, Cerrar link).
+  // Origin = the Basic "50% OFF" pill, because the gift now grants Basic's
+  // discount and that is what the overlay announces. Watching overlayClosed
+  // instead of giftDiscountApplied is important: the discount is applied the
+  // moment the overlay OPENS (so the pill is already visible "underneath"),
+  // but the user can't see the confetti while the overlay covers the page.
   const giftOverlayClosed = useGiftOverlayClosed();
-  const proBadgeRef = useRef<HTMLDivElement>(null);
+  const giftBadgeRef = useRef<HTMLDivElement>(null);
   const [confettiOn, setConfettiOn] = useState(false);
   const [confettiOrigin, setConfettiOrigin] = useState({ x: 0, y: 0 });
 
@@ -608,7 +602,7 @@ function PricingSection() {
     // Small delay so the overlay's exit animation can finish and the
     // pricing cards are fully visible before the confetti pops.
     const t = window.setTimeout(() => {
-      const el = proBadgeRef.current;
+      const el = giftBadgeRef.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
       setConfettiOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
@@ -656,57 +650,81 @@ function PricingSection() {
   }, []);
 
   const starterFeatures = [
-    "Hasta 1 marca",
-    "Sin personalización",
     "6 ads o posts de prueba",
+    "Generados con tu marca real",
     "Sin tarjeta de crédito",
   ];
 
-  /* The credit allowance is rendered as an EQUIVALENCE, not a bullet: the
-     total, then the two things it buys with an "o" between them. Images and
-     videos are alternatives for the same pool — a flat list read as two
-     separate quotas, which is the wrong mental model. */
+  /* The credit allowance is rendered as one bundle: the total, then the two
+     things it buys joined by a "+". Deliberately unqualified — no "terminadas",
+     no per-video duration — these are the marketing figures Juan set for the
+     e-commerce repositioning. Note they run ahead of the credit table in
+     Postty-Prod (CREDITS_PER_IMAGE=2, CREDITS_PER_VIDEO_SECOND=3) and ahead of
+     the T&C, which still declare 1 and 4 videos (TermsContent §4.2/§4.3), as
+     does FAQ "¿Cuántas imágenes y videos puedo hacer por mes?" below. */
   const basicCredits = {
     total: "200 créditos por mes equivalentes a:",
-    images: "60 imágenes terminadas",
-    videos: "1 video de 20 segundos",
+    videos: "15 videos",
+    images: "30 imágenes",
   };
 
   const proCredits = {
     total: "400 créditos por mes equivalentes a:",
-    images: "120 imágenes terminadas",
-    videos: "4 videos de 20 segundos",
+    videos: "35 videos",
+    images: "70 imágenes",
   };
 
   const basicFeatures = [
-    "Hasta 1 marca",
-    "Personalización absoluta",
-    "Edición de imágenes",
+    "Publicación automática en Instagram y Meta",
+    "Edición de imágenes y videos",
+    "Optimización de campañas de Meta",
+    "Soporte técnico",
   ];
 
+  /* Pro reads as a delta on top of Basic (see the "Todo lo de Basic, más:"
+     label above the list), so it only carries what Basic does not. */
   const proFeatures = [
-    "Hasta 3 marcas",
-    "Personalización absoluta",
-    "Modelos Pro de video",
-    "Optimización de Campañas",
+    "Modelos Pro de IA para video",
+    "Edición de imágenes sin límite",
+    "Soporte prioritario",
   ];
 
-  const agencyFeatures = [
-    "Hasta 5 marcas",
-    "Hasta 10 usuarios en tu equipo",
-    "Ads e imágenes de Contenido ilimitadas",
-    "Personalización absoluta",
-    "Edits infinitos por imagen",
-    "Modelos Pro de IA",
-  ];
+  /* Pricing in one place. It used to be eight loose inline ternaries, which
+     let the strikethroughs drift: they were hardcoded to the monthly list
+     price and ignored the billing toggle entirely, so "Anual" crossed out a
+     monthly number.
 
-  const activeCard = hoveredCard ?? "pro";
+     What the user PAYS is unchanged. The list prices are the anchor, chosen
+     so Basic wins on both axes a buyer actually compares — the percentage
+     (50 vs 30) and the pesos saved ($70.000 vs $56.000). Previously Pro's
+     60% off $324.900 read as a $195.000 saving against Basic's $18.000, which
+     is why every visitor was funnelled to Pro.
+
+     Nothing here is visible until the gift is claimed; before that each card
+     shows `list` with no pill and no strikethrough. */
+  const PLANS = {
+    basic: {
+      monthly: { list: "$139.900", pay: "$69.900", listValue: 139900, payValue: 69900 },
+      yearly: { list: "$122.900", pay: "$61.500", listValue: 122900, payValue: 61500 },
+      off: "50% OFF",
+    },
+    pro: {
+      monthly: { list: "$185.900", pay: "$129.900", listValue: 185900, payValue: 129900 },
+      yearly: { list: "$139.900", pay: "$97.900", listValue: 139900, payValue: 97900 },
+      off: "30% OFF",
+    },
+  } as const;
+
+  const basicPrice = PLANS.basic[billing];
+  const proPrice = PLANS.pro[billing];
+
+  const activeCard = hoveredCard ?? "basic";
 
   return (
     <section ref={sectionRef} id="pricing" className="px-3 py-24 sm:px-4 lg:px-6">
-      {/* Confetti that bursts from the Pro "60% OFF" badge when the
+      {/* Confetti that bursts from the Basic "50% OFF" pill when the
           gift discount lands. Same animation as the GiftOverlay's
-          "Ver regalo" burst — just centered on the badge instead of
+          "Ver regalo" burst — just centered on the pill instead of
           the viewport center. */}
       {confettiOn && (
         <Confetti originX={confettiOrigin.x} originY={confettiOrigin.y} />
@@ -757,10 +775,12 @@ function PricingSection() {
           </div>
         </motion.div>
 
-        {/* Grid uses items-start so per-card lg:mt-X offsets stagger vertically.
-            Basic + Agencia sit lower; Pro sits slightly above so it reads as the
-            recommended plan without needing a "Recommended" tag. */}
-        <div className="relative mt-16 grid items-start gap-[1.5rem] lg:grid-cols-4">
+        {/* Three cards since the Agencia plan came out (parked in
+            _extras/AgencyPlanCard.tsx), which leaves Basic in the centre with no
+            reordering. Grid uses items-start so per-card lg:mt-X offsets stagger
+            vertically: Gratis + Pro sit lower, Basic sits above them so it reads
+            as the recommended plan without needing a "Recommended" tag. */}
+        <div className="relative mx-auto mt-16 grid items-start gap-[1.5rem] lg:max-w-[1200px] lg:grid-cols-3">
           {/* ── Starter (Gratis) Card ─────────────────────────────────────
               Free tier, glass-on-light, neutral palette. */}
           <div
@@ -792,17 +812,14 @@ function PricingSection() {
               </div>
 
               <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
-                Probá Postty sin compromiso y generá tus primeros Ads
+                Mirá qué genera con tu marca antes de pagar nada
               </p>
 
               <a
                 href={appUrl}
                 onClick={() => trackEvent("Lead", {
-                  content_category: "pricing_starter",
-                  content_ids: ["plan_starter"],
-                  content_type: "product",
-                  value: 0,
-                  currency: "ARS",
+                  content_name: "pricing_starter_trial",
+                  content_category: "trial_intent",
                 })}
                 className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
@@ -828,9 +845,14 @@ function PricingSection() {
           </div>
 
           {/* ── Basic Card ─────────────────────────────────────────────────
-              Glass-on-light. Neutral palette so Pro can stand out. */}
+              The highlighted plan: solid blue gradient, sits higher in the grid,
+              and is the default active card — so it reads as the recommended one
+              without needing a "Recomendado" tag. Pro used to carry this exact
+              treatment; the two were swapped when the page repositioned onto
+              e-commerce, where a single store belongs in Basic and Pro becomes
+              the multi-brand upsell. */}
           <div
-            className="relative self-start lg:mt-14"
+            className="relative self-start lg:mt-2"
             onMouseEnter={() => setHoveredCard("basic")}
             onMouseLeave={() => setHoveredCard(null)}
           >
@@ -850,99 +872,103 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
+              className="relative z-10 rounded-3xl p-[1.53rem] text-white shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
+              style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
             >
-              {/* Title row — name top-left, subtle 20% OFF badge top-right
-                  (only when the gift discount has been claimed). Without
-                  the gift the Basic card shows the plain, undiscounted
-                  price and no badge / strikethrough at all. */}
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">Basic</h3>
-                {giftDiscountApplied && (
-                  <div className="inline-flex shrink-0 items-center justify-center rounded-full leading-none border border-white/80 bg-white/70 px-[0.72rem] py-[0.4rem] shadow-[0_2px_8px_rgba(13,21,34,0.06),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-md">
-                    <span className="font-heading text-[0.82rem] font-semibold text-[#0D1522]/70">{billing === "monthly" ? "20% OFF" : "30% OFF"}</span>
-                  </div>
-                )}
-              </div>
+              {/* Discount pill — tilted, hanging off the top-right corner.
+                  The card deliberately has no overflow-hidden, or this would be
+                  clipped. Only renders once the gift is claimed, and doubles as
+                  the confetti origin (giftBadgeRef). */}
+              {giftDiscountApplied && (
+                <div
+                  ref={giftBadgeRef}
+                  className="absolute -right-3.5 -top-5 z-20 rotate-12 rounded-full px-[1.15rem] py-[0.68rem] leading-none shadow-[0_8px_26px_rgba(181,255,0,0.55)]"
+                  style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
+                >
+                  <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]">{PLANS.basic.off}</span>
+                </div>
+              )}
 
-              {/* Price — strikethrough + discounted only when the gift
-                  was claimed. Otherwise: plain $87.900 / $79.100 with no
-                  badge or strikethrough. The gift-final prices are the real
-                  targets ($69.900 monthly, per the credits pricing sheet —
-                  deliberately the same as today's charge); the list price is
-                  back-derived from the 20%/30% badges. */}
+              <h3 className="font-heading text-[2rem] font-medium text-white">Basic</h3>
+
+              {/* Price — strikethrough + discounted only once the gift is
+                  claimed. Both figures follow the billing toggle (they did not
+                  before: the strikethrough was hardcoded to the monthly list). */}
               <div className="mt-2">
                 {giftDiscountApplied && (
-                  <div className="text-[0.85rem] font-semibold text-[#0D1522]/40 line-through decoration-2 decoration-[#0D1522]/40">
-                    $87.900
+                  <div className="text-[1.12rem] font-semibold text-white/65 line-through decoration-2 decoration-white/75">
+                    {basicPrice.list}
                   </div>
                 )}
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span className="font-heading text-[2.55rem] font-semibold tracking-tight text-[#0D1522]">
-                    {giftDiscountApplied
-                      ? (billing === "monthly" ? "$69.900" : "$61.500")
-                      : (billing === "monthly" ? "$87.900" : "$79.100")}
+                  <span
+                    className="font-heading text-[2.55rem] font-semibold tracking-tight"
+                    style={{
+                      background: "linear-gradient(135deg, #b5ff00, #eeff64)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                    }}
+                  >
+                    {giftDiscountApplied ? basicPrice.pay : basicPrice.list}
                   </span>
-                  <span className="text-[0.78rem] font-medium text-[#0D1522]/50">/mes</span>
+                  <span className="text-[0.78rem] font-medium text-white/65">/mes</span>
                 </div>
               </div>
 
-              {/* Subtitle */}
-              <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
-                Tenés una empresa y manejás todo el marketing vos
+              <p className="mt-3 text-[0.78rem] leading-relaxed text-white/85">
+                Tu e-commerce, sin agencia ni community manager
               </p>
 
-              {/* CTA — moved up, neutral so Pro pops */}
+              {/* CTA — chartreuse, the only colored CTA in the grid */}
               <a
                 href={basicCheckoutUrl}
                 onClick={() => trackEvent("Lead", {
-                  content_category: "pricing_basic",
+                  content_name: "pricing_basic_checkout",
+                  content_category: "checkout_intent",
                   content_ids: ["plan_basic"],
                   content_type: "product",
-                  value: giftDiscountApplied
-                    ? (billing === "monthly" ? 69900 : 61500)
-                    : (billing === "monthly" ? 87900 : 79100),
+                  value: giftDiscountApplied ? basicPrice.payValue : basicPrice.listValue,
                   currency: "ARS",
                 })}
-                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
+                className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
+                style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
               >
                 Empezar ahora
               </a>
 
-              {/* Features — inner glass block */}
               {/* Credits — its own glass block. No tick here: an allowance
                   is a quantity, not a yes/no feature like the bullets below. */}
-              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
-                <p className="text-center text-[0.78rem] font-medium text-[#0D1522]/75">{basicCredits.total}</p>
+              <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
+                <p className="text-center text-[0.78rem] font-medium text-white/90">{basicCredits.total}</p>
                 {/* Two columns joined by a "+": the allowance is one bundle
                     the user gets in full, not a choice between two options. */}
                 <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-x-2.5">
-                  <div className="flex flex-col items-center text-center text-[#0D1522]">
-                    <ImageIcon className="size-[18px]" />
-                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
-                      {basicCredits.images}
-                    </p>
-                  </div>
-                  <span className="font-heading text-[1.1rem] font-semibold text-[#0D1522]/45">+</span>
-                  <div className="flex flex-col items-center text-center text-[#0D1522]">
+                  <div className="flex flex-col items-center text-center text-white">
                     <VideoIcon className="size-[18px]" />
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
                       {basicCredits.videos}
+                    </p>
+                  </div>
+                  <span className="font-heading text-[1.1rem] font-semibold text-white/60">+</span>
+                  <div className="flex flex-col items-center text-center text-white">
+                    <ImageIcon className="size-[18px]" />
+                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
+                      {basicCredits.images}
                     </p>
                   </div>
                 </div>
               </div>
 
               {/* Feature list */}
-              <div className="mt-3 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
+              <div className="mt-3 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
                 {basicFeatures.map((feat, i) => (
                   <div
                     key={feat}
                     className={`flex items-center justify-between py-[0.6rem] ${
-                      i < basicFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                      i < basicFeatures.length - 1 ? "border-b border-white/10" : ""
                     }`}
                   >
-                    <span className="text-[0.78rem] font-medium text-[#0D1522]/75">{feat}</span>
+                    <span className="text-[0.78rem] font-medium text-white/90">{feat}</span>
                     <div className="flex h-[1.15rem] w-[1.15rem] items-center justify-center rounded-full bg-[#D6F951]">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                     </div>
@@ -953,11 +979,10 @@ function PricingSection() {
           </div>
 
           {/* ── Pro Card ───────────────────────────────────────────────────
-              Solid blue gradient — only card with vivid color, only one with
-              discount badge + strikethrough. The visual weight here is the
-              point: Pro is the recommended plan. */}
+              Glass-on-light. Pro is the multi-brand / high-volume upsell now,
+              not the default — Basic carries the vivid treatment. */}
           <div
-            className="relative lg:mt-2"
+            className="relative self-start lg:mt-14"
             onMouseEnter={() => setHoveredCard("pro")}
             onMouseLeave={() => setHoveredCard(null)}
           >
@@ -976,177 +1001,83 @@ function PricingSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative z-10 overflow-hidden rounded-3xl p-[1.53rem] text-white shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
-              style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
+              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-              {/* Title row — name top-left, discount badge top-right.
-                  Badge + strikethrough only render when the gift has been
-                  claimed (the gift IS the 60% off — without it Pro shows
-                  the full price). */}
-              <div className="flex items-start justify-between gap-3">
-                <h3 className="font-heading text-[2rem] font-medium text-white">Pro</h3>
-                {giftDiscountApplied && (
-                  <div
-                    ref={proBadgeRef}
-                    className="inline-flex shrink-0 items-center justify-center rounded-full leading-none px-[0.72rem] py-[0.4rem] shadow-[0_4px_16px_rgba(181,255,0,0.45)]"
-                    style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
-                  >
-                    <span className="font-heading text-[0.82rem] font-semibold text-[#0D1522]">{billing === "monthly" ? "60% OFF" : "70% OFF"}</span>
-                  </div>
-                )}
-              </div>
+              {/* Same tilted pill as Basic, in glass instead of chartreuse —
+                  Basic must stay the louder discount of the two. */}
+              {giftDiscountApplied && (
+                <div className="absolute -right-3.5 -top-5 z-20 rotate-12 rounded-full border border-white/80 bg-white/90 px-[1.15rem] py-[0.68rem] leading-none shadow-[0_6px_20px_rgba(13,21,34,0.14)] backdrop-blur-md">
+                  <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]/70">{PLANS.pro.off}</span>
+                </div>
+              )}
 
-              {/* Price — strikethrough + discounted price only when gift
-                  claimed. Otherwise: plain $324.900 / $292.900 full
-                  price, no strikethrough. The gift-final prices are the real
-                  targets ($129.900 monthly); the list price is back-derived
-                  from the 60%/70% badges. */}
+              <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">Pro</h3>
+
               <div className="mt-2">
                 {giftDiscountApplied && (
-                  <div className="text-[0.85rem] font-semibold text-white/60 line-through decoration-2 decoration-white/70">
-                    $324.900
+                  <div className="text-[1.12rem] font-semibold text-[#0D1522]/45 line-through decoration-2 decoration-[#0D1522]/45">
+                    {proPrice.list}
                   </div>
                 )}
                 <div className="mt-1 flex items-baseline gap-2">
-                  <span
-                    className="font-heading text-[2.55rem] font-semibold tracking-tight"
-                    style={{
-                      background: "linear-gradient(135deg, #b5ff00, #eeff64)",
-                      WebkitBackgroundClip: "text",
-                      WebkitTextFillColor: "transparent",
-                    }}
-                  >
-                    {giftDiscountApplied
-                      ? (billing === "monthly" ? "$129.900" : "$97.900")
-                      : (billing === "monthly" ? "$324.900" : "$292.900")}
+                  <span className="font-heading text-[2.55rem] font-semibold tracking-tight text-[#0D1522]">
+                    {giftDiscountApplied ? proPrice.pay : proPrice.list}
                   </span>
-                  <span className="text-[0.78rem] font-medium text-white/65">/mes</span>
+                  <span className="text-[0.78rem] font-medium text-[#0D1522]/50">/mes</span>
                 </div>
               </div>
 
-              {/* Subtitle */}
-              <p className="mt-3 text-[0.78rem] leading-relaxed text-white/85">
-                Escalá tu marketing al próximo nivel: más marcas, más contenido y campañas que se optimizan solas
+              <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
+                Para cuando necesitás el doble de volumen y los mejores modelos de video
               </p>
 
-              {/* CTA — chartreuse, only colored CTA on the page */}
               <a
                 href={proCheckoutUrl}
                 onClick={() => trackEvent("Lead", {
-                  content_category: "pricing_pro",
+                  content_name: "pricing_pro_checkout",
+                  content_category: "checkout_intent",
                   content_ids: ["plan_pro"],
                   content_type: "product",
-                  value: giftDiscountApplied
-                    ? (billing === "monthly" ? 129900 : 97900)
-                    : (billing === "monthly" ? 324900 : 292900),
+                  value: giftDiscountApplied ? proPrice.payValue : proPrice.listValue,
                   currency: "ARS",
                 })}
-                className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-medium text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
-                style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
+                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
                 Convertirme en Pro
               </a>
 
-              {/* Features — inner glass block on the blue */}
               {/* Credits — its own glass block. No tick here: an allowance
                   is a quantity, not a yes/no feature like the bullets below. */}
-              <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
-                <p className="text-center text-[0.78rem] font-medium text-white/90">{proCredits.total}</p>
-                {/* Two columns joined by a "+": the allowance is one bundle
-                    the user gets in full, not a choice between two options. */}
+              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
+                <p className="text-center text-[0.78rem] font-medium text-[#0D1522]/75">{proCredits.total}</p>
                 <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-x-2.5">
-                  <div className="flex flex-col items-center text-center text-white">
-                    <ImageIcon className="size-[18px]" />
-                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
-                      {proCredits.images}
-                    </p>
-                  </div>
-                  <span className="font-heading text-[1.1rem] font-semibold text-white/60">+</span>
-                  <div className="flex flex-col items-center text-center text-white">
+                  <div className="flex flex-col items-center text-center text-[#0D1522]">
                     <VideoIcon className="size-[18px]" />
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
                       {proCredits.videos}
                     </p>
                   </div>
+                  <span className="font-heading text-[1.1rem] font-semibold text-[#0D1522]/45">+</span>
+                  <div className="flex flex-col items-center text-center text-[#0D1522]">
+                    <ImageIcon className="size-[18px]" />
+                    <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
+                      {proCredits.images}
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Feature list */}
-              <div className="mt-3 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
+              {/* Feature list — Pro is a delta on Basic, so it is labelled as
+                  one instead of repeating the four Basic rows. */}
+              <div className="mt-3 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
+                <p className="pb-[0.55rem] text-[0.78rem] font-semibold text-[#0D1522]/55">
+                  Todo lo de Basic, más:
+                </p>
                 {proFeatures.map((feat, i) => (
                   <div
                     key={feat}
                     className={`flex items-center justify-between py-[0.6rem] ${
-                      i < proFeatures.length - 1 ? "border-b border-white/10" : ""
-                    }`}
-                  >
-                    <span className="text-[0.78rem] font-medium text-white/90">{feat}</span>
-                    <div className="flex h-[1.15rem] w-[1.15rem] items-center justify-center rounded-full bg-[#D6F951]">
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0D1522" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
-                    </div>
-                  </div>
-                ))}
-                {/* Credits belong to the account, not to each brand. */}
-                <p className="pt-[0.6rem] text-[0.7rem] leading-relaxed text-white/55">
-                  Los créditos son de la cuenta, no de cada marca. Usalos como quieras.
-                </p>
-              </div>
-            </motion.div>
-          </div>
-
-          {/* ── Agencia Card ───────────────────────────────────────────────
-              Mirror of Basic (glass-on-light, neutral). */}
-          <div
-            className="relative lg:mt-14"
-            onMouseEnter={() => setHoveredCard("agency")}
-            onMouseLeave={() => setHoveredCard(null)}
-          >
-            <motion.div
-              animate={{ y: activeCard === "agency" ? 0 : 50, opacity: activeCard === "agency" ? 1 : 0 }}
-              initial={false}
-              transition={{ type: "spring", stiffness: 260, damping: 24 }}
-              className="pointer-events-none absolute left-1/2 top-0 z-0 -translate-x-1/2"
-              style={{ width: 120, height: 120, marginTop: -55 }}
-            >
-              <Image src="/mascot.png" alt="Postty mascot" width={120} height={120} className="drop-shadow-xl" />
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
-            >
-              <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">Agencia</h3>
-
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="font-heading text-[1.75rem] font-semibold tracking-tight text-[#0D1522]">Personalizado</span>
-              </div>
-
-              <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
-                Sos una agencia o tenés un equipo manejando varias marcas
-              </p>
-
-              <a
-                href={AGENCY_CALENDLY}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent("Lead", {
-                  content_name: "agency_meeting",
-                  content_category: "agency",
-                })}
-                className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
-              >
-                Agendar reunión
-              </a>
-
-              <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
-                {agencyFeatures.map((feat, i) => (
-                  <div
-                    key={feat}
-                    className={`flex items-center justify-between py-[0.6rem] ${
-                      i < agencyFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                      i < proFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
                     }`}
                   >
                     <span className="text-[0.78rem] font-medium text-[#0D1522]/75">{feat}</span>
@@ -1167,24 +1098,34 @@ function PricingSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4 }}
-          className="mt-12 flex justify-center"
+          className="mx-auto mt-9 flex items-center gap-4 sm:gap-6 lg:max-w-[1200px]"
         >
+          {/* Hairlines fade to transparent at the outer edges so this reads as
+              a divider the pill sits on, not a boxed-in bar. */}
+          <span
+            aria-hidden="true"
+            className="hidden h-px flex-1 bg-gradient-to-r from-transparent to-[#0D1522]/[0.11] sm:block"
+          />
           <a
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            onClick={() => trackEvent("Lead", { content_name: "pricing_whatsapp_help" })}
-            className="inline-flex items-center gap-2.5 rounded-full border border-white/70 bg-white/45 px-6 py-3 text-sm font-medium text-[#0D1522] shadow-[0_8px_32px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/65 sm:text-base"
+            onClick={() => trackEvent("Lead", { content_name: "pricing_whatsapp_help", content_category: "contacto_whatsapp" })}
+            className="mx-auto inline-flex shrink-0 items-center gap-2.5 rounded-full border border-white/70 bg-white/45 px-5 py-[0.6rem] text-sm font-medium text-[#0D1522] shadow-[0_2px_12px_rgba(13,21,34,0.05),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/65 hover:shadow-[0_6px_20px_rgba(13,21,34,0.09),inset_0_1px_0_rgba(255,255,255,0.8)] sm:mx-0 sm:text-base"
           >
             <svg width="18" height="18" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413" />
             </svg>
             <span>
               ¿No sabés qué plan te conviene?{" "}
-              <span className="font-semibold">Mandanos un mensaje al WhatsApp</span>
+              <span className="font-semibold">Contactanos</span>
             </span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
           </a>
+          <span
+            aria-hidden="true"
+            className="hidden h-px flex-1 bg-gradient-to-l from-transparent to-[#0D1522]/[0.11] sm:block"
+          />
         </motion.div>
       </div>
     </section>
@@ -1242,9 +1183,9 @@ function BusinessTypesSection() {
             viewport={{ once: true }}
             className="font-heading relative text-center text-3xl font-semibold leading-tight tracking-tight text-[#0D1522] sm:text-5xl md:text-6xl"
           >
-            Funciona para cualquier
+            Hecho para marcas
             <br />
-            tipo de negocio
+            que ya venden
           </motion.h2>
         </div>
       </div>
@@ -1422,7 +1363,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Contactar por WhatsApp"
-            onClick={() => trackEvent("Lead", { content_name: "header_whatsapp" })}
+            onClick={() => trackEvent("Lead", { content_name: "header_whatsapp", content_category: "contacto_whatsapp" })}
             className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="#0D1522" aria-hidden="true">
@@ -1475,7 +1416,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Contactar por WhatsApp"
-              onClick={() => trackEvent("Lead", { content_name: "header_whatsapp_scrolled" })}
+              onClick={() => trackEvent("Lead", { content_name: "header_whatsapp_scrolled", content_category: "contacto_whatsapp" })}
               className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="#0D1522" aria-hidden="true">
@@ -1498,7 +1439,7 @@ export default function Home() {
         {/* SEO-critical H1: visually represented by the hero video.
             Keywords: agente, marketing, IA, contenido, ads, Meta. */}
         <h1 className="sr-only">
-          Postty — Agente de marketing con IA que crea contenido y ads para Meta y Google en 5 minutos
+          Postty — Agente de marketing con IA para e-commerce: crea contenido y ads para Meta y Google en 5 minutos
         </h1>
         {isMobile !== null && (
           <video
@@ -1547,14 +1488,14 @@ export default function Home() {
             >
               {/* Secondary CTA — WhatsApp. Same glass language as the
                   primary so they read as a pair, slightly less horizontal
-                  padding so "Empezar gratis" remains the visual anchor.
+                  padding so "Probar gratis" remains the visual anchor.
                   Icon in WhatsApp brand green (#25D366). target=_blank
                   + noopener since it leaves the site. */}
               <motion.a
                 href={WHATSAPP_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={() => trackEvent("Lead", { content_name: "hero_cta_whatsapp" })}
+                onClick={() => trackEvent("Lead", { content_name: "hero_cta_whatsapp", content_category: "contacto_whatsapp" })}
                 className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-6 py-[18px] text-lg font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px] sm:px-7"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
@@ -1569,13 +1510,13 @@ export default function Home() {
               {/* Primary CTA — unchanged */}
               <motion.a
                 href={appUrl}
-                onClick={() => trackEvent("Lead", { content_name: "hero_cta_empezar_gratis" })}
+                onClick={() => trackEvent("Lead", { content_name: "hero_cta_probar_gratis", content_category: "trial_intent" })}
                 className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
               >
-                Empezar gratis
+                Probar gratis
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </motion.a>
             </motion.div>
@@ -1706,6 +1647,45 @@ export default function Home() {
               </motion.div>
             ))}
           </div>
+
+          {/* Instagram handle — centred under the grid, which puts it directly
+              below Juan's card on desktop (he holds the middle column). Same
+              glass pill language as the WhatsApp one under pricing.
+              Deliberately untracked: a social follow is not a Lead, and firing
+              one here would dilute the Lead signal Meta optimises against. */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.4 }}
+            className="mt-8 flex justify-center"
+          >
+            <a
+              href="https://www.instagram.com/posttyai/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2.5 rounded-full border border-white/70 bg-white/45 px-5 py-[0.6rem] text-sm font-medium text-[#0D1522] shadow-[0_2px_12px_rgba(13,21,34,0.05),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/65 hover:shadow-[0_6px_20px_rgba(13,21,34,0.09),inset_0_1px_0_rgba(255,255,255,0.8)] sm:text-base"
+            >
+              <svg
+                width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="url(#ig-gradient)" strokeWidth="2"
+                strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+              >
+                <defs>
+                  <linearGradient id="ig-gradient" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stopColor="#FFD521" />
+                    <stop offset="30%" stopColor="#F50000" />
+                    <stop offset="62%" stopColor="#B900B4" />
+                    <stop offset="100%" stopColor="#4C68D7" />
+                  </linearGradient>
+                </defs>
+                <rect x="2" y="2" width="20" height="20" rx="5.5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z" />
+                <path d="M17.5 6.5h.01" />
+              </svg>
+              <span className="font-semibold">@posttyai</span>
+            </a>
+          </motion.div>
         </div>
       </section>
 
@@ -1742,12 +1722,12 @@ export default function Home() {
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
             <h2 className="font-heading text-xl font-semibold text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl lg:text-4xl">
-              ¿Listo para no estresarte más con tus redes?
+              ¿Listo para dejar de pagar una agencia?
             </h2>
             <div className="mt-5">
               <motion.a
                 href={appUrl}
-                onClick={() => trackEvent("Lead", { content_name: "final_cta_empezar_gratis" })}
+                onClick={() => trackEvent("Lead", { content_name: "final_cta_empezar_gratis", content_category: "trial_intent" })}
                 className="group inline-flex items-center gap-2 rounded-full bg-white/15 px-8 py-3.5 text-base font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
                 whileHover={{ y: -2, scale: 1.015 }}
                 whileTap={{ scale: 0.98 }}
@@ -1769,20 +1749,50 @@ export default function Home() {
           <div>
             <p className="font-heading text-xl font-extrabold tracking-[-0.08em] text-[#0D1522]">Postty</p>
             <p className="mt-2 text-sm text-[#0D1522]/50">soporte@posttyai.com</p>
-            {/* WhatsApp CTA — same brand-green icon + text pill as the
-                hero, sized down to footer-meta scale. */}
-            <a
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => trackEvent("Lead", { content_name: "footer_whatsapp" })}
-              className="mt-3 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#0D1522] transition hover:border-gray-300 hover:bg-gray-50"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
-                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
-              </svg>
-              WhatsApp
-            </a>
+            {/* Contact pills — glass, stacked, same language as the ones
+                under pricing and the team grid. Both are brand-coloured icon
+                + label; the footer versions are sized down to meta scale.
+                items-start so each pill hugs its own label instead of
+                stretching to the column width. */}
+            <div className="mt-3 flex flex-col items-start gap-2">
+              <a
+                href={WHATSAPP_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackEvent("Lead", { content_name: "footer_whatsapp", content_category: "contacto_whatsapp" })}
+                className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/45 px-4 py-2 text-sm font-medium text-[#0D1522] shadow-[0_2px_12px_rgba(13,21,34,0.05),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/65 hover:shadow-[0_6px_20px_rgba(13,21,34,0.09),inset_0_1px_0_rgba(255,255,255,0.8)]"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
+                </svg>
+                WhatsApp
+              </a>
+              <a
+                href="https://www.instagram.com/posttyai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/45 px-4 py-2 text-sm font-medium text-[#0D1522] shadow-[0_2px_12px_rgba(13,21,34,0.05),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/65 hover:shadow-[0_6px_20px_rgba(13,21,34,0.09),inset_0_1px_0_rgba(255,255,255,0.8)]"
+              >
+                <svg
+                  width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="url(#ig-gradient-footer)" strokeWidth="2"
+                  strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"
+                >
+                  <defs>
+                    <linearGradient id="ig-gradient-footer" x1="2" y1="22" x2="22" y2="2" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#FFD521" />
+                      <stop offset="30%" stopColor="#F50000" />
+                      <stop offset="62%" stopColor="#B900B4" />
+                      <stop offset="100%" stopColor="#4C68D7" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="2" y="2" width="20" height="20" rx="5.5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37Z" />
+                  <path d="M17.5 6.5h.01" />
+                </svg>
+                @posttyai
+              </a>
+            </div>
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
             <div>

@@ -30,6 +30,7 @@ const CAPI_ENDPOINT =
 const TEST_EVENT_CODE = process.env.NEXT_PUBLIC_META_TEST_EVENT_CODE || '';
 
 const APP_BASE_URL = 'https://app.posttyai.com';
+const EXTERNAL_ID_KEY = 'postty_ext_id';
 const FBCLID_TTL_MS = 90 * 24 * 60 * 60 * 1000;
 const FBCLID_KEY = 'postty_fbclid';
 const FBCLID_TIME_KEY = 'postty_fbclid_t';
@@ -67,6 +68,36 @@ export function persistFbclid(): void {
     }
   } catch {
     /* localStorage unavailable (private mode etc.) — silently ignore */
+  }
+}
+
+/** Unix ms when the fbclid was first observed, or null. */
+function getFbclidTime(): number | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const ts = Number(localStorage.getItem(FBCLID_TIME_KEY) || 0);
+    return ts > 0 ? ts : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Stable per-browser pseudonymous id, sent as Meta's ``external_id``.
+ * Random UUID only — never an email, never anything derived from one — so it
+ * identifies a browser across events without carrying personal data.
+ */
+export function getExternalId(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    let id = localStorage.getItem(EXTERNAL_ID_KEY);
+    if (!id) {
+      id = generateEventId();
+      localStorage.setItem(EXTERNAL_ID_KEY, id);
+    }
+    return id;
+  } catch {
+    return null;
   }
 }
 
@@ -135,13 +166,43 @@ function getCookie(name: string): string | null {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
+/** Read `?fbclid=` from the current URL. Null on SSR or when absent. */
+function fbclidFromUrl(): string | null {
+  if (typeof window === 'undefined') return null;
+  return new URLSearchParams(window.location.search).get('fbclid');
+}
+
+/** Click id inside an `_fbc` value (`fb.1.{ts_ms}.{fbclid}`). The fbclid can
+ *  itself contain dots, so it is everything after the third segment. */
+function fbcClickId(fbc: string): string | null {
+  const parts = fbc.split('.');
+  return parts.length >= 4 ? parts.slice(3).join('.') : null;
+}
+
+/**
+ * Build the `fbc` value, newest click first.
+ *
+ * The `_fbc` cookie lives 90 days, and fbevents.js loads async (the pixel is
+ * `afterInteractive`), so a returning visitor who clicks a NEW ad can fire the
+ * first PageView while the cookie still holds the PREVIOUS click — attributing
+ * the visit to the wrong ad. Meta's fbp/fbc doc says to refresh `_fbc` whenever
+ * the fbclid in the URL differs from the one inside the cookie; that is the
+ * first branch here, and it mirrors getOrReconstructFbc() in the app's pixel.ts.
+ */
 function buildFbc(): string | null {
-  const existing = getCookie('_fbc');
-  if (existing) return existing;
+  const urlFbclid = fbclidFromUrl();
+  const cookie = getCookie('_fbc');
+  // Format per Meta CAPI spec: fb.<subdomain_index>.<creation_time>.<fbclid>
+  if (urlFbclid && (!cookie || fbcClickId(cookie) !== urlFbclid)) {
+    // The click is happening right now, so Date.now() IS its creation time.
+    return `fb.1.${Date.now()}.${urlFbclid}`;
+  }
+  if (cookie) return cookie;
   const fbclid = getFbclid();
   if (!fbclid) return null;
-  // Format per Meta CAPI spec: fb.<subdomain_index>.<creation_time>.<fbclid>
-  return `fb.1.${Date.now()}.${fbclid}`;
+  // Reconstructed from a click stored up to 90 days ago — stamp it with when
+  // it actually happened, not now. See getFbclidTime.
+  return `fb.1.${getFbclidTime() ?? Date.now()}.${fbclid}`;
 }
 
 function sendCapi(
@@ -157,10 +218,17 @@ function sendCapi(
     event_time: Math.floor(Date.now() / 1000),
     event_source_url: window.location.href,
     action_source: 'website',
-    user_data: {
-      fbp: getCookie('_fbp'),
-      fbc: buildFbc(),
-    },
+    // TOP LEVEL, not nested: /api/pixel-event reads data["fbp"] / data["fbc"]
+    // (see its Body docstring). They used to be sent inside a `user_data`
+    // object, which the handler never looks at — so Meta received every CAPI
+    // event from this landing with no Click ID and no Browser ID.
+    fbp: getCookie('_fbp'),
+    fbc: buildFbc(),
+    // Anonymous browser id. The handler currently prefers the server-side
+    // session's user id and ignores this, which is correct for logged-in
+    // traffic; landing visitors have no session, so accepting this as the
+    // fallback there is a one-line backend change worth making.
+    external_id: getExternalId(),
     custom_data: customData,
     ...(TEST_EVENT_CODE ? { test_event_code: TEST_EVENT_CODE } : {}),
   };

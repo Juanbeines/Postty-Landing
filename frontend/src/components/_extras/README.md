@@ -19,6 +19,31 @@ step mockups and the "Privacy" section.
 with an animated lock badge. Lived between the "Stats" section and the "FAQ"
 section.
 
+### `AgencyPlanCard.tsx`
+The fourth pricing card ("Agencia — Personalizado / Agendar reunión"). Pulled
+when the landing repositioned onto e-commerce (2026-08); removing it also left
+Basic sitting in the centre of the grid with no reordering.
+
+**Do not restore it as-is.** The plan it advertises does not exist yet: in
+`Postty-Prod/backend/entitlements.py` the "agency" plan is scaffolding that
+inherits Pro entitlements literally, with multi-cliente, team seats and
+white-label behind feature flags defaulting to false. So "Hasta 5 marcas" and
+"Hasta 10 usuarios en tu equipo" are not deliverable.
+
+Restoring also needs, in `PricingSection`: the grid back to `lg:grid-cols-4`,
+and `"agency"` back in the `hoveredCard` union.
+
+### Other files here
+`ContentCalendarSection.tsx`, `FuncionalidadesSection.tsx`,
+`HowItWorksCardsSection.tsx`, `HowItWorksOldSection.tsx`,
+`PlatformCardsSection.tsx`, `ProblemCardsStack.tsx` — same deal, parked
+sections.
+
+### `REMOVED-COPY.md`
+Every string cut in the 2026-08 e-commerce repositioning, verbatim: plan
+features, card subtitles, the FAQs that were rewritten or dropped, and the
+section headings that were tried and discarded.
+
 ## Restoring a section
 
 1. `import { StatsSection } from "@/components/_extras/StatsSection";`

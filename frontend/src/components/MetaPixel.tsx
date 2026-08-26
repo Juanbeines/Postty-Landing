@@ -33,7 +33,30 @@ export default function MetaPixel() {
           t.src=v;s=b.getElementsByTagName(e)[0];
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', '${PIXEL_ID}');
+          // Advanced matching: a stable pseudonymous browser id, read from (or
+          // seeded into) the same localStorage key lib/pixel.ts uses, so the
+          // browser pixel and the CAPI mirror report the SAME external_id and
+          // Meta can join them. Inlined here rather than set from an effect so
+          // it is present on the very first event. Random UUID only — no PII.
+          // Wrapped because Safari private mode throws on localStorage access.
+          var __pxid = null;
+          try {
+            __pxid = localStorage.getItem('postty_ext_id');
+            if (!__pxid) {
+              __pxid = (crypto && crypto.randomUUID)
+                ? crypto.randomUUID()
+                : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+                    var r = Math.random() * 16 | 0;
+                    return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+                  });
+              localStorage.setItem('postty_ext_id', __pxid);
+            }
+          } catch (e) { __pxid = null; }
+          if (__pxid) {
+            fbq('init', '${PIXEL_ID}', { external_id: __pxid });
+          } else {
+            fbq('init', '${PIXEL_ID}');
+          }
         `}
       </Script>
       <noscript>

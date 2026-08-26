@@ -295,6 +295,7 @@ export default function AppsCarousel() {
                     onClick={() =>
                       trackEvent("Lead", {
                         content_name: `apps_carousel_${current.logo}`,
+                        content_category: "trial_intent",
                       })
                     }
                     className="mt-6 inline-flex items-center gap-2 rounded-full border border-white/80 bg-white px-5 py-2.5 text-sm font-semibold text-[#0D1522] shadow-[0_8px_24px_rgba(13,21,34,0.13),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-xl transition hover:shadow-[0_10px_30px_rgba(13,21,34,0.18)]"

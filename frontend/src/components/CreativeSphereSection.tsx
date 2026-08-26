@@ -32,6 +32,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import { trackEvent, useAppUrl } from "@/lib/pixel";
 
 type BandCard = { src: string; phase: number; band: -1 | 0 | 1; size: number };
 
@@ -72,6 +73,7 @@ const LAT_RADIUS = 0.8;   // outer bands' radius vs equator
 const BEND = 0.82;        // local cylinder radius vs R — lower = harder bend
 
 export default function CreativeSphereSection() {
+  const appUrl = useAppUrl();
   const stageRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const innerRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -243,6 +245,34 @@ export default function CreativeSphereSection() {
             </div>
           );
         })}
+
+        {/* CTA layered over the sphere. Two things make this work:
+            - z-index: cards get theirs recalculated every frame from cos(),
+              topping out near 1040 (see the rAF loop above), so anything less
+              than that gets painted behind the front creative. Hence z-[1100].
+            - pointer-events: the wrapper is inert and only the pill itself is
+              clickable, so the pill doesn't blanket the front card and kill its
+              hover-grow. Same pattern as the hero CTA pair in page.tsx. */}
+        <div className="pointer-events-none absolute inset-0 z-[1100] flex items-center justify-center">
+          <a
+            href={appUrl}
+            onClick={() => trackEvent("Lead", {
+              content_name: "creatives_sphere_cta",
+              content_category: "trial_intent",
+            })}
+            className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full border border-white/60 bg-white/30 px-7 py-3.5 text-base font-semibold text-[#0D1522] shadow-[0_4px_24px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-[2px] hover:bg-white/50 hover:shadow-[0_10px_36px_rgba(13,21,34,0.18),inset_0_1px_0_rgba(255,255,255,0.85)]"
+          >
+            Probar gratis
+            <svg
+              width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+              className="transition-transform duration-300 group-hover:translate-x-1"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
       </div>
     </section>
   );
