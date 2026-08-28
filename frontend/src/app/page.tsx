@@ -341,10 +341,10 @@ function WhatPosttyDoesSection() {
             // bottom, which is the desired look).
             className="isolate flex aspect-[5/7] flex-col items-center overflow-hidden rounded-xl bg-[#F1F2F4] px-3 pt-12 pb-0 sm:pt-20 md:aspect-[7/6]"
           >
-            <h3 className="font-heading text-center text-2xl font-semibold tracking-tight text-[#0D1522] sm:text-3xl">
+            <h3 className="font-heading text-center text-[1.65rem] font-semibold tracking-tight text-[#0D1522] sm:text-[2.05rem]">
               {item.title}
             </h3>
-            <p className="mt-3 max-w-md text-balance text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base">
+            <p className="mt-3 max-w-md text-balance text-center text-[0.95rem] leading-relaxed text-[#0D1522]/65 sm:text-[1.1rem]">
               {item.subtitle}
             </p>
             {/* Video — flex-1 fills whatever vertical space is left below
@@ -352,7 +352,7 @@ function WhatPosttyDoesSection() {
                 another ~15% (310/375 → 265/320). Height area is unchanged
                 because flex-1 still consumes the remaining tile height —
                 only the phone's WIDTH gets narrower. */}
-            <div className="relative mt-3 w-full max-w-[265px] flex-1 overflow-hidden sm:max-w-[320px]">
+            <div className="relative mt-7 w-full max-w-[265px] flex-1 overflow-hidden sm:mt-9 sm:max-w-[320px]">
               <ScrollTriggeredVideo
                 src={item.video}
                 className="absolute inset-0 h-full w-full object-cover object-top mix-blend-darken"
