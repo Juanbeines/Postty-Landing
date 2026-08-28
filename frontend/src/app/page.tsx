@@ -286,18 +286,18 @@ const whatPosttyDoesItems: ReadonlyArray<{
   video: string;
 }> = [
   {
-    title: "Contenido para redes",
+    title: "Contenido en 5 minutos, sin CM",
     subtitle: ["Se publica solo.", "Vos no subís nada."],
     video: "/videos/feed.mp4",
   },
   {
-    title: "Campañas con Ads",
+    title: "Campañas automáticas, sin agencias",
     subtitle: ["Sin abrir el Administrador", "de Meta ni una vez."],
     video: "/videos/campagin.mp4",
   },
   {
-    title: "Photoshoot de producto",
-    subtitle: ["Sin estudio, sin fotógrafo,", "sin esperar la entrega."],
+    title: "Fotos profesionales, sin estudio ni modelos",
+    subtitle: ["Listas para publicar,", "el mismo día."],
     video: "/videos/product.mp4",
   },
 ];
@@ -341,7 +341,7 @@ function WhatPosttyDoesSection() {
             // bottom, which is the desired look).
             className="isolate flex aspect-[5/7] flex-col items-center overflow-hidden rounded-xl bg-[#F1F2F4] px-3 pt-12 pb-0 sm:pt-20 md:aspect-[7/6]"
           >
-            <h3 className="font-heading text-center text-2xl font-semibold tracking-tight text-[#0D1522] sm:text-3xl">
+            <h3 className="font-heading text-balance text-center text-xl font-semibold tracking-tight text-[#0D1522] sm:text-2xl">
               {item.title}
             </h3>
             <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base">
@@ -372,7 +372,7 @@ function WhatPosttyDoesSection() {
         <div className="relative aspect-[5/7] overflow-hidden rounded-xl md:aspect-[7/6]">
           <Image
             src="/blonde.webp"
-            alt="Dejá de pagarle a una agencia que no te da resultados"
+            alt="Tus findes así, sin gastar más tiempo y dinero en agencias y CMs que no suman"
             fill
             sizes="(max-width: 767px) 100vw, 50vw"
             className="object-cover object-center"
@@ -382,10 +382,8 @@ function WhatPosttyDoesSection() {
               weight (medium) per spec so it reads as editorial copy rather
               than a heading shout. */}
           <div className="absolute inset-x-0 top-12 px-4 sm:top-20 sm:px-8">
-            <h3 className="font-heading text-center text-xl font-medium leading-tight tracking-tight text-[#0D1522] sm:text-2xl md:text-3xl">
-              Dejá de pagarle a una agencia
-              <br />
-              que no te da resultados
+            <h3 className="font-heading mx-auto max-w-[19ch] text-balance text-center text-lg font-medium leading-tight tracking-tight text-[#0D1522] sm:text-xl md:max-w-[24ch] md:text-2xl">
+              Tus findes así, sin gastar más tiempo y dinero en agencias y CMs que no suman
             </h3>
           </div>
           {/* Glass CTA — vertically centered, with arrow that nudges right on
@@ -757,14 +755,22 @@ function PricingSection() {
                   key={option}
                   type="button"
                   onClick={() => setBilling(option)}
-                  className={`relative rounded-full px-5 py-2 text-sm font-semibold transition-colors sm:text-base ${
+                  className={`relative z-10 cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition-colors sm:text-base ${
                     selected ? "text-[#0D1522]" : "text-[#0D1522]/55 hover:text-[#0D1522]/80"
                   }`}
                 >
                   {selected && (
                     <motion.span
                       layoutId="billing-thumb"
-                      className="absolute inset-0 rounded-full border border-white/60 bg-white/70 shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl backdrop-saturate-150"
+                      // pointer-events-none is load-bearing, not hygiene. The
+                      // thumb is `absolute inset-0` INSIDE the selected button,
+                      // and layoutId drives it with a transform — so while it
+                      // slides (and at rest, if projection measures before
+                      // hydration settles) it can sit over the OTHER button.
+                      // A click there hits the thumb, which belongs to the
+                      // already-selected button, so the toggle looked frozen
+                      // on "Mensual" and never switched.
+                      className="pointer-events-none absolute inset-0 rounded-full border border-white/60 bg-white/70 shadow-[0_4px_16px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl backdrop-saturate-150"
                       transition={{ type: "spring", stiffness: 360, damping: 30 }}
                     />
                   )}
