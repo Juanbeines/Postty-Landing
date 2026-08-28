@@ -282,22 +282,22 @@ const brandTestimonials: ReadonlyArray<BrandTestimonial> = [
 
 const whatPosttyDoesItems: ReadonlyArray<{
   title: string;
-  subtitle: readonly [string, string];
+  subtitle: string;
   video: string;
 }> = [
   {
-    title: "Contenido en 5 minutos, sin CM",
-    subtitle: ["Se publica solo.", "Vos no subís nada."],
+    title: "Contenido para redes",
+    subtitle: "Todo el mes en 5 minutos, sin CM.",
     video: "/videos/feed.mp4",
   },
   {
-    title: "Campañas automáticas, sin agencias",
-    subtitle: ["Sin abrir el Administrador", "de Meta ni una vez."],
+    title: "Campañas de Meta",
+    subtitle: "Ads profesionales, sin agencias.",
     video: "/videos/campagin.mp4",
   },
   {
-    title: "Fotos profesionales, sin estudio ni modelos",
-    subtitle: ["Listas para publicar,", "el mismo día."],
+    title: "Photoshoot de producto",
+    subtitle: "Producciones sin estudio ni modelos.",
     video: "/videos/product.mp4",
   },
 ];
@@ -341,13 +341,11 @@ function WhatPosttyDoesSection() {
             // bottom, which is the desired look).
             className="isolate flex aspect-[5/7] flex-col items-center overflow-hidden rounded-xl bg-[#F1F2F4] px-3 pt-12 pb-0 sm:pt-20 md:aspect-[7/6]"
           >
-            <h3 className="font-heading text-balance text-center text-xl font-semibold tracking-tight text-[#0D1522] sm:text-2xl">
+            <h3 className="font-heading text-center text-2xl font-semibold tracking-tight text-[#0D1522] sm:text-3xl">
               {item.title}
             </h3>
-            <p className="mt-3 max-w-md text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base">
-              {item.subtitle[0]}
-              <br />
-              {item.subtitle[1]}
+            <p className="mt-3 max-w-md text-balance text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base">
+              {item.subtitle}
             </p>
             {/* Video — flex-1 fills whatever vertical space is left below
                 the subtitle (no fixed aspect on the container). max-w shrunk
@@ -382,7 +380,7 @@ function WhatPosttyDoesSection() {
               weight (medium) per spec so it reads as editorial copy rather
               than a heading shout. */}
           <div className="absolute inset-x-0 top-12 px-4 sm:top-20 sm:px-8">
-            <h3 className="font-heading mx-auto max-w-[19ch] text-balance text-center text-lg font-medium leading-tight tracking-tight text-[#0D1522] sm:text-xl md:max-w-[24ch] md:text-2xl">
+            <h3 className="font-heading mx-auto max-w-[26ch] text-balance text-center text-xl font-medium leading-tight tracking-tight text-[#0D1522] sm:text-2xl md:max-w-[40ch] md:text-3xl">
               Tus findes así, sin gastar más tiempo y dinero en agencias y CMs que no suman
             </h3>
           </div>
