@@ -48,7 +48,12 @@ export default function GiftTeaser() {
           initial={false}
           animate={{ scale: hovered ? 1.05 : 1 }}
           transition={{ type: "spring", stiffness: 340, damping: 22 }}
-          className="pointer-events-none -mb-1 whitespace-nowrap rounded-full border border-white/70 bg-white/55 px-4 py-2 text-sm font-semibold text-[#0D1522] shadow-[0_4px_18px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.8)] backdrop-blur-xl backdrop-saturate-150"
+          /* Same recipe as the hero CTAs: no border at all, a light blur, and
+             a hairline inset highlight doing the edge instead. One departure —
+             the hero can afford bg-white/15 with white text because the video
+             behind it is dark; this pill is fixed and also travels over the
+             page's light grey, so it keeps dark text and a little more fill. */
+          className="pointer-events-none -mb-1 whitespace-nowrap rounded-full bg-white/30 px-4 py-2 text-sm font-semibold text-[#0D1522] shadow-[0_6px_20px_rgba(13,21,34,0.07),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-[6px]"
         >
           Pss, ¡sorpresa!
         </motion.div>

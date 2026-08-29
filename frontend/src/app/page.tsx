@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
+import GiftCountdown from "@/components/GiftCountdown";
 import GiftOverlay from "@/components/GiftOverlay";
 import GiftTeaser from "@/components/GiftTeaser";
 import CreativeSphereSection from "@/components/CreativeSphereSection";
@@ -884,13 +885,22 @@ function PricingSection() {
                   The card deliberately has no overflow-hidden, or this would be
                   clipped. Only renders once the gift is claimed, and doubles as
                   the confetti origin (giftBadgeRef). */}
+              {/* Discount and deadline in ONE tilted badge hanging off the
+                  corner: the offer and its expiry are a single fact, and two
+                  separate chips made the corner look cluttered. Absolute, so
+                  it never pushes the card's content down. The card has no
+                  overflow-hidden on purpose, or this would be clipped. */}
               {giftDiscountApplied && (
                 <div
                   ref={giftBadgeRef}
-                  className="absolute -right-3.5 -top-5 z-20 rotate-12 rounded-full px-[1.15rem] py-[0.68rem] leading-none shadow-[0_8px_26px_rgba(181,255,0,0.55)]"
+                  className="absolute -right-3.5 -top-5 z-20 flex rotate-12 flex-col items-center gap-[0.3rem] rounded-2xl px-[1.05rem] py-[0.62rem] leading-none shadow-[0_8px_26px_rgba(181,255,0,0.55)]"
                   style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
                 >
                   <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]">{PLANS.basic.off}</span>
+                  <span className="h-px w-full bg-[#0D1522]/15" aria-hidden="true" />
+                  <span className="text-[#0D1522]">
+                    <GiftCountdown bare />
+                  </span>
                 </div>
               )}
 
@@ -1010,9 +1020,15 @@ function PricingSection() {
             >
               {/* Same tilted pill as Basic, in glass instead of chartreuse —
                   Basic must stay the louder discount of the two. */}
+              {/* Same badge in white glass — Basic must stay the louder of
+                  the two discounts. */}
               {giftDiscountApplied && (
-                <div className="absolute -right-3.5 -top-5 z-20 rotate-12 rounded-full border border-white/80 bg-white/90 px-[1.15rem] py-[0.68rem] leading-none shadow-[0_6px_20px_rgba(13,21,34,0.14)] backdrop-blur-md">
+                <div className="absolute -right-3.5 -top-5 z-20 flex rotate-12 flex-col items-center gap-[0.3rem] rounded-2xl border border-white/80 bg-white/90 px-[1.05rem] py-[0.62rem] leading-none shadow-[0_6px_20px_rgba(13,21,34,0.14)] backdrop-blur-md">
                   <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]/70">{PLANS.pro.off}</span>
+                  <span className="h-px w-full bg-[#0D1522]/12" aria-hidden="true" />
+                  <span className="text-[#0D1522]/70">
+                    <GiftCountdown bare />
+                  </span>
                 </div>
               )}
 
