@@ -55,7 +55,7 @@ export default function GiftTeaser() {
              page's light grey, so it keeps dark text and a little more fill. */
           className="pointer-events-none -mb-1 whitespace-nowrap rounded-full bg-white/30 px-4 py-2 text-sm font-semibold text-[#0D1522] shadow-[0_6px_20px_rgba(13,21,34,0.07),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-[6px]"
         >
-          Pss, ¡sorpresa!
+          Clickeame para un regalo
         </motion.div>
 
         <button

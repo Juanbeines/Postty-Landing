@@ -177,7 +177,14 @@ export default function CreativeSphereSection() {
   }, [stageW, R, bandY, Rl]);
 
   return (
-    <section id="creativos" className="overflow-hidden px-4 py-16 md:py-24">
+    /* `isolate` is load-bearing, not cosmetic. The sphere paints its cards by
+       writing an explicit zIndex up to ~1040 (and 1100 on its CTA) so the
+       front creative covers the back ones. Without a stacking context of its
+       own, those numbers compete in the ROOT context and beat every real
+       overlay on the page — the gift modal at z-[100] rendered UNDER the
+       sphere. isolate scopes them to this section, so an overlay only has to
+       out-rank the section itself. */
+    <section id="creativos" className="isolate overflow-hidden px-4 py-16 md:py-24">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

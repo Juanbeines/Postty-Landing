@@ -14,7 +14,7 @@ import Confetti from "@/components/Confetti";
 import HowItWorksFlow from "@/components/HowItWorksFlow";
 import AppsCarousel from "@/components/AppsCarousel";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
-import { useGiftDiscount, useGiftOverlayClosed } from "@/lib/giftDiscount";
+import { onGiftJustClosed, useGiftDiscount } from "@/lib/giftDiscount";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
 // Untitled UI icons (MIT) — the credit allowance lines.
 import { Image01 as ImageIcon, VideoRecorder as VideoIcon } from "@untitledui/icons";
@@ -582,34 +582,39 @@ function PricingSection() {
   // otherwise they render the plain list price.
   const giftDiscountApplied = useGiftDiscount();
   // Confetti fires the instant the GiftOverlay closes (X, ESC, Cerrar link).
-  // Origin = the Basic "50% OFF" pill, because the gift now grants Basic's
-  // discount and that is what the overlay announces. Watching overlayClosed
-  // instead of giftDiscountApplied is important: the discount is applied the
-  // moment the overlay OPENS (so the pill is already visible "underneath"),
-  // but the user can't see the confetti while the overlay covers the page.
-  const giftOverlayClosed = useGiftOverlayClosed();
+  // Origin is the discount badge — the "50% OFF" + countdown block hanging off
+  // the Basic card, which is what the overlay just announced.
   const giftBadgeRef = useRef<HTMLDivElement>(null);
   const [confettiOn, setConfettiOn] = useState(false);
   const [confettiOrigin, setConfettiOrigin] = useState({ x: 0, y: 0 });
 
-  useEffect(() => {
-    if (!giftOverlayClosed || !giftDiscountApplied) return;
-    try {
-      if (sessionStorage.getItem("postty_gift_confetti_fired") === "1") return;
-    } catch { /* ignore */ }
-    // Small delay so the overlay's exit animation can finish and the
-    // pricing cards are fully visible before the confetti pops.
-    const t = window.setTimeout(() => {
+  /* Bursts from the discount badge on EVERY close — the mascot can reopen the
+     gift as often as the user likes, and a once-per-session flag meant only
+     the first close ever popped.
+
+     It waits for close()'s scroll to stop before measuring: reading the badge
+     mid-flight returns a coordinate the page is merely passing through, which
+     is how the confetti ended up going off in random places. Capped at 90
+     frames so a scroll that never settles cannot hang it. */
+  useEffect(() => onGiftJustClosed(() => {
+    let last = window.scrollY;
+    let still = 0;
+    let frames = 0;
+    const tick = () => {
+      frames += 1;
+      if (window.scrollY === last) still += 1;
+      else { still = 0; last = window.scrollY; }
+      if (still < 3 && frames < 90) { requestAnimationFrame(tick); return; }
+
       const el = giftBadgeRef.current;
       if (!el) return;
       const r = el.getBoundingClientRect();
       setConfettiOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
       setConfettiOn(true);
-      try { sessionStorage.setItem("postty_gift_confetti_fired", "1"); } catch { /* ignore */ }
       window.setTimeout(() => setConfettiOn(false), 2200);
-    }, 200);
-    return () => window.clearTimeout(t);
-  }, [giftOverlayClosed, giftDiscountApplied]);
+    };
+    requestAnimationFrame(tick);
+  }), []);
   const sectionRef = useRef<HTMLElement>(null);
   const appUrl = useAppUrl();
 
@@ -1289,8 +1294,12 @@ function LegalModal({ open, onClose, title, children }: { open: boolean; onClose
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
+  /* True while the pill is still over the hero image. The hero is a dark,
+     warm photograph and the rest of the page is near-white, so the pill's
+     copy has to invert as it crosses that boundary or it becomes unreadable
+     on one side or the other. */
+  const [overHero, setOverHero] = useState(true);
   const [legalModal, setLegalModal] = useState<"tyc" | "privacy" | null>(null);
-  const [showHeroCTA, setShowHeroCTA] = useState(false);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const appUrl = useAppUrl();
 
@@ -1310,6 +1319,11 @@ export default function Home() {
       const currentY = window.scrollY;
       const delta = currentY - lastY;
 
+      // Flip a little before the hero fully leaves, so the swap happens
+      // while the pill still has dark photo behind it rather than exactly
+      // on the seam.
+      setOverHero(currentY < window.innerHeight - 80);
+
       if (currentY <= 10) {
         setScrolled(false);
       } else if (delta > 2) {
@@ -1323,8 +1337,13 @@ export default function Home() {
       lastY = currentY;
     };
 
+    handler();
     window.addEventListener("scroll", handler, { passive: true });
-    return () => window.removeEventListener("scroll", handler);
+    window.addEventListener("resize", handler);
+    return () => {
+      window.removeEventListener("scroll", handler);
+      window.removeEventListener("resize", handler);
+    };
   }, []);
 
   const faqJsonLd = {
@@ -1367,14 +1386,36 @@ export default function Home() {
             scrolled && !isMobile ? "pointer-events-none" : ""
           }`}
         >
-          <a href="#" className="font-heading text-lg font-extrabold tracking-[-0.08em] text-[#0D1522]">
+          <a
+            href="#"
+            className={`font-heading text-lg font-extrabold tracking-[-0.08em] transition-colors duration-300 ${
+              overHero ? "text-white" : "text-[#0D1522]"
+            }`}
+          >
             Postty
           </a>
           {/* Nav links — desktop only (mobile pill just shows brand +
               WhatsApp + Iniciar sesión for compactness). */}
-          <nav className="hidden items-center gap-5 text-sm text-[#0D1522]/70 md:flex">
-            <a href="#como-funciona" className="whitespace-nowrap transition hover:text-[#0D1522]">Cómo funciona</a>
-            <a href="#pricing" className="whitespace-nowrap transition hover:text-[#0D1522]">Precios</a>
+          {/* font-medium and a higher opacity: against an extrabold wordmark,
+              the old regular weight at 70% read as a different, lighter
+              typeface sitting next to the logo. */}
+          <nav
+            className={`hidden items-center gap-5 text-sm font-medium transition-colors duration-300 md:flex ${
+              overHero ? "text-white/85" : "text-[#0D1522]/80"
+            }`}
+          >
+            <a
+              href="#como-funciona"
+              className={`whitespace-nowrap transition ${overHero ? "hover:text-white" : "hover:text-[#0D1522]"}`}
+            >
+              Cómo funciona
+            </a>
+            <a
+              href="#pricing"
+              className={`whitespace-nowrap transition ${overHero ? "hover:text-white" : "hover:text-[#0D1522]"}`}
+            >
+              Precios
+            </a>
           </nav>
           {/* WhatsApp glass circle — moved OUT of the desktop-only nav
               so it shows on every viewport, sitting between the brand
@@ -1388,11 +1429,16 @@ export default function Home() {
             onClick={() => trackEvent("Lead", { content_name: "header_whatsapp", content_category: "contacto_whatsapp" })}
             className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="#0D1522" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill={overHero ? "#FFFFFF" : "#0D1522"} aria-hidden="true">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
             </svg>
           </a>
-          <a href={appUrl} className="inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-medium text-[#0D1522] shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25">
+          <a
+            href={appUrl}
+            className={`inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition-colors duration-300 hover:bg-white/25 ${
+              overHero ? "text-white" : "text-[#0D1522]"
+            }`}
+          >
             Iniciar sesión
           </a>
         </motion.header>
@@ -1463,73 +1509,33 @@ export default function Home() {
         <h1 className="sr-only">
           Postty — Agente de marketing con IA para e-commerce: crea contenido y ads para Meta y Google en 5 minutos
         </h1>
-        {isMobile !== null && (
-          <video
-            key={isMobile ? "mobile" : "desktop"}
-            src={isMobile ? "/hero-mobile.mp4" : "/hero.mp4"}
-            /* Poster = the video's OWN closing frame, the one carrying "En
-               2026, dejale el marketing a Postty." Two reasons it's that
-               frame and not a designed image: it's the payoff, so ad traffic
-               reads the promise on the first pixel instead of the sepia
-               opening shot; and it's the same set and person as the video,
-               so there's no visual jump when playback finally starts.
-               Matters most inside the Instagram in-app browser, where a
-               3 MB video on mobile data takes seconds to buffer. */
-            poster={isMobile ? "/hero-poster-mobile.webp" : "/hero-poster.webp"}
-            autoPlay
-            muted
-            playsInline
-            preload="auto"
-            onTimeUpdate={(e) => {
-              const video = e.currentTarget;
-              if (video.currentTime >= 11 && !showHeroCTA) {
-                setShowHeroCTA(true);
-              }
-              // On mobile, pause 0.5s before the natural end so the final
-              // text frame stays visible (otherwise it fades out).
-              if (
-                isMobile &&
-                video.duration &&
-                video.currentTime >= video.duration - 0.5
-              ) {
-                video.pause();
-              }
-            }}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        )}
+        {/* Designed still, exported with the headline and subhead already
+            set into it. Replaces the 12s hero video: almost nobody watched it
+            through, and the CTA underneath was gated on 11 seconds of
+            playback — so most visitors never saw the page's primary button at
+            all, and anyone whose browser blocked autoplay never could.
+            WebP q90 at 145 KB against 1.9 MB for the JPG export.
+            priority: it is the LCP element, so it must not lazy-load. */}
+        <Image
+          src="/hero-final.webp"
+          alt="Concentrate en crecer. Postty se encarga del marketing. Sin agencia. Sin CM."
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+        />
 
-        <AnimatePresence>
-          {showHeroCTA && (
-            <motion.div
-              initial={{ y: 40, scale: 0.9 }}
-              animate={{ y: 0, scale: 1 }}
-              exit={{ y: 40, scale: 0.9 }}
-              transition={{ type: "spring", stiffness: 280, damping: 26 }}
-              className="pointer-events-none absolute inset-x-0 bottom-[16%] flex flex-col-reverse items-center justify-center gap-2 sm:flex-row sm:gap-3 md:bottom-[36%]"
-            >
-              {/* Secondary CTA — WhatsApp. Same glass language as the
-                  primary so they read as a pair, slightly less horizontal
-                  padding so "Probar gratis" remains the visual anchor.
-                  Icon in WhatsApp brand green (#25D366). target=_blank
-                  + noopener since it leaves the site. */}
-              <motion.a
-                href={WHATSAPP_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => trackEvent("Lead", { content_name: "hero_cta_whatsapp", content_category: "contacto_whatsapp" })}
-                className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-white/15 px-6 py-[18px] text-lg font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px] sm:px-7"
-                whileHover={{ y: -2, scale: 1.015 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 340, damping: 22 }}
-              >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366" aria-hidden="true">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
-                </svg>
-                WhatsApp
-              </motion.a>
-
-              {/* Primary CTA — unchanged */}
+        {/* No gate any more: the button is on screen from the first paint.
+            Positioned under the baked-in subhead, per the mockup. */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="pointer-events-none absolute inset-x-0 top-[56%] flex items-center justify-center md:top-[52%]"
+        >
+              {/* The hero's only CTA. WhatsApp used to sit beside it; with a
+                  single button the choice is unambiguous, and support is
+                  still one tap away in the header and the footer. */}
               <motion.a
                 href={appUrl}
                 onClick={() => trackEvent("Lead", { content_name: "hero_cta_probar_gratis", content_category: "trial_intent" })}
@@ -1538,12 +1544,10 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
               >
-                Probar gratis
+                Probar
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </motion.a>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        </motion.div>
       </section>
 
       {/* Problem cards removed — archived in src/components/_extras/ProblemCardsStack.tsx */}

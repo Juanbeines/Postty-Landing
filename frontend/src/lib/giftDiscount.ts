@@ -24,6 +24,9 @@ const STORAGE_KEY = "postty_gift_discount_applied";
 const EVENT_NAME = "postty:gift-discount";
 const CLOSED_KEY = "postty_gift_overlay_closed";
 const CLOSED_EVENT = "postty:gift-overlay-closed";
+/* PricingSection's confetti fires once per open→close cycle. The key lives
+   here, not there, because resetGiftCycle() has to clear it. */
+const CONFETTI_KEY = "postty_gift_confetti_fired";
 
 /* The deadline is the one piece of gift state that must OUTLIVE the session:
    a seven-day countdown that resets when the browser closes is not a
@@ -185,6 +188,69 @@ export function useGiftOverlayClosed(): boolean {
 const OPEN_EVENT = "postty:gift-open";
 
 /** Ask the GiftOverlay to open now. No-op if it already fired this session. */
+/** True once this cycle's confetti has gone off. */
+export function giftConfettiFired(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return sessionStorage.getItem(CONFETTI_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function markGiftConfettiFired(): void {
+  if (typeof window === "undefined") return;
+  try { sessionStorage.setItem(CONFETTI_KEY, "1"); } catch { /* ignore */ }
+}
+
+/**
+ * Rearm the gift for another run, called whenever the overlay OPENS.
+ *
+ * Both "closed" and "confetti fired" are sticky within a session, which was
+ * correct while the gift could only appear once. The corner mascot reopens it
+ * on demand, so without this the second close and every one after it produced
+ * nothing: the confetti key blocked the burst, and `closed` staying true meant
+ * PricingSection's effect never even re-ran, since its dependencies never
+ * changed back.
+ */
+export function resetGiftCycle(): void {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(CLOSED_KEY);
+    sessionStorage.removeItem(CONFETTI_KEY);
+  } catch {
+    /* ignore */
+  }
+  // Same-tab listeners must see `closed` flip back to false, or the next
+  // close would not register as a change.
+  window.dispatchEvent(new Event(CLOSED_EVENT));
+}
+
+/* ── The close signal ────────────────────────────────────────────────────
+   PricingSection's confetti used to key off `useGiftOverlayClosed()`, a
+   boolean derived from sessionStorage and watched through an effect's
+   dependency array. That has too many ways to sit in a state that never
+   re-fires: the flag already true from an earlier cycle, the dependency not
+   actually changing, a stale guard surviving in storage.
+
+   A close is an EDGE, so it is modelled as one. The event only exists at the
+   instant it happens, cannot be "already true", and needs no reset. */
+
+const JUST_CLOSED_EVENT = "postty:gift-just-closed";
+
+/** Fired by GiftOverlay.close(), every single time it closes. */
+export function notifyGiftJustClosed(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(JUST_CLOSED_EVENT));
+}
+
+/** Subscribe to closes; returns an unsubscribe function. */
+export function onGiftJustClosed(fn: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(JUST_CLOSED_EVENT, fn);
+  return () => window.removeEventListener(JUST_CLOSED_EVENT, fn);
+}
+
 export function requestGiftOpen(): void {
   if (typeof window === "undefined") return;
   window.dispatchEvent(new Event(OPEN_EVENT));

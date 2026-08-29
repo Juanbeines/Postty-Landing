@@ -52,7 +52,9 @@ import { trackEvent } from "@/lib/pixel";
 import {
   applyGiftDiscount,
   markGiftOverlayClosed,
+  notifyGiftJustClosed,
   onGiftOpenRequested,
+  resetGiftCycle,
 } from "@/lib/giftDiscount";
 import { buildGiftWhatsAppUrl } from "@/lib/whatsapp";
 import Confetti from "@/components/Confetti";
@@ -114,6 +116,10 @@ export default function GiftOverlay() {
     if (timersRef.current.load !== undefined) window.clearTimeout(timersRef.current.load);
     if (timersRef.current.pricing !== undefined) window.clearTimeout(timersRef.current.pricing);
     timersRef.current.observer?.disconnect();
+    // Clear the previous run's "closed" and "confetti fired" marks so this
+    // open→close cycle can burst its own confetti. Without it only the very
+    // first close of the session ever popped.
+    resetGiftCycle();
     setStep(1);
     // Apply the discount the MOMENT the overlay opens — the gift itself
     // is the trigger, not the submit. The user gets the discount whether
@@ -185,12 +191,19 @@ export default function GiftOverlay() {
      because the body lock would otherwise swallow the programmatic scroll. */
   const close = useCallback(() => {
     document.body.style.overflow = "";
+    // "start", not "center": the pricing section is tall, and centring it put
+    // the heading half off the top of the screen. Aligning its top leaves the
+    // section's own py-24 as breathing room above "Precios simples".
     document.querySelector("#pricing")?.scrollIntoView({
       behavior: "auto",
-      block: "center",
+      block: "start",
     });
     setStep(0);
     markGiftOverlayClosed();
+    // This is the ONLY scroll in the close path. PricingSection waits for it
+    // to settle and then bursts — it must not scroll again, or the two fight
+    // and the confetti goes off at whatever coordinate the page is passing.
+    notifyGiftJustClosed();
   }, []);
 
   /* ESC to close */
