@@ -49,7 +49,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/pixel";
-import { applyGiftDiscount, markGiftOverlayClosed } from "@/lib/giftDiscount";
+import {
+  applyGiftDiscount,
+  markGiftOverlayClosed,
+  onGiftOpenRequested,
+} from "@/lib/giftDiscount";
 import { buildGiftWhatsAppUrl } from "@/lib/whatsapp";
 import Confetti from "@/components/Confetti";
 
@@ -87,6 +91,43 @@ export default function GiftOverlay() {
   /* Trigger — a page-load timer and a pricing-visibility timer race each
      other; the first to fire opens the overlay once and tears the other down.
      Either way it is a single, predictable nudge per session. */
+  /* Guards live in refs because `open` is now shared between the timers and
+     the corner teaser, and must stay idempotent across both. */
+  const firedRef = useRef(false);
+  const timersRef = useRef<{
+    load?: number;
+    pricing?: number;
+    observer?: IntersectionObserver;
+  }>({});
+
+  /* `force` is what separates the two kinds of trigger. The timers must
+     fire at most once per session, so they call open() and are stopped by
+     firedRef. The corner mascot is a deliberate click and must work every
+     time, so it calls open(true) and skips that guard. */
+  const open = useCallback((force = false) => {
+    if (firedRef.current && !force) return;
+    firedRef.current = true;
+    // Mark seen before anything else, so a reload mid-animation can't
+    // queue a second run.
+    try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
+    // Whichever trigger lost the race must not fire afterwards.
+    if (timersRef.current.load !== undefined) window.clearTimeout(timersRef.current.load);
+    if (timersRef.current.pricing !== undefined) window.clearTimeout(timersRef.current.pricing);
+    timersRef.current.observer?.disconnect();
+    setStep(1);
+    // Apply the discount the MOMENT the overlay opens — the gift itself
+    // is the trigger, not the submit. The user gets the discount whether
+    // they submit, close with the X, or just dismiss.
+    // Load-bearing for the confetti: PricingSection's burst reads
+    // giftBadgeRef, and that pill only mounts once the discount is
+    // applied. Deferring this to submit would silently kill it.
+    applyGiftDiscount();
+  }, []);
+
+  /* The corner teaser opens the gift on click, through the same `open`,
+     forcing past the once-per-session guard. */
+  useEffect(() => onGiftOpenRequested(() => open(true)), [open]);
+
   useEffect(() => {
     try {
       if (sessionStorage.getItem(SESSION_KEY)) {
@@ -98,54 +139,32 @@ export default function GiftOverlay() {
       }
     } catch { /* ignore */ }
 
-    let pricingTimer: number | undefined;
-    let observer: IntersectionObserver | undefined;
-    let fired = false;
-
-    const open = () => {
-      if (fired) return;
-      fired = true;
-      // Mark seen before anything else, so a reload mid-animation can't
-      // queue a second run.
-      try { sessionStorage.setItem(SESSION_KEY, "1"); } catch { /* ignore */ }
-      // Whichever timer lost the race must not fire afterwards.
-      window.clearTimeout(loadTimer);
-      if (pricingTimer !== undefined) window.clearTimeout(pricingTimer);
-      observer?.disconnect();
-      setStep(1);
-      // Apply the discount the MOMENT the overlay opens — the gift itself
-      // is the trigger, not the submit. The user gets the discount whether
-      // they submit, close with the X, or just dismiss.
-      // Load-bearing for the confetti: PricingSection's burst reads
-      // giftBadgeRef, and that pill only mounts once the discount is
-      // applied. Deferring this to submit would silently kill it.
-      applyGiftDiscount();
-    };
-
-    const loadTimer = window.setTimeout(open, PAGE_LOAD_DELAY_MS);
+    timersRef.current.load = window.setTimeout(open, PAGE_LOAD_DELAY_MS);
 
     const target = document.querySelector<HTMLElement>(TRIGGER_SELECTOR);
     if (target) {
-      observer = new IntersectionObserver(
+      const observer = new IntersectionObserver(
         ([entry]) => {
-          if (!entry.isIntersecting || pricingTimer !== undefined) return;
-          pricingTimer = window.setTimeout(open, PRICING_DELAY_MS);
-          observer?.disconnect();
+          if (!entry.isIntersecting || timersRef.current.pricing !== undefined) return;
+          timersRef.current.pricing = window.setTimeout(open, PRICING_DELAY_MS);
+          observer.disconnect();
         },
         // Fires as soon as 10% of the pricing section is visible — on
         // mobile the section is tall, a higher threshold meant the user
         // had to scroll deep before the timer even started.
         { threshold: 0.1 },
       );
+      timersRef.current.observer = observer;
       observer.observe(target);
     }
 
+    const timers = timersRef.current;
     return () => {
-      observer?.disconnect();
-      window.clearTimeout(loadTimer);
-      if (pricingTimer !== undefined) window.clearTimeout(pricingTimer);
+      timers.observer?.disconnect();
+      if (timers.load !== undefined) window.clearTimeout(timers.load);
+      if (timers.pricing !== undefined) window.clearTimeout(timers.pricing);
     };
-  }, []);
+  }, [open]);
 
   /* Lock body scroll */
   useEffect(() => {

@@ -100,3 +100,23 @@ export function useGiftOverlayClosed(): boolean {
 
   return closed;
 }
+
+/* ── Manual trigger ───────────────────────────────────────────────────────
+   The overlay opens itself on two timers (page load, pricing in view). The
+   corner teaser is a THIRD way in, and it lives outside GiftOverlay, so it
+   asks via an event rather than reaching into that component's state. */
+
+const OPEN_EVENT = "postty:gift-open";
+
+/** Ask the GiftOverlay to open now. No-op if it already fired this session. */
+export function requestGiftOpen(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event(OPEN_EVENT));
+}
+
+/** GiftOverlay subscribes with this; returns an unsubscribe function. */
+export function onGiftOpenRequested(fn: () => void): () => void {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener(OPEN_EVENT, fn);
+  return () => window.removeEventListener(OPEN_EVENT, fn);
+}

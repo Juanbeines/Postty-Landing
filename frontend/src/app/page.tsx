@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
 import TermsContent from "@/components/legal/TermsContent";
 import GiftOverlay from "@/components/GiftOverlay";
+import GiftTeaser from "@/components/GiftTeaser";
 import CreativeSphereSection from "@/components/CreativeSphereSection";
 import BrandContentModal from "@/components/BrandContentModal";
 import Confetti from "@/components/Confetti";
@@ -1328,6 +1329,7 @@ export default function Home() {
       {/* Full-screen 3-step lead-capture overlay. Triggers once per session
           when the user scrolls into #testimonios. */}
       <GiftOverlay />
+      <GiftTeaser />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
