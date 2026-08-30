@@ -394,7 +394,7 @@ function WhatPosttyDoesSection() {
               content_name: "bento_quiero_probar",
               content_category: "trial_intent",
             })}
-            className="group absolute left-1/2 top-1/2 inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2.5 rounded-full border border-white/60 bg-white/30 px-7 py-3.5 text-base font-semibold text-[#0D1522] shadow-[0_4px_24px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 hover:bg-white/50 hover:shadow-[0_10px_36px_rgba(13,21,34,0.18),inset_0_1px_0_rgba(255,255,255,0.85)] hover:-translate-y-[calc(50%+2px)]"
+            className="group absolute left-1/2 top-[58%] inline-flex -translate-x-1/2 -translate-y-1/2 items-center gap-2.5 whitespace-nowrap rounded-full border border-white/60 bg-white/30 px-6 py-3 text-[0.95rem] font-semibold text-[#0D1522] shadow-[0_4px_24px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-[calc(50%+2px)] hover:bg-white/50 hover:shadow-[0_10px_36px_rgba(13,21,34,0.18),inset_0_1px_0_rgba(255,255,255,0.85)] sm:px-7 sm:py-3.5 sm:text-base md:top-1/2"
           >
             Quiero probar
             <svg
@@ -1516,14 +1516,19 @@ export default function Home() {
             all, and anyone whose browser blocked autoplay never could.
             WebP q90 at 145 KB against 1.9 MB for the JPG export.
             priority: it is the LCP element, so it must not lazy-load. */}
-        <Image
-          src="/hero-final.webp"
-          alt="Concentrate en crecer. Postty se encarga del marketing. Sin agencia. Sin CM."
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        {/* Two crops, because the headline is baked INTO the picture: a 16:9
+            frame cover-cropped on a portrait phone cuts "Concentrate en
+            crecer" in half. <picture> lets the browser pick before it
+            downloads, so neither viewport ever fetches the other's file. */}
+        <picture>
+          <source media="(max-width: 767px)" srcSet="/hero-mobile.webp" />
+          <img
+            src="/hero-final.webp"
+            alt="Concentrate en crecer. Postty se encarga del marketing. Sin agencia. Sin CM."
+            fetchPriority="high"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+          />
+        </picture>
 
         {/* No gate any more: the button is on screen from the first paint.
             Positioned under the baked-in subhead, per the mockup. */}
