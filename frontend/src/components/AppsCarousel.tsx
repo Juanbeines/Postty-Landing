@@ -200,7 +200,7 @@ export default function AppsCarousel() {
               the two sides and never pokes out under the bottom edge. */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute -left-5 -right-5 bottom-6 top-6 rounded-[36px] border border-white/60 bg-white/45 shadow-[0_18px_46px_rgba(13,21,34,0.07)]"
+            className="pointer-events-none absolute -left-3 -right-3 bottom-6 top-6 rounded-[36px] sm:-left-5 sm:-right-5 border border-white/60 bg-white/45 shadow-[0_18px_46px_rgba(13,21,34,0.07)]"
           />
 
           <div className="relative rounded-[32px] border border-white/70 bg-white/75 p-5 shadow-[0_16px_50px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-2xl backdrop-saturate-150">
@@ -210,7 +210,7 @@ export default function AppsCarousel() {
                 material. Not blurred: blur washed out the contrast with the
                 tiles. */}
             <div
-              className="rounded-[24px] border border-white/40 px-4 pb-6 pt-8 shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
+              className="overflow-hidden rounded-[24px] border border-white/40 px-4 pb-6 pt-8 shadow-[0_12px_40px_rgba(24,129,241,0.35)]"
               style={{ background: "linear-gradient(160deg, #1881F1, #49D3F8)" }}
             >
               <div className="relative flex h-[132px] items-center justify-center">
