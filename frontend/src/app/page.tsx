@@ -14,6 +14,7 @@ import Confetti from "@/components/Confetti";
 import HowItWorksFlow from "@/components/HowItWorksFlow";
 import HeroFan from "@/components/HeroFan";
 import StudioBackdrop from "@/components/StudioBackdrop";
+import BusinessCloud from "@/components/BusinessCloud";
 import AppsCarousel from "@/components/AppsCarousel";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { onGiftJustClosed, useGiftDiscount } from "@/lib/giftDiscount";
@@ -1523,7 +1524,8 @@ export default function Home() {
       <PricingSection />
 
       {/* ── Business types ── */}
-      <BusinessTypesSection />
+      {/* Emoji-pill version (BusinessTypesSection) is still defined above. */}
+      <BusinessCloud />
 
       {/* ── Tu equipo / ¿Por qué Postty? ──
           One white glass card per person: framed photo on top (name + role
