@@ -287,9 +287,9 @@ export default function HowItWorksFlow() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.1 }}
-        className="mx-auto mt-3 max-w-md text-center text-base text-[#0D1522]/55 sm:text-lg"
+        className="mx-auto mt-4 max-w-2xl text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl lg:max-w-none lg:whitespace-nowrap"
       >
-        Tres pasos, de tu URL a campañas activas.
+        Tres pasos, de tu producto o servicio a cientos de piezas y campañas publicitarias
       </motion.p>
 
       {/* ── Desktop: the full horizontal diagram ── */}

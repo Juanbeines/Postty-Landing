@@ -12,6 +12,8 @@ import CreativeSphereSection from "@/components/CreativeSphereSection";
 import BrandContentModal from "@/components/BrandContentModal";
 import Confetti from "@/components/Confetti";
 import HowItWorksFlow from "@/components/HowItWorksFlow";
+import HeroFan from "@/components/HeroFan";
+import StudioBackdrop from "@/components/StudioBackdrop";
 import AppsCarousel from "@/components/AppsCarousel";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { onGiftJustClosed, useGiftDiscount } from "@/lib/giftDiscount";
@@ -1294,11 +1296,6 @@ function LegalModal({ open, onClose, title, children }: { open: boolean; onClose
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false);
-  /* True while the pill is still over the hero image. The hero is a dark,
-     warm photograph and the rest of the page is near-white, so the pill's
-     copy has to invert as it crosses that boundary or it becomes unreadable
-     on one side or the other. */
-  const [overHero, setOverHero] = useState(true);
   const [legalModal, setLegalModal] = useState<"tyc" | "privacy" | null>(null);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
   const appUrl = useAppUrl();
@@ -1318,11 +1315,6 @@ export default function Home() {
     const handler = () => {
       const currentY = window.scrollY;
       const delta = currentY - lastY;
-
-      // Flip a little before the hero fully leaves, so the swap happens
-      // while the pill still has dark photo behind it rather than exactly
-      // on the seam.
-      setOverHero(currentY < window.innerHeight - 80);
 
       if (currentY <= 10) {
         setScrolled(false);
@@ -1360,7 +1352,8 @@ export default function Home() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-[#0D1522] md:min-h-0">
+    <div className="flex min-h-screen flex-col text-[#0D1522] md:min-h-0">
+      <StudioBackdrop />
       {/* Full-screen 3-step lead-capture overlay. Triggers once per session
           when the user scrolls into #testimonios. */}
       <GiftOverlay />
@@ -1388,9 +1381,7 @@ export default function Home() {
         >
           <a
             href="#"
-            className={`font-heading text-lg font-extrabold tracking-[-0.08em] transition-colors duration-300 ${
-              overHero ? "text-white" : "text-[#0D1522]"
-            }`}
+            className={`font-heading text-lg font-extrabold tracking-[-0.08em] transition-colors duration-300 text-[#0D1522]`}
           >
             Postty
           </a>
@@ -1400,19 +1391,17 @@ export default function Home() {
               the old regular weight at 70% read as a different, lighter
               typeface sitting next to the logo. */}
           <nav
-            className={`hidden items-center gap-5 text-sm font-medium transition-colors duration-300 md:flex ${
-              overHero ? "text-white/85" : "text-[#0D1522]/80"
-            }`}
+            className={`hidden items-center gap-5 text-sm font-medium transition-colors duration-300 md:flex text-[#0D1522]/80`}
           >
             <a
               href="#como-funciona"
-              className={`whitespace-nowrap transition ${overHero ? "hover:text-white" : "hover:text-[#0D1522]"}`}
+              className={"whitespace-nowrap transition hover:text-[#0D1522]"}
             >
               Cómo funciona
             </a>
             <a
               href="#pricing"
-              className={`whitespace-nowrap transition ${overHero ? "hover:text-white" : "hover:text-[#0D1522]"}`}
+              className={"whitespace-nowrap transition hover:text-[#0D1522]"}
             >
               Precios
             </a>
@@ -1429,15 +1418,13 @@ export default function Home() {
             onClick={() => trackEvent("Lead", { content_name: "header_whatsapp", content_category: "contacto_whatsapp" })}
             className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill={overHero ? "#FFFFFF" : "#0D1522"} aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#0D1522" aria-hidden="true">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/>
             </svg>
           </a>
           <a
             href={appUrl}
-            className={`inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition-colors duration-300 hover:bg-white/25 ${
-              overHero ? "text-white" : "text-[#0D1522]"
-            }`}
+            className={`inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition-colors duration-300 hover:bg-white/25 text-[#0D1522]`}
           >
             Iniciar sesión
           </a>
@@ -1502,68 +1489,17 @@ export default function Home() {
       </div>
 
       <main className="flex-1 md:flex-initial">
-      {/* ── Hero ── */}
-      <section className="relative h-screen overflow-hidden bg-black">
-        {/* SEO-critical H1: visually represented by the hero video.
-            Keywords: agente, marketing, IA, contenido, ads, Meta. */}
-        <h1 className="sr-only">
-          Postty — Agente de marketing con IA para e-commerce: crea contenido y ads para Meta y Google en 5 minutos
-        </h1>
-        {/* Designed still, exported with the headline and subhead already
-            set into it. Replaces the 12s hero video: almost nobody watched it
-            through, and the CTA underneath was gated on 11 seconds of
-            playback — so most visitors never saw the page's primary button at
-            all, and anyone whose browser blocked autoplay never could.
-            WebP q90 at 145 KB against 1.9 MB for the JPG export.
-            priority: it is the LCP element, so it must not lazy-load. */}
-        {/* Two crops, because the headline is baked INTO the picture: a 16:9
-            frame cover-cropped on a portrait phone cuts "Concentrate en
-            crecer" in half. <picture> lets the browser pick before it
-            downloads, so neither viewport ever fetches the other's file. */}
-        <picture>
-          <source media="(max-width: 767px)" srcSet="/hero-mobile.webp" />
-          <img
-            src="/hero-final.webp"
-            alt="Concentrate en crecer. Postty se encarga del marketing. Sin agencia. Sin CM."
-            fetchPriority="high"
-            className="absolute inset-0 h-full w-full object-cover object-center"
-          />
-        </picture>
-
-        {/* No gate any more: the button is on screen from the first paint.
-            Positioned under the baked-in subhead, per the mockup. */}
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          className="pointer-events-none absolute inset-x-0 top-[56%] flex items-center justify-center md:top-[52%]"
-        >
-              {/* The hero's only CTA. WhatsApp used to sit beside it; with a
-                  single button the choice is unambiguous, and support is
-                  still one tap away in the header and the footer. */}
-              <motion.a
-                href={appUrl}
-                onClick={() => trackEvent("Lead", { content_name: "hero_cta_probar_gratis", content_category: "trial_intent" })}
-                className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full bg-white/15 px-10 py-[18px] text-lg font-semibold text-white shadow-[0_6px_20px_rgba(0,0,0,0.07),inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-[6px]"
-                whileHover={{ y: -2, scale: 1.015 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 340, damping: 22 }}
-              >
-                Probar
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-              </motion.a>
-        </motion.div>
-      </section>
+      {/* ── Hero ──
+          Studio set with five finished ads fanned like a hand of cards; they
+          tip back into the backdrop on scroll. The previous still-image hero
+          (hero-final.webp / hero-mobile.webp) stays in /public. */}
+      <HeroFan appUrl={appUrl} />
 
       {/* Problem cards removed — archived in src/components/_extras/ProblemCardsStack.tsx */}
 
-      {/* ── Qué hace Postty ── */}
-      <WhatPosttyDoesSection />
-
-      {/* Lluvia de creativos — 3D sphere. Replaced BrandTestimonialsSection
-          (StarConcept + Nüa), which stays defined above in case we bring
-          testimonials back. */}
-      <CreativeSphereSection />
+      {/* The four bento tiles ("Qué hace Postty") are off the page; the
+          component is still defined above (WhatPosttyDoesSection) if they
+          come back. */}
 
       {/* ── How it works ──
           Flow diagram: connected platforms ride into the glass card, the
@@ -1571,6 +1507,9 @@ export default function Home() {
           is archived at _extras/HowItWorksCardsSection.tsx. */}
       <HowItWorksFlow />
 
+      {/* Creatives wheel — Ads / Posts / Videos on a turning ring. The 3D
+          sphere it replaced is archived at _extras/CreativeSphereSection.tsx. */}
+      <CreativeSphereSection />
 
       {/* ── Plataformas soportadas ──
           Multi-canal positioning for the Google Ads review: makes explicit that

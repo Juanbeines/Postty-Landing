@@ -170,7 +170,7 @@ export default function AppsCarousel() {
           viewport={{ once: true }}
           className="font-heading text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl"
         >
-          Publicá en las plataformas más importantes
+          Publicá en todos lados,<br className="md:hidden" /> con 1 click
         </motion.h2>
 
         <motion.p
@@ -178,12 +178,9 @@ export default function AppsCarousel() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.05 }}
-          className="mx-auto mt-4 max-w-2xl text-center text-sm leading-relaxed text-[#0D1522]/65 sm:text-base"
+          className="mx-auto mt-4 max-w-2xl text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl"
         >
-          <span className="block">
-            Postty se conecta con tus cuentas publicitarias de forma 100% segura.
-          </span>
-          <span className="block">Vos mantenés el control total.</span>
+          Postty se conecta de forma segura,<br className="md:hidden" /> vos mantenés el control.
         </motion.p>
 
         {/* A card, with a second one resting behind it (inert — it only

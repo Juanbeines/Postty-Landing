@@ -1,286 +1,216 @@
 "use client";
 
 /**
- * CreativeSphereSection — the "lluvia de creativos" that replaced the old
- * StarConcept/Nüa testimonial section.
+ * CreativeSphereSection — 9:16 creatives standing on the rim of a big
+ * invisible circle, turning slowly clockwise, with a Ads / Posts / Videos selector.
  *
- * A SPHERE of ad creatives spinning slowly and infinitely left→right, cards
- * BENT around the surface like tiles on a globe (Juan's sketch: segments
- * hugging the sphere, not flat panels rotated in space).
+ * Replaced the 3D sphere (archived at _extras/CreativeSphereSection.tsx).
  *
- * How the bend works — a flat div with rotateY can never LOOK curved, so
- * each card is split into vertical SLICES. The slices of a card sit on a
- * shared local cylinder (`rotateY(δ) translateZ(Rl)` inside a preserve-3d
- * container), which makes the artwork physically wrap. Rotating that inner
- * container spins the card's arc segment to its current longitude, while
- * the outer wrapper translates it to its screen position. Slices carry
- * `backface-visibility: hidden`, so as a card crosses the sphere's edge its
- * far slices wink out one by one — visually it slides behind the horizon
- * exactly like geography on a turning globe.
+ * Geometry: every card hangs off ONE container with
+ * `rotate(θ) translateY(-Rc)`, so it stands radially on the circle like a
+ * spoke. The container is what spins
+ * (a CSS animation in globals.css) — a single composited rotation for the
+ * whole ring, no per-frame JS. Slots are fixed (SLOTS around the full
+ * circle) and a tab's creatives repeat to fill them; Rc is derived from the
+ * card width so neighbours keep an even gap and about five fit across a
+ * full-width screen.
  *
- * Why not one big preserve-3d scene: per-card opacity would flatten it and
- * the browser's depth sort breaks (back cards painted over front ones — a
- * bug we shipped once). Each card is its own tiny 3D scene; BETWEEN cards
- * the paint order is an explicit zIndex from cos(longitude).
- *
- * Per-frame cost: 2 style writes per card (wrapper + inner rotation), rAF,
- * zero React re-renders. Slice geometry is static per container width.
- *
- * The creatives are AI-generated demo ads (Postty's production model) for
- * fictional brands, deliberately containing NO brand names.
+ * All creatives are AI-generated for fictional brands — no real brand marks.
  */
 
 import { useEffect, useRef, useState } from "react";
-import { motion } from "framer-motion";
-import { trackEvent, useAppUrl } from "@/lib/pixel";
+import { AnimatePresence, motion } from "framer-motion";
 
-type BandCard = { src: string; phase: number; band: -1 | 0 | 1; size: number };
+import IgStats, { type Stats } from "@/components/IgStats";
 
-/* Bands = globe latitudes: equator biggest, north/south rings smaller and on
-   a reduced radius. Phases staggered so cards never align into columns.
- *
- * Phase 0 = dead front-center at t0, and the ring turns left→right, so the
- * NEXT card to reach the front is the one at 315 (it starts front-left).
- * The two strongest creatives own those two slots on purpose — that pair is
- * the first thing the section shows. Don't reshuffle without keeping them. */
-const BANDS: BandCard[] = [
-  { src: "moda-2",     phase: 0,   band: 0,  size: 1.0  }, // ← hero: "BÁSICOS QUE SON BÁSICOS"
-  { src: "skincare-1", phase: 315, band: 0,  size: 1.0  }, // ← next in: "PIEL EN CALMA"
-  { src: "gastro-1",   phase: 45,  band: 0,  size: 0.96 },
-  { src: "saas-1",     phase: 90,  band: 0,  size: 1.0  },
-  { src: "fitness-1",  phase: 135, band: 0,  size: 0.96 },
-  { src: "cafe-2",     phase: 180, band: 0,  size: 0.94 },
-  { src: "running-1",  phase: 225, band: 0,  size: 1.0  },
-  { src: "deco-2",     phase: 270, band: 0,  size: 0.96 },
-  { src: "cafe-1",     phase: 18,  band: 1,  size: 0.84 },
-  { src: "joyas-2",    phase: 78,  band: 1,  size: 0.78 },
-  { src: "helado-1",   phase: 138, band: 1,  size: 0.84 },
-  { src: "moda-1",     phase: 198, band: 1,  size: 0.78 },
-  { src: "saas-2",     phase: 258, band: 1,  size: 0.84 },
-  { src: "deco-1",     phase: 318, band: 1,  size: 0.78 },
-  { src: "gastro-2",   phase: 42,  band: -1, size: 0.82 },
-  { src: "running-2",  phase: 102, band: -1, size: 0.78 },
-  { src: "joyas-1",    phase: 162, band: -1, size: 0.82 },
-  { src: "skincare-2", phase: 222, band: -1, size: 0.78 },
-  { src: "fitness-2",  phase: 282, band: -1, size: 0.82 },
-  { src: "pan-1",      phase: 342, band: -1, size: 0.78 },
+type Tab = "ads" | "posts" | "videos";
+
+const TABS: { id: Tab; label: string }[] = [
+  { id: "ads", label: "Ads" },
+  { id: "posts", label: "Posts" },
+  { id: "videos", label: "Videos" },
 ];
 
-const SLICES = 9;         // vertical strips per card — more = smoother bend
-const FULL_TURN_S = 55;   // slow — one full revolution
-const HOVER_BOOST = 1.15; // extra growth on hover (sphere keeps spinning)
-const LAT_RADIUS = 0.8;   // outer bands' radius vs equator
-const BEND = 0.82;        // local cylinder radius vs R — lower = harder bend
+const CREATIVES: Record<Tab, string[]> = {
+  ads: ["01b", "02b", "03b", "04b", "05", "06b", "07b", "08c", "09b", "10"].map((n) => `/creatives-v3/ads/ad-${n}.webp`),
+  posts: ["02", "03", "04", "05", "06", "07", "08-b", "09", "10-b"].map((n) => `/creatives-v3/posts/post-${n}.webp`),
+  videos: [], // coming later
+};
+
+/* Small-account numbers on purpose (30–500 likes): the point is "this is
+   what a normal brand posts", not viral proof. Deterministic per slot so
+   server and client render the same thing. */
+function statsFor(i: number): Stats {
+  const r = (seed: number) => {
+    const x = Math.sin(i * 97.13 + seed * 13.7) * 43758.5453;
+    return x - Math.floor(x);
+  };
+  const likes = Math.round(30 + r(1) * 470);
+  const comments = Math.max(2, Math.round(likes * (0.03 + r(2) * 0.09)));
+  const views = Math.round(likes * (6 + r(3) * 8));
+  const fmt = (n: number) => n.toLocaleString("es-AR");
+  return { likes: fmt(likes), comments: fmt(comments), views: fmt(views) };
+}
+
+const SLOTS = 26;           // cards around the full circle
+const STEP = (2 * Math.PI) / SLOTS;
+const GAP = 1.02;           // centre-to-centre distance vs card width — nearly touching
+const PAD = 28;             // room above the top card for its shadow
+const FADE = 190;           // px over which the ring dissolves at the section's bottom edge
+const BELOW = 0.6;          // room under the top card for the ring's sides, in card heights
 
 export default function CreativeSphereSection() {
-  const appUrl = useAppUrl();
-  const stageRef = useRef<HTMLDivElement>(null);
-  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const innerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const hovered = useRef<number>(-1);
-  const hoverLerp = useRef<number[]>(new Array(BANDS.length).fill(0));
-  const spinning = useRef(false);
-  const [stageW, setStageW] = useState(0);
+  const ref = useRef<HTMLElement>(null);
+  const [w, setW] = useState(1280);
+  const [tab, setTab] = useState<Tab>("posts");
 
   useEffect(() => {
-    const el = stageRef.current;
+    const el = ref.current;
     if (!el) return;
-    const measure = () => setStageW(el.clientWidth);
+    const measure = () => setW(el.clientWidth);
     measure();
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
 
-  /* Hold the ring at rotation 0 until the section is actually on screen.
-     The two hero creatives sit at phase 0 / 315, and that opening pair is
-     the whole point — if the clock ran from page load, the sphere would
-     already be ~60° in by the time anyone scrolled down here. */
-  useEffect(() => {
-    const el = stageRef.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          spinning.current = true;
-          io.disconnect();
-        }
-      },
-      { threshold: 0.25 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const cardW = Math.min(Math.max(w * 0.15, 150), 290);
+  const cardH = (cardW * 16) / 9;
+  const Rc = (cardW * GAP) / (2 * Math.sin(STEP / 2)); // orbit of card centres
+  const cy = PAD + cardH / 2 + Rc;                     // circle centre, from stage top
+  const stageH = PAD + cardH + cardH * BELOW;
 
-  // Geometry shared by the frame loop and the static slice JSX.
-  // Radius is deliberately small vs card width: neighbors on the ring
-  // almost touch ("mínimo mínimo espacio"), overlapping slightly as they
-  // leave the center.
-  const R = Math.min(Math.max(stageW * 0.275, 222), 432);     // equator radius — big tight globe
-  const bandY = Math.min(Math.max(stageW * 0.125, 90), 156);  // latitude offset
-  const baseW = Math.min(Math.max(stageW * 0.335, 235), 470); // XL cards
-  const Rl = R * BEND;                                        // bend radius
-
-  useEffect(() => {
-    if (!stageW) return;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    let raf = 0;
-    let last = performance.now();
-    let rot = 0;
-
-    const tick = (now: number) => {
-      const dt = Math.min((now - last) / 1000, 0.1);
-      last = now;
-      if (!reduceMotion && spinning.current) rot = (rot + (360 / FULL_TURN_S) * dt) % 360;
-
-      for (let i = 0; i < BANDS.length; i++) {
-        const card = cardRefs.current[i];
-        const inner = innerRefs.current[i];
-        if (!card || !inner) continue;
-
-        const { phase, band, size } = BANDS[i];
-        const a = (((rot + phase) % 360) + 360) % 360;
-        const rad = (a * Math.PI) / 180;
-        const sin = Math.sin(rad);
-        const cos = Math.cos(rad); // 1 = front center, -1 = back
-
-        const r = band === 0 ? R : R * LAT_RADIUS;
-        const x = sin * r;
-        const y = band * -bandY;
-
-        const target = hovered.current === i ? 1 : 0;
-        hoverLerp.current[i] += (target - hoverLerp.current[i]) * Math.min(1, dt * 9);
-
-        const frontness = Math.max(0, cos);
-        // High floor: side cards stay chunky so the ring reads packed —
-        // shrinking them too much is what created the gaps. Center cards
-        // get an extra-strong boost so the front of the globe dominates.
-        const scale = (0.72 + 0.52 * frontness) * size * (1 + (HOVER_BOOST - 1) * hoverLerp.current[i]);
-
-        // Wrapper: screen position + size. The signed angle spins the inner
-        // arc segment to its longitude; slices past 90° hide themselves via
-        // backface-visibility = the card slips behind the horizon.
-        const signed = a <= 180 ? a : a - 360;
-        card.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(${scale})`;
-        inner.style.transform = `translateZ(${-Rl}px) rotateY(${signed}deg) rotateX(${band * 7}deg)`;
-
-        card.style.zIndex = String(Math.round((cos + 1) * 500) + Math.round(hoverLerp.current[i] * 40));
-        const opacity = cos < -0.12 ? 0 : Math.min(1, 0.22 + 0.78 * ((cos + 0.12) / 1.12));
-        card.style.opacity = String(opacity);
-        card.style.pointerEvents = cos > 0.1 ? "auto" : "none";
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [stageW, R, bandY, Rl]);
+  const items = CREATIVES[tab];
 
   return (
-    /* `isolate` is load-bearing, not cosmetic. The sphere paints its cards by
-       writing an explicit zIndex up to ~1040 (and 1100 on its CTA) so the
-       front creative covers the back ones. Without a stacking context of its
-       own, those numbers compete in the ROOT context and beat every real
-       overlay on the page — the gift modal at z-[100] rendered UNDER the
-       sphere. isolate scopes them to this section, so an overlay only has to
-       out-rank the section itself. */
-    <section id="creativos" className="isolate overflow-hidden px-4 py-16 md:py-24">
+    /* `isolate` keeps the cards' stacking inside this section, so the gift
+       overlay (z-[100]) always paints over it. */
+    <section
+      ref={ref}
+      id="creativos"
+      className="relative isolate overflow-hidden pt-20 md:pt-24"
+    >
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="font-heading text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl"
+        className="mx-auto max-w-5xl px-4 text-center font-heading text-3xl font-semibold tracking-tight text-[#0D1522] sm:text-4xl md:text-5xl"
       >
-        Creativos hechos con Postty
+        Contenido, Ads, Videos UGC y mucho más
       </motion.h2>
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ delay: 0.1 }}
-        className="mx-auto mt-3 max-w-md text-center text-base text-[#0D1522]/55 sm:text-lg"
+        transition={{ delay: 0.08 }}
+        className="mt-4 px-4 text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl"
       >
-        Sin diseñadores, sin agencias. Listos para publicar.
+        Todo hecho con Postty
       </motion.p>
 
-      <div
-        ref={stageRef}
-        className="relative mx-auto mt-10 h-[580px] max-w-[1440px] sm:h-[700px] md:mt-14 md:h-[820px]"
-      >
-        {BANDS.map((c, i) => {
-          const cardW = baseW * c.size;
-          const cardH = cardW * 1.25; // 4:5
-          const sliceW = cardW / SLICES;
-          // Angular width of one slice on the local bend cylinder
-          const phi = (sliceW / Rl) * (180 / Math.PI);
-          return (
-            <div
-              key={c.src}
-              ref={(el) => { cardRefs.current[i] = el; }}
-              className="absolute left-1/2 top-1/2 will-change-transform"
-              style={{ width: cardW, height: cardH, opacity: 0, perspective: 900 }}
-              onMouseEnter={() => { hovered.current = i; }}
-              onMouseLeave={() => { hovered.current = -1; }}
-            >
-              <div
-                ref={(el) => { innerRefs.current[i] = el; }}
-                className="relative h-full w-full will-change-transform"
-                style={{ transformStyle: "preserve-3d" }}
-              >
-                {Array.from({ length: SLICES }, (_, j) => {
-                  const delta = (j - (SLICES - 1) / 2) * phi;
-                  return (
-                    <div
-                      key={j}
-                      className="absolute top-0 h-full"
-                      style={{
-                        left: "50%",
-                        width: sliceW + 0.7, // hairline overlap kills seams
-                        marginLeft: -(sliceW + 0.7) / 2,
-                        transform: `rotateY(${delta}deg) translateZ(${Rl}px)`,
-                        backfaceVisibility: "hidden",
-                        backgroundImage: `url(/creatives/${c.src}.webp)`,
-                        backgroundSize: `${SLICES * 100}% 100%`,
-                        backgroundPositionX: `${(j / (SLICES - 1)) * 100}%`,
-                        borderRadius:
-                          j === 0 ? "16px 0 0 16px" : j === SLICES - 1 ? "0 16px 16px 0" : "0",
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          );
-        })}
-
-        {/* CTA layered over the sphere. Two things make this work:
-            - z-index: cards get theirs recalculated every frame from cos(),
-              topping out near 1040 (see the rAF loop above), so anything less
-              than that gets painted behind the front creative. Hence z-[1100].
-            - pointer-events: the wrapper is inert and only the pill itself is
-              clickable, so the pill doesn't blanket the front card and kill its
-              hover-grow. Same pattern as the hero CTA pair in page.tsx. */}
-        <div className="pointer-events-none absolute inset-0 z-[1100] flex items-center justify-center">
-          <a
-            href={appUrl}
-            onClick={() => trackEvent("Lead", {
-              content_name: "creatives_sphere_cta",
-              content_category: "trial_intent",
-            })}
-            className="group pointer-events-auto inline-flex items-center gap-2.5 rounded-full border border-white/60 bg-white/30 px-7 py-3.5 text-base font-semibold text-[#0D1522] shadow-[0_4px_24px_rgba(13,21,34,0.10),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition-all duration-300 hover:-translate-y-[2px] hover:bg-white/50 hover:shadow-[0_10px_36px_rgba(13,21,34,0.18),inset_0_1px_0_rgba(255,255,255,0.85)]"
+      {/* Format selector — underline tabs on one shared track. */}
+      <div role="tablist" aria-label="Formato" className="relative mx-auto mt-10 flex w-fit gap-10 md:mt-14 md:gap-16">
+        <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#0D1522]/[0.07]" />
+        {TABS.map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`relative pb-2 font-heading text-lg transition-colors md:text-2xl ${
+              tab === t.id ? "text-[#0D1522]" : "text-[#0D1522]/55 hover:text-[#0D1522]"
+            }`}
           >
-            Probar gratis
-            <svg
-              width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
-              className="transition-transform duration-300 group-hover:translate-x-1"
-              aria-hidden="true"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </a>
-        </div>
+            {t.label}
+            {tab === t.id && (
+              <motion.span
+                layoutId="creative-tab-bar"
+                transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#A6E35A]"
+              />
+            )}
+          </button>
+        ))}
       </div>
+
+      {/* The ring's sides run off the bottom of the section. A mask fades
+          the cards out over the last FADE px so there is no hard crop line,
+          and a blur band over the same strip (below) softens them as they
+          go — a progressive blur rather than a cut. */}
+      <div
+        className="creative-wheel-stage relative mt-6 md:mt-10"
+        style={{
+          height: stageH,
+          maskImage: `linear-gradient(to bottom, #000 calc(100% - ${FADE}px), transparent)`,
+          WebkitMaskImage: `linear-gradient(to bottom, #000 calc(100% - ${FADE}px), transparent)`,
+        }}
+      >
+        <AnimatePresence mode="wait">
+          {items.length > 0 ? (
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30 }}
+              transition={{ duration: 0.35, ease: [0.4, 0, 0.2, 1] }}
+              className="absolute inset-0"
+            >
+              {/* The wheel. Its box is the orbit circle; cards hang off its centre. */}
+              <div
+                className="creative-wheel absolute will-change-transform"
+                style={{ width: Rc * 2, height: Rc * 2, left: `calc(50% - ${Rc}px)`, top: cy - Rc }}
+              >
+                {Array.from({ length: SLOTS }, (_, i) => (
+                  <div
+                    key={i}
+                    className="absolute left-1/2 top-1/2 overflow-hidden rounded-[18px] bg-white shadow-[0_18px_40px_-14px_rgba(13,21,34,0.35),0_2px_6px_rgba(13,21,34,0.08)]"
+                    style={{
+                      width: cardW,
+                      height: cardH,
+                      marginLeft: -cardW / 2,
+                      marginTop: -cardH / 2,
+                      transform: `rotate(${(360 / SLOTS) * i}deg) translateY(${-Rc}px)`,
+                    }}
+                  >
+                    <img
+                      src={items[i % items.length]}
+                      alt=""
+                      loading="lazy"
+                      draggable={false}
+                      className="h-full w-full select-none object-cover"
+                    />
+                    <IgStats stats={statsFor(i)} unit={(n) => `${(n * cardH) / 64}px`} />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.p
+              key="soon"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-x-0 text-center font-heading text-xl text-[#0D1522]/45 md:text-2xl"
+              style={{ top: PAD + cardH * 0.55 }}
+            >
+              Próximamente
+            </motion.p>
+          )}
+        </AnimatePresence>
+      </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 backdrop-blur-[10px]"
+        style={{
+          height: FADE,
+          // Faded out at BOTH ends. A backdrop blur that is still on at the
+          // section's bottom edge leaves a visible seam where blurred studio
+          // meets sharp studio; tapering it to zero there removes the line.
+          maskImage: "linear-gradient(to top, transparent, #000 40%, #000 60%, transparent)",
+          WebkitMaskImage: "linear-gradient(to top, transparent, #000 40%, #000 60%, transparent)",
+        }}
+      />
     </section>
   );
 }

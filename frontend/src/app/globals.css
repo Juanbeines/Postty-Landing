@@ -270,3 +270,19 @@ input:-webkit-autofill:active {
   caret-color: #0D1522;
   transition: background-color 9999s ease-in-out 0s;
 }
+
+/* Creative wheel (CreativeSphereSection) — one full clockwise turn. The
+   wheel is a single element, so this is one composited rotation for all
+   twenty cards. Hovering the stage pauses it so a card can be read. */
+@keyframes creative-wheel-spin {
+  to { transform: rotate(360deg); }
+}
+.creative-wheel {
+  animation: creative-wheel-spin 140s linear infinite;
+}
+.creative-wheel-stage:hover .creative-wheel {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .creative-wheel { animation: none; }
+}
