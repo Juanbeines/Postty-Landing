@@ -187,7 +187,7 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="font-heading text-[2.2rem] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0D1522] sm:text-5xl md:text-[4rem]"
           >
-            Contenido y Ads para tu marca
+            Contenido y Ads<br className="md:hidden" /> para tu marca
             <span className="sr-only"> — Postty, agente de marketing con IA: contenido y ads para tu marca, para Meta y Google, en minutos, sin agencias ni community managers</span>
           </motion.h1>
           <motion.p
