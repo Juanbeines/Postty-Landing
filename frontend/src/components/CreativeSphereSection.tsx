@@ -105,7 +105,7 @@ export default function CreativeSphereSection() {
         transition={{ delay: 0.08 }}
         className="mt-4 px-4 text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl"
       >
-        Todo hecho con Postty
+        Hecho por Postty, para el mercado argentino
       </motion.p>
 
       {/* Format selector — underline tabs on one shared track. */}

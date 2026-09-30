@@ -289,7 +289,7 @@ export default function HowItWorksFlow() {
         transition={{ delay: 0.1 }}
         className="mx-auto mt-4 max-w-2xl text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl lg:max-w-none lg:whitespace-nowrap"
       >
-        Tres pasos, de tu producto o servicio a cientos de piezas y campañas publicitarias
+        De tu producto o servicio a cientos de piezas y campañas publicitarias
       </motion.p>
 
       {/* ── Desktop: the full horizontal diagram ── */}
