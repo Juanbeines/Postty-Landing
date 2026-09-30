@@ -37,7 +37,7 @@ export default function IgStats({ stats, unit: u }: { stats: Stats; unit: (n: nu
   ];
   return (
     <div
-      className="absolute inset-x-0 bottom-0 flex items-center bg-gradient-to-t from-black/55 via-black/25 to-transparent font-semibold text-white"
+      className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center bg-gradient-to-t from-black/55 via-black/25 to-transparent font-semibold text-white"
       style={{ gap: u(1.8), padding: `${u(5)} ${u(1.8)} ${u(1.5)}`, fontSize: u(1.45) }}
     >
       {items.map((it) => (

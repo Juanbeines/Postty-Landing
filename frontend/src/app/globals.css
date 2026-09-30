@@ -280,7 +280,12 @@ input:-webkit-autofill:active {
 .creative-wheel {
   animation: creative-wheel-spin 140s linear infinite;
 }
-.creative-wheel-stage:hover .creative-wheel {
+.creative-wheel-stage:hover .creative-wheel,
+.creative-wheel-stage[data-sound="on"] .creative-wheel,
+.creative-wheel-stage:not([data-seen]) .creative-wheel {
+  /* Also held while a video has sound, so the card you are listening to
+     does not turn away off-screen, and until the section is first seen, so
+     the wheel opens on its lead creative instead of wherever it got to. */
   animation-play-state: paused;
 }
 @media (prefers-reduced-motion: reduce) {

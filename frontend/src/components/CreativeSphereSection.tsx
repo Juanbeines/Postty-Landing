@@ -33,8 +33,8 @@ const TABS: { id: Tab; label: string }[] = [
 
 const CREATIVES: Record<Tab, string[]> = {
   ads: ["01b", "02b", "03b", "04b", "05", "06b", "07b", "08c", "09b", "10"].map((n) => `/creatives-v3/ads/ad-${n}.webp`),
-  posts: ["02", "03", "04", "05", "06", "07", "08-b", "09", "10-b"].map((n) => `/creatives-v3/posts/post-${n}.webp`),
-  videos: [], // coming later
+  posts: ["06", "07", "08-b", "09", "10-b", "02", "03", "04", "05"].map((n) => `/creatives-v3/posts/post-${n}.webp`),
+  videos: ["01", "02", "03"].map((n) => `/creatives-v3/videos/video-${n}.mp4`), // alternate around the ring
 };
 
 /* Small-account numbers on purpose (30–500 likes): the point is "this is
@@ -59,10 +59,79 @@ const PAD = 28;             // room above the top card for its shadow
 const FADE = 190;           // px over which the ring dissolves at the section's bottom edge
 const BELOW = 0.6;          // room under the top card for the ring's sides, in card heights
 
+const isVideo = (src: string) => src.endsWith(".mp4");
+
+/* One video card. Always starts muted — that is what lets browsers autoplay
+   it — and only the card the visitor tapped gets sound. `muted` is set on
+   the element rather than trusted to the JSX attribute, because React does
+   not reflect `muted` reliably and iOS refuses to autoplay without it. */
+function CreativeVideo({ src, sound, active, onToggle, size }: {
+  src: string;
+  sound: boolean;
+  active: boolean;
+  onToggle: () => void;
+  size: number;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    v.muted = !sound;
+    if (sound) v.currentTime = 0; // tapped for sound → hear it from the start
+    if (active) v.play().catch(() => {});
+    else v.pause();
+  }, [sound, active]);
+
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={sound ? "Silenciar video" : "Activar audio del video"}
+      aria-pressed={sound}
+      className="absolute inset-0 block h-full w-full cursor-pointer"
+    >
+      <video
+        ref={ref}
+        src={src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="h-full w-full select-none object-cover"
+      />
+      <span
+        aria-hidden="true"
+        className="absolute flex items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm"
+        style={{ top: size * 0.05, right: size * 0.05, width: size * 0.17, height: size * 0.17 }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ width: "55%", height: "55%" }}>
+          <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+          {sound ? (
+            <>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+            </>
+          ) : (
+            <>
+              <path d="m22 9-6 6" />
+              <path d="m16 9 6 6" />
+            </>
+          )}
+        </svg>
+      </span>
+    </button>
+  );
+}
+
 export default function CreativeSphereSection() {
   const ref = useRef<HTMLElement>(null);
   const [w, setW] = useState(1280);
   const [tab, setTab] = useState<Tab>("posts");
+  const [soundSlot, setSoundSlot] = useState<number | null>(null); // the one card with audio on
+  const [inView, setInView] = useState(false);
+  const [seen, setSeen] = useState(false); // the wheel waits for its first sight, so it opens on the lead creative
 
   useEffect(() => {
     const el = ref.current;
@@ -72,6 +141,24 @@ export default function CreativeSphereSection() {
     const ro = new ResizeObserver(measure);
     ro.observe(el);
     return () => ro.disconnect();
+  }, []);
+
+  /* Videos only play while the section is on screen, and scrolling away
+     silences them — sound from something you can no longer see is jarring. */
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver((entries) => {
+      // Several crossings can arrive in one batch; only the newest is current.
+      const e = entries[entries.length - 1];
+      setInView(e.isIntersecting);
+      // Start turning only once the wheel is really in view, not when the
+      // heading first peeks in — or it has already moved off the lead card.
+      if (e.intersectionRatio >= 0.5) setSeen(true);
+      if (!e.isIntersecting) setSoundSlot(null);
+    }, { threshold: [0.15, 0.5] });
+    io.observe(el);
+    return () => io.disconnect();
   }, []);
 
   const cardW = Math.min(Math.max(w * 0.15, 150), 290);
@@ -117,7 +204,10 @@ export default function CreativeSphereSection() {
             type="button"
             role="tab"
             aria-selected={tab === t.id}
-            onClick={() => setTab(t.id)}
+            onClick={() => {
+              setTab(t.id);
+              setSoundSlot(null);
+            }}
             className={`relative pb-2 font-heading text-lg transition-colors md:text-2xl ${
               tab === t.id ? "text-[#0D1522]" : "text-[#0D1522]/55 hover:text-[#0D1522]"
             }`}
@@ -140,6 +230,8 @@ export default function CreativeSphereSection() {
           go — a progressive blur rather than a cut. */}
       <div
         className="creative-wheel-stage relative mt-6 md:mt-10"
+        data-sound={soundSlot !== null ? "on" : undefined}
+        data-seen={seen ? "" : undefined}
         style={{
           height: stageH,
           maskImage: `linear-gradient(to bottom, #000 calc(100% - ${FADE}px), transparent)`,
@@ -173,13 +265,23 @@ export default function CreativeSphereSection() {
                       transform: `rotate(${(360 / SLOTS) * i}deg) translateY(${-Rc}px)`,
                     }}
                   >
-                    <img
-                      src={items[i % items.length]}
-                      alt=""
-                      loading="lazy"
-                      draggable={false}
-                      className="h-full w-full select-none object-cover"
-                    />
+                    {isVideo(items[i % items.length]) ? (
+                      <CreativeVideo
+                        src={items[i % items.length]}
+                        sound={soundSlot === i}
+                        active={inView}
+                        onToggle={() => setSoundSlot((s) => (s === i ? null : i))}
+                        size={cardW}
+                      />
+                    ) : (
+                      <img
+                        src={items[i % items.length]}
+                        alt=""
+                        loading="lazy"
+                        draggable={false}
+                        className="h-full w-full select-none object-cover"
+                      />
+                    )}
                     <IgStats stats={statsFor(i)} unit={(n) => `${(n * cardH) / 64}px`} />
                   </div>
                 ))}
