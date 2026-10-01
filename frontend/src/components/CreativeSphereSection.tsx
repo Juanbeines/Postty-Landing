@@ -8,11 +8,16 @@
  *
  * Geometry: every card hangs off ONE container with
  * `rotate(θ) translateY(-Rc)`, so it stands radially on the circle like a
- * spoke. The container is what spins
- * (a CSS animation in globals.css) — a single composited rotation for the
- * whole ring, no per-frame JS. Slots are fixed (SLOTS around the full
- * circle) and a tab's creatives repeat to fill them; Rc is derived from the
- * card width so neighbours keep an even gap and about five fit across a
+ * spoke. The container is what turns: one transform per frame for the whole
+ * ring, driven by a small rAF loop so the wheel can also be grabbed — drag it
+ * with the mouse or a finger to speed it up or run it backwards; let go and
+ * it coasts, then eases back to its own slow pace.
+ *
+ * Each tab fills the circle with a whole number of copies of its creatives
+ * (slotsFor), so the sequence closes cleanly and no two neighbours repeat.
+ * The order runs the way cards ARRIVE at the top: the lead creative is centred
+ * and the next in the list is the one turning in after it. Rc is derived from
+ * the card width so neighbours keep an even gap and about five fit across a
  * full-width screen.
  *
  * All creatives are AI-generated for fictional brands — no real brand marks.
@@ -34,7 +39,8 @@ const TABS: { id: Tab; label: string }[] = [
 const CREATIVES: Record<Tab, string[]> = {
   ads: ["01b", "02b", "03b", "04b", "05", "06b", "07b", "08c", "09b", "10"].map((n) => `/creatives-v3/ads/ad-${n}.webp`),
   posts: ["06", "07", "08-b", "09", "10-b", "02", "03", "04", "05"].map((n) => `/creatives-v3/posts/post-${n}.webp`),
-  videos: ["01", "02", "03"].map((n) => `/creatives-v3/videos/video-${n}.mp4`), // alternate around the ring
+  // Sweaters lead, then the bags, then the perfume, around and around.
+  videos: ["02", "01", "03"].map((n) => `/creatives-v3/videos/video-${n}.mp4`),
 };
 
 /* Small-account numbers on purpose (30–500 likes): the point is "this is
@@ -52,8 +58,12 @@ function statsFor(i: number): Stats {
   return { likes: fmt(likes), comments: fmt(comments), views: fmt(views) };
 }
 
-const SLOTS = 26;           // cards around the full circle
-const STEP = (2 * Math.PI) / SLOTS;
+const TARGET_SLOTS = 26;    // roughly how many cards go around the full circle
+/* The real count is the multiple of the tab's creative count closest to
+   TARGET_SLOTS, so the list repeats a whole number of times and the seam where
+   it wraps never puts the same creative twice in a row. */
+const slotsFor = (n: number) => n * Math.max(2, Math.round(TARGET_SLOTS / n));
+const BASE_SPEED = 360 / 140; // deg/s — one slow turn every 140 s
 const GAP = 1.02;           // centre-to-centre distance vs card width — nearly touching
 const PAD = 28;             // room above the top card for its shadow
 const FADE = 190;           // px over which the ring dissolves at the section's bottom edge
@@ -161,13 +171,106 @@ export default function CreativeSphereSection() {
     return () => io.disconnect();
   }, []);
 
+  const items = CREATIVES[tab];
+  const slots = slotsFor(Math.max(items.length, 1));
+  const step = (2 * Math.PI) / slots;
+
   const cardW = Math.min(Math.max(w * 0.15, 150), 290);
   const cardH = (cardW * 16) / 9;
-  const Rc = (cardW * GAP) / (2 * Math.sin(STEP / 2)); // orbit of card centres
+  const Rc = (cardW * GAP) / (2 * Math.sin(step / 2)); // orbit of card centres
   const cy = PAD + cardH / 2 + Rc;                     // circle centre, from stage top
   const stageH = PAD + cardH + cardH * BELOW;
 
-  const items = CREATIVES[tab];
+  /* Slot i, counting clockwise from the top. The wheel turns clockwise, so
+     the card that reaches the top next is the one to its LEFT (slot -1):
+     walking the list backwards around the circle makes it arrive in order. */
+  const creativeAt = (i: number) => items[(items.length - (i % items.length)) % items.length];
+
+  /* ── Wheel motion ──────────────────────────────────────────────────────
+     angle/velocity live in refs and the loop writes the transform directly:
+     no React render per frame. When nothing holds it, velocity eases toward
+     the cruise speed (zero while paused), which is also what turns a fling
+     into a coast that settles back to normal. */
+  const wheelRef = useRef<HTMLDivElement | null>(null);
+  const motionRef = useRef({ angle: 0, vel: 0, dragging: false, lastX: 0, lastT: 0, moved: 0, hover: false });
+  const pausedRef = useRef(true);
+  const rcRef = useRef(Rc);
+  // The loop and the drag handlers read these; synced after each render.
+  useEffect(() => {
+    pausedRef.current = !seen || soundSlot !== null;
+    rcRef.current = Rc;
+  }, [seen, soundSlot, Rc]);
+
+  // Every tab opens on its lead creative at the top.
+  useEffect(() => {
+    motionRef.current.angle = 0;
+    motionRef.current.vel = 0;
+  }, [tab]);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let raf = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      const dt = Math.min((now - last) / 1000, 0.05);
+      last = now;
+      const m = motionRef.current;
+      if (!m.dragging) {
+        // Hovering with a mouse slows it to a stop so a card can be read.
+        const cruise = pausedRef.current || m.hover || reduce ? 0 : BASE_SPEED;
+        m.vel += (cruise - m.vel) * Math.min(1, dt * 1.4);
+        m.angle += m.vel * dt;
+      }
+      if (wheelRef.current) wheelRef.current.style.transform = `rotate(${m.angle}deg)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  /* Drag: horizontal movement at the top of the ring maps to arc length, so
+     the card under the pointer follows it. Listeners go on window for the
+     rest of the gesture, so a fast drag that leaves the stage keeps working. */
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    const m = motionRef.current;
+    m.dragging = true;
+    m.lastX = e.clientX;
+    m.lastT = performance.now();
+    m.moved = 0;
+    m.vel = 0;
+    const move = (ev: PointerEvent) => {
+      const now = performance.now();
+      const dx = ev.clientX - m.lastX;
+      const d = (dx / rcRef.current) * (180 / Math.PI);
+      m.angle += d;
+      m.moved += Math.abs(dx);
+      const dtm = Math.max((now - m.lastT) / 1000, 1 / 240);
+      m.vel = m.vel * 0.6 + (d / dtm) * 0.4; // smoothed, so the fling is the hand's speed, not one jittery event
+      m.lastX = ev.clientX;
+      m.lastT = now;
+    };
+    const up = () => {
+      m.dragging = false;
+      // A pause before letting go means "stop here", not "fling".
+      if (performance.now() - m.lastT > 80) m.vel = 0;
+      m.vel = Math.max(-240, Math.min(240, m.vel));
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+      window.removeEventListener("pointercancel", up);
+    };
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
+    window.addEventListener("pointercancel", up);
+  };
+  /* A drag must not also count as a tap (which would toggle a video's sound). */
+  const onClickCapture = (e: React.MouseEvent) => {
+    if (motionRef.current.moved > 6) {
+      e.preventDefault();
+      e.stopPropagation();
+      motionRef.current.moved = 0;
+    }
+  };
 
   return (
     /* `isolate` keeps the cards' stacking inside this section, so the gift
@@ -229,11 +332,15 @@ export default function CreativeSphereSection() {
           and a blur band over the same strip (below) softens them as they
           go — a progressive blur rather than a cut. */}
       <div
-        className="creative-wheel-stage relative mt-6 md:mt-10"
-        data-sound={soundSlot !== null ? "on" : undefined}
-        data-seen={seen ? "" : undefined}
+        className="relative mt-6 cursor-grab select-none active:cursor-grabbing md:mt-10"
+        onPointerDown={onPointerDown}
+        onClickCapture={onClickCapture}
+        onPointerEnter={(e) => { if (e.pointerType === "mouse") motionRef.current.hover = true; }}
+        onPointerLeave={() => { motionRef.current.hover = false; }}
         style={{
           height: stageH,
+          // Vertical swipes still scroll the page; horizontal ones turn the wheel.
+          touchAction: "pan-y",
           maskImage: `linear-gradient(to bottom, #000 calc(100% - ${FADE}px), transparent)`,
           WebkitMaskImage: `linear-gradient(to bottom, #000 calc(100% - ${FADE}px), transparent)`,
         }}
@@ -250,10 +357,11 @@ export default function CreativeSphereSection() {
             >
               {/* The wheel. Its box is the orbit circle; cards hang off its centre. */}
               <div
-                className="creative-wheel absolute will-change-transform"
+                ref={wheelRef}
+                className="absolute will-change-transform"
                 style={{ width: Rc * 2, height: Rc * 2, left: `calc(50% - ${Rc}px)`, top: cy - Rc }}
               >
-                {Array.from({ length: SLOTS }, (_, i) => (
+                {Array.from({ length: slots }, (_, i) => (
                   <div
                     key={i}
                     className="absolute left-1/2 top-1/2 overflow-hidden rounded-[18px] bg-white shadow-[0_18px_40px_-14px_rgba(13,21,34,0.35),0_2px_6px_rgba(13,21,34,0.08)]"
@@ -262,12 +370,12 @@ export default function CreativeSphereSection() {
                       height: cardH,
                       marginLeft: -cardW / 2,
                       marginTop: -cardH / 2,
-                      transform: `rotate(${(360 / SLOTS) * i}deg) translateY(${-Rc}px)`,
+                      transform: `rotate(${(360 / slots) * i}deg) translateY(${-Rc}px)`,
                     }}
                   >
-                    {isVideo(items[i % items.length]) ? (
+                    {isVideo(creativeAt(i)) ? (
                       <CreativeVideo
-                        src={items[i % items.length]}
+                        src={creativeAt(i)}
                         sound={soundSlot === i}
                         active={inView}
                         onToggle={() => setSoundSlot((s) => (s === i ? null : i))}
@@ -275,7 +383,7 @@ export default function CreativeSphereSection() {
                       />
                     ) : (
                       <img
-                        src={items[i % items.length]}
+                        src={creativeAt(i)}
                         alt=""
                         loading="lazy"
                         draggable={false}
