@@ -1,0 +1,32 @@
+[
+  {
+    "source": "/",
+    "target": "/en/",
+    "status": "302",
+    "condition": "<US>"
+  },
+  {
+    "source": "/privacy",
+    "target": "/en/privacy/",
+    "status": "302",
+    "condition": "<US>"
+  },
+  {
+    "source": "/privacy/",
+    "target": "/en/privacy/",
+    "status": "302",
+    "condition": "<US>"
+  },
+  {
+    "source": "/terms",
+    "target": "/en/terms/",
+    "status": "302",
+    "condition": "<US>"
+  },
+  {
+    "source": "/terms/",
+    "target": "/en/terms/",
+    "status": "302",
+    "condition": "<US>"
+  }
+]

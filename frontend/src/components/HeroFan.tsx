@@ -26,6 +26,7 @@ import {
 import { useRef } from "react";
 
 import IgStats, { type Stats } from "@/components/IgStats";
+import { useCopy } from "@/i18n/locale";
 import { trackEvent } from "@/lib/pixel";
 
 /* All geometry is in `u`, a unit that is 1vh on wide screens and shrinks
@@ -51,15 +52,50 @@ const FAN_TOP = "var(--fan-top)";
 const STAGE_VARS =
   "[--u:min(0.9vh,1.35vw)] [--fan-top:56%] [--title-shift:18vh] [--cta-shift:-24vh] md:[--u:min(1vh,1.5vw)] md:[--fan-top:51%] md:[--title-shift:0px] md:[--cta-shift:0px]";
 
-type Slot = { src: string; alt: string; x: number; y: number; r: number; s: number; z: number; stats: Stats };
+type Slot = { src: string; x: number; y: number; r: number; s: number; z: number };
 
 const SLOTS: Slot[] = [
-  { src: "/hero-posts/perfume-lumina.webp", alt: "Ad de perfume: Olé a verano.", x: -40, y: 17, r: -38, s: 0.8, z: 1, stats: { likes: "8.912", comments: "143", views: "61,2 mil" } },
-  { src: "/hero-posts/post-4.webp", alt: "Ad de zapatillas: De 8 AM a tu última salida.", x: 40, y: 17, r: 38, s: 0.8, z: 1, stats: { likes: "15,7 mil", comments: "402", views: "118 mil" } },
-  { src: "/hero-posts/beauty-rimel.webp", alt: "Ad de belleza: Tu nuevo rimel. Sale con vos.", x: -25, y: 6, r: -15, s: 0.9, z: 2, stats: { likes: "21,3 mil", comments: "586", views: "164 mil" } },
-  { src: "/hero-posts/burger-break.webp", alt: "Ad gastronómico: Tomate un break.", x: 25, y: 6, r: 15, s: 0.9, z: 2, stats: { likes: "6.487", comments: "97", views: "43,8 mil" } },
-  { src: "/hero-posts/sneaker-diseno.webp", alt: "Ad de zapatillas: Diseño que se siente.", x: 0, y: 0, r: 0, s: 1, z: 3, stats: { likes: "12,4 mil", comments: "318", views: "86,5 mil" } },
+  { src: "/hero-posts/perfume-lumina.webp", x: -40, y: 17, r: -38, s: 0.8, z: 1 },
+  { src: "/hero-posts/post-4.webp", x: 40, y: 17, r: 38, s: 0.8, z: 1 },
+  { src: "/hero-posts/beauty-rimel.webp", x: -25, y: 6, r: -15, s: 0.9, z: 2 },
+  { src: "/hero-posts/burger-break.webp", x: 25, y: 6, r: 15, s: 0.9, z: 2 },
+  { src: "/hero-posts/sneaker-diseno.webp", x: 0, y: 0, r: 0, s: 1, z: 3 },
 ];
+
+/* Per-locale copy. `cards` follows SLOTS order: alt text, then the
+   engagement row in that locale's number style. The ad images themselves
+   carry Spanish headlines; the English alt text describes the ad instead of
+   quoting them, so nothing on the English page reads in Spanish. */
+const COPY = {
+  es: {
+    title: "Contenido y Ads",
+    titleEnd: "para tu marca",
+    srOnly: " — Postty, agente de marketing con IA: contenido y ads para tu marca, para Meta y Google, en minutos, sin agencias ni community managers",
+    sub: "Sin agencias, sin CMs.",
+    cta: "Probar gratis",
+    cards: [
+      { alt: "Ad de perfume: Olé a verano.", stats: { likes: "8.912", comments: "143", views: "61,2 mil" } },
+      { alt: "Ad de zapatillas: De 8 AM a tu última salida.", stats: { likes: "15,7 mil", comments: "402", views: "118 mil" } },
+      { alt: "Ad de belleza: Tu nuevo rimel. Sale con vos.", stats: { likes: "21,3 mil", comments: "586", views: "164 mil" } },
+      { alt: "Ad gastronómico: Tomate un break.", stats: { likes: "6.487", comments: "97", views: "43,8 mil" } },
+      { alt: "Ad de zapatillas: Diseño que se siente.", stats: { likes: "12,4 mil", comments: "318", views: "86,5 mil" } },
+    ] as { alt: string; stats: Stats }[],
+  },
+  en: {
+    title: "Content and Ads",
+    titleEnd: "for your brand",
+    srOnly: " — Postty, the AI marketing agent: content and ads for your brand, for Meta and Google, in minutes, without agencies or social media managers",
+    sub: "No agencies, no social media managers.",
+    cta: "Try it free",
+    cards: [
+      { alt: "Ad for a summer perfume", stats: { likes: "8,912", comments: "143", views: "61.2K" } },
+      { alt: "Ad for everyday sneakers", stats: { likes: "15.7K", comments: "402", views: "118K" } },
+      { alt: "Ad for a new mascara", stats: { likes: "21.3K", comments: "586", views: "164K" } },
+      { alt: "Ad for a burger restaurant", stats: { likes: "6,487", comments: "97", views: "43.8K" } },
+      { alt: "Ad for designer sneakers", stats: { likes: "12.4K", comments: "318", views: "86.5K" } },
+    ] as { alt: string; stats: Stats }[],
+  },
+};
 
 /* Pulls a card back toward the centre card as the fan recedes. A wrapper of
    its own, because the card inside is already animating x/y for its deal-in
@@ -78,6 +114,7 @@ function Gather({ p, c, off, children }: { p: MotionValue<number>; c: Slot; off:
 export default function HeroFan({ appUrl }: { appUrl: string }) {
   const ref = useRef<HTMLElement>(null);
   const reduce = useReducedMotion();
+  const t = useCopy(COPY);
 
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end end"] });
   const p = useSpring(scrollYProgress, { stiffness: 140, damping: 30, mass: 0.4 });
@@ -106,7 +143,7 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
       whileTap={{ scale: 0.98 }}
       className={`group pointer-events-auto items-center gap-2.5 rounded-full bg-[#0D1522] px-9 py-4 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(13,21,34,0.45)] md:text-lg ${extra}`}
     >
-      Probar gratis
+      {t.cta}
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
     </motion.a>
   );
@@ -160,13 +197,13 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
               >
                 <img
                   src={c.src}
-                  alt={c.alt}
+                  alt={t.cards[i].alt}
                   loading="eager"
                   fetchPriority={i === SLOTS.length - 1 ? "high" : "auto"}
                   draggable={false}
                   className="h-full w-full select-none object-cover"
                 />
-                <IgStats stats={c.stats} unit={u} />
+                <IgStats stats={t.cards[i].stats} unit={u} />
               </motion.div>
             </Gather>
           ))}
@@ -187,8 +224,8 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
             transition={{ duration: 0.6, delay: 0.35 }}
             className="font-heading text-[2.2rem] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0D1522] sm:text-5xl md:text-[4rem]"
           >
-            Contenido y Ads<br className="md:hidden" /> para tu marca
-            <span className="sr-only"> — Postty, agente de marketing con IA: contenido y ads para tu marca, para Meta y Google, en minutos, sin agencias ni community managers</span>
+            {t.title}<br className="md:hidden" /> {t.titleEnd}
+            <span className="sr-only">{t.srOnly}</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 14 }}
@@ -196,7 +233,7 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
             transition={{ duration: 0.6, delay: 0.45 }}
             className="mt-3 font-heading text-xl font-semibold tracking-[-0.02em] text-[#0D1522] md:text-[2rem]"
           >
-            Sin agencias, sin CMs.
+            {t.sub}
           </motion.p>
           {cta("mt-7 hidden md:inline-flex")}
         </motion.div>

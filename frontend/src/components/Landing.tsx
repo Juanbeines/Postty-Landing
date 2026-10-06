@@ -4,7 +4,9 @@ import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import PrivacyContent from "@/components/legal/PrivacyContent";
+import PrivacyContentEn from "@/components/legal/PrivacyContentEn";
 import TermsContent from "@/components/legal/TermsContent";
+import TermsContentEn from "@/components/legal/TermsContentEn";
 import GiftCountdown from "@/components/GiftCountdown";
 import GiftOverlay from "@/components/GiftOverlay";
 import GiftTeaser from "@/components/GiftTeaser";
@@ -19,6 +21,8 @@ import AppsCarousel from "@/components/AppsCarousel";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { onGiftJustClosed, useGiftDiscount } from "@/lib/giftDiscount";
 import { WHATSAPP_URL } from "@/lib/whatsapp";
+import { localePath } from "@/i18n/config";
+import { useCopy, useLocale } from "@/i18n/locale";
 // Untitled UI icons (MIT) — the credit allowance lines.
 import { Image01 as ImageIcon, VideoRecorder as VideoIcon } from "@untitledui/icons";
 
@@ -32,34 +36,30 @@ const avatars = [
 
 /**
  * Team — each person carries their own quote on their own card (see the
- * "¿Por qué Postty?" section). Array order is the desktop layout, with
- * Juan in the middle column; on mobile his card is pulled to the top
- * (`order-first`) so the CEO still leads.
+ * "¿Por qué Postty?" section). Array order is the desktop layout (two
+ * columns). The CEO's card is also pulled to the top on mobile
+ * (`order-first`) so he leads whatever the order here.
  */
 const teamMembers = [
-  {
-    name: "Dario Soria",
-    role: "CTO",
-    image: "/team/dari.webp",
-    link: "https://www.linkedin.com/in/dario-soria-11198324/",
-    quote:
-      "Queremos que la IA esté al servicio de quien vende, no que sume una complejidad más.",
-  },
   {
     name: "Juan Beines",
     role: "CEO",
     image: "/team/juan.webp",
     link: "https://www.linkedin.com/in/juanbeines/",
-    quote:
-      "Nacimos para que vender de forma digital deje de ser un problema y vuelva a ser una oportunidad.",
+    quote: {
+      es: "Nacimos para que vender de forma digital deje de ser un problema y vuelva a ser una oportunidad.",
+      en: "We started Postty so that selling online stops being a problem and becomes an opportunity again.",
+    },
   },
   {
-    name: "Agustina Tobias",
-    role: "CMO",
-    image: "/team/agustina.webp",
-    link: "https://www.linkedin.com/in/agustobias/",
-    quote:
-      "Para que cada marca pueda enfocarse en su estrategia mientras la ejecución del contenido se resuelve sola.",
+    name: "Dario Soria",
+    role: "CTO",
+    image: "/team/dari.webp",
+    link: "https://www.linkedin.com/in/dario-soria-11198324/",
+    quote: {
+      es: "Queremos que la IA esté al servicio de quien vende, no que sume una complejidad más.",
+      en: "We want AI to work for the people who sell, not to add one more layer of complexity.",
+    },
   },
 ];
 
@@ -121,7 +121,9 @@ const businessRows: ReadonlyArray<ReadonlyArray<{ name: string; emoji: string }>
   ],
 ];
 
-const faqItems = [
+type FaqItem = { q: string; a: string };
+
+const FAQ: Record<"es" | "en", FaqItem[]> = { es: [
   {
     q: "¿Qué es Postty?",
     a: "Un agente de marketing con IA. Aprende tu marca una vez y después produce todos los meses el contenido y las campañas que tu negocio necesita: videos, posts, historias y ads, con tu identidad, publicados en Instagram y Meta y optimizados solos. Hace el trabajo que hoy hacés vos, un community manager o una agencia.",
@@ -182,7 +184,68 @@ const faqItems = [
     q: "¿En qué plataformas puedo publicar mis campañas?",
     a: "Hoy Postty publica en Meta Ads (Facebook e Instagram). Estamos integrando Google Ads para publicar campañas con las imágenes y videos generados por inteligencia artificial. TikTok llegará próximamente. En todos los casos, Postty conecta con tu cuenta publicitaria a través del proceso oficial de autorización (OAuth 2.0) — nunca almacenamos ni compartimos tus credenciales, y podés revocar el acceso cuando quieras desde tu cuenta.",
   },
-];
+], en: [
+  {
+    q: "What is Postty?",
+    a: "An AI marketing agent. It learns your brand once and then produces, every month, the content and campaigns your business needs: videos, posts, stories and ads, in your brand identity, published on Instagram and Meta and optimized on their own. It does the work that you, a social media manager or an agency do today.",
+  },
+  {
+    q: "Why Postty instead of an agency or a social media manager?",
+    a: "Volume, speed and control. An agency delivers a handful of pieces a month, with briefs, rounds of revisions and waiting in between; Postty produces dozens the same day and publishes them without you having to chase anyone. And if you already hired one and it didn't move the needle, here you see the result before you pay: the free trial generates 6 pieces with your real brand.",
+  },
+  {
+    q: "How is Postty different from other AI tools?",
+    a: "Postty learns your brand once and then produces with that judgment, without briefs or back-and-forth. An online store that pays an agency or a social media manager today gets, in one afternoon, the volume of content and campaigns that used to take a month.",
+  },
+  {
+    q: "Do I need to learn Meta Ads Manager?",
+    a: "No. Postty creates the assets, builds the campaign, publishes it to your ad account and then optimizes it on its own. You approve and see the results; you never have to open Ads Manager.",
+  },
+  {
+    q: "What kind of content can Postty create?",
+    a: "Videos, feed posts, stories, carousels and ads for paid campaigns. Video is the format that matters most on Meta today, so it's the one Postty prioritizes: Basic includes 15 a month and Pro 35. Everything comes out in your brand identity, ready to publish.",
+  },
+  {
+    q: "Do you have a free trial?",
+    a: "Yes. In the free trial Postty creates 6 ads or posts for your Instagram profile and your Meta profile, with no card and no commitment. For the most personalized results, connect your Instagram and Meta accounts; if you'd rather not, Postty still generates from your website URL, though the result is less personalized. Afterwards you can pick a plan and keep creating.",
+  },
+  {
+    q: "Do I need to connect my social accounts to use Postty?",
+    a: "It's not required, but it's recommended. If you connect your Instagram and Meta accounts, Postty creates much more personalized content for your Instagram profile and ads for your Meta profile. If you'd rather not connect them, Postty works from your website URL and still generates, though the result is less personalized.",
+  },
+  {
+    q: "Is it right for my type of business?",
+    a: "It performs best for online stores that already sell and already invest in Meta, especially brands with a catalog of physical products that need a steady volume of content. It also works well for services and local businesses with a strong social presence. What matters isn't the industry: it's that you already have sales going, because Postty scales what works.",
+  },
+  {
+    q: "Can I edit the ads it generates?",
+    a: "Yes, as many times as it takes until it's exactly how you want it. On Basic, edits use credits from your plan, far fewer than generating from scratch. On Pro, image editing is unlimited: it doesn't use credits.",
+  },
+  {
+    q: "How do credits work?",
+    a: "Credits are the unit we use to measure everything you generate. Each action uses a different amount depending on what it costs to produce: an image weighs much less than a video, and editing costs much less than generating from scratch. Before you confirm each generation we show you how many credits it uses, so you always know what you're spending them on.",
+  },
+  {
+    q: "How many images and videos can I make per month?",
+    a: "Basic includes 200 credits a month, enough for 15 videos plus 30 images. Pro includes 400 credits: 35 videos plus 70 images, and adds the Pro AI video models. That's a reference mix, not a fixed limit: the credits are yours to split between images and videos however works for you.",
+  },
+  {
+    q: "Do unused credits roll over to the next month?",
+    a: "No. Credits belong to the current month and fully renew at the start of each billing cycle. That's why it's worth choosing the plan that matches your real pace of work: if you're not sure, message us on WhatsApp and we'll help you decide.",
+  },
+  {
+    q: "What happens if a generation fails?",
+    a: "You aren't charged the credits. If an image or a video fails because of a technical problem on our side or with the AI models, the credits go back to your account automatically.",
+  },
+  {
+    q: "Can I change plans whenever I want?",
+    a: "Yes. If you upgrade, we credit you the difference in credits, prorated for the days left in the month. If you downgrade, the change applies at the start of the next cycle, and you keep the credits you already had until then.",
+  },
+  {
+    q: "Which platforms can I publish my campaigns on?",
+    a: "Today Postty publishes to Meta Ads (Facebook and Instagram). We're integrating Google Ads to publish campaigns with AI-generated images and videos. TikTok is coming soon. In every case, Postty connects to your ad account through the official authorization process (OAuth 2.0) — we never store or share your credentials, and you can revoke access from your account whenever you want.",
+  },
+] };
 
 /* Supported ad platforms (name, logo, live/"Próximamente" state and the
    OAuth copy the Google Ads review needs) now live with the section that
@@ -577,7 +640,118 @@ function BrandTestimonialsSection() {
   );
 }
 
+/* Pricing copy and amounts per locale.
+
+   What the user PAYS is unchanged. The list prices are the anchor, chosen so
+   Basic wins on both axes a buyer actually compares — the percentage (50 vs
+   30) and the pesos saved ($70.000 vs $56.000). Previously Pro's 60% off
+   $324.900 read as a $195.000 saving against Basic's $18.000, which is why
+   every visitor was funnelled to Pro. Nothing here is visible until the gift
+   is claimed; before that each card shows `list` with no pill and no
+   strikethrough.
+
+   USD (the /en/ page): what the customer pays is US$40 Basic / US$99 Pro;
+   the list prices ($80 / $141) only anchor the same 50% / 30% gift discount
+   the peso prices carry. There are no yearly USD prices, so the English page
+   has no billing toggle (`yearly: false`) and its `yearly` entries just repeat
+   monthly to keep the shape. Checkout still runs through MercadoPago in ARS,
+   so the app must be able to charge these amounts before /en/ goes live.
+   These display amounts never reach the Pixel — see `basicTracked` below. */
+const PRICING_COPY = {
+  es: {
+    title: "Precios simples",
+    monthly: "Mensual",
+    yearly: "Anual",
+    perMonth: "/mes",
+    yearlyAvailable: true,
+    free: {
+      name: "Gratis",
+      price: "$0.00",
+      blurb: "Mirá qué genera con tu marca antes de pagar nada",
+      cta: "Probar gratis",
+      features: ["6 ads o posts de prueba", "Generados con tu marca real", "Sin tarjeta de crédito"],
+    },
+    basic: {
+      monthly: { list: "$139.900", pay: "$69.900", listValue: 139900, payValue: 69900 },
+      yearly: { list: "$122.900", pay: "$61.500", listValue: 122900, payValue: 61500 },
+      off: "50% OFF",
+      blurb: "Tu e-commerce, sin agencia ni community manager",
+      cta: "Empezar ahora",
+      /* The credit allowance is rendered as one bundle: the total, then the
+         two things it buys joined by a "+". Deliberately unqualified — no
+         "terminadas", no per-video duration — these are the marketing
+         figures Juan set for the e-commerce repositioning. Note they run
+         ahead of the credit table in Postty-Prod (CREDITS_PER_IMAGE=2,
+         CREDITS_PER_VIDEO_SECOND=3) and ahead of the T&C, which still declare
+         1 and 4 videos (TermsContent §4.2/§4.3), as does the FAQ entry
+         "¿Cuántas imágenes y videos puedo hacer por mes?". */
+      credits: { total: "200 créditos por mes equivalentes a:", videos: "15 videos", images: "30 imágenes" },
+      features: [
+        "Publicación automática en Instagram y Meta",
+        "Edición de imágenes y videos",
+        "Optimización de campañas de Meta",
+        "Soporte técnico",
+      ],
+    },
+    pro: {
+      monthly: { list: "$185.900", pay: "$129.900", listValue: 185900, payValue: 129900 },
+      yearly: { list: "$139.900", pay: "$97.900", listValue: 139900, payValue: 97900 },
+      off: "30% OFF",
+      blurb: "Para cuando necesitás el doble de volumen y los mejores modelos de video",
+      cta: "Convertirme en Pro",
+      credits: { total: "400 créditos por mes equivalentes a:", videos: "35 videos", images: "70 imágenes" },
+      /* Pro reads as a delta on top of Basic (see `plus`), so it only
+         carries what Basic does not. */
+      plus: "Todo lo de Basic, más:",
+      features: ["Modelos Pro de IA para video", "Edición de imágenes sin límite", "Soporte prioritario"],
+    },
+    help: "¿No sabés qué plan te conviene?",
+    helpCta: "Contactanos",
+  },
+  en: {
+    title: "Simple pricing",
+    monthly: "Monthly",
+    yearly: "Yearly",
+    perMonth: "/mo",
+    yearlyAvailable: false,
+    free: {
+      name: "Free",
+      price: "$0.00",
+      blurb: "See what it creates for your brand before you pay a thing",
+      cta: "Try it free",
+      features: ["6 trial ads or posts", "Made with your real brand", "No credit card"],
+    },
+    basic: {
+      monthly: { list: "$80", pay: "$40", listValue: 80, payValue: 40 },
+      yearly: { list: "$80", pay: "$40", listValue: 80, payValue: 40 },
+      off: "50% OFF",
+      blurb: "Your online store, without an agency or a social media manager",
+      cta: "Get started",
+      credits: { total: "200 credits a month, enough for:", videos: "15 videos", images: "30 images" },
+      features: [
+        "Auto-publishing to Instagram and Meta",
+        "Image and video editing",
+        "Meta campaign optimization",
+        "Tech support",
+      ],
+    },
+    pro: {
+      monthly: { list: "$141", pay: "$99", listValue: 141, payValue: 99 },
+      yearly: { list: "$141", pay: "$99", listValue: 141, payValue: 99 },
+      off: "30% OFF",
+      blurb: "For when you need twice the volume and the best video models",
+      cta: "Go Pro",
+      credits: { total: "400 credits a month, enough for:", videos: "35 videos", images: "70 images" },
+      plus: "Everything in Basic, plus:",
+      features: ["Pro AI video models", "Unlimited image editing", "Priority support"],
+    },
+    help: "Not sure which plan is right for you?",
+    helpCta: "Contact us",
+  },
+};
+
 function PricingSection() {
+  const t = useCopy(PRICING_COPY);
   const [hoveredCard, setHoveredCard] = useState<"starter" | "basic" | "pro" | null>("basic");
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   // Whether the user already claimed their gift via the GiftOverlay.
@@ -655,74 +829,14 @@ function PricingSection() {
     return () => observer.disconnect();
   }, []);
 
-  const starterFeatures = [
-    "6 ads o posts de prueba",
-    "Generados con tu marca real",
-    "Sin tarjeta de crédito",
-  ];
-
-  /* The credit allowance is rendered as one bundle: the total, then the two
-     things it buys joined by a "+". Deliberately unqualified — no "terminadas",
-     no per-video duration — these are the marketing figures Juan set for the
-     e-commerce repositioning. Note they run ahead of the credit table in
-     Postty-Prod (CREDITS_PER_IMAGE=2, CREDITS_PER_VIDEO_SECOND=3) and ahead of
-     the T&C, which still declare 1 and 4 videos (TermsContent §4.2/§4.3), as
-     does FAQ "¿Cuántas imágenes y videos puedo hacer por mes?" below. */
-  const basicCredits = {
-    total: "200 créditos por mes equivalentes a:",
-    videos: "15 videos",
-    images: "30 imágenes",
-  };
-
-  const proCredits = {
-    total: "400 créditos por mes equivalentes a:",
-    videos: "35 videos",
-    images: "70 imágenes",
-  };
-
-  const basicFeatures = [
-    "Publicación automática en Instagram y Meta",
-    "Edición de imágenes y videos",
-    "Optimización de campañas de Meta",
-    "Soporte técnico",
-  ];
-
-  /* Pro reads as a delta on top of Basic (see the "Todo lo de Basic, más:"
-     label above the list), so it only carries what Basic does not. */
-  const proFeatures = [
-    "Modelos Pro de IA para video",
-    "Edición de imágenes sin límite",
-    "Soporte prioritario",
-  ];
-
-  /* Pricing in one place. It used to be eight loose inline ternaries, which
-     let the strikethroughs drift: they were hardcoded to the monthly list
-     price and ignored the billing toggle entirely, so "Anual" crossed out a
-     monthly number.
-
-     What the user PAYS is unchanged. The list prices are the anchor, chosen
-     so Basic wins on both axes a buyer actually compares — the percentage
-     (50 vs 30) and the pesos saved ($70.000 vs $56.000). Previously Pro's
-     60% off $324.900 read as a $195.000 saving against Basic's $18.000, which
-     is why every visitor was funnelled to Pro.
-
-     Nothing here is visible until the gift is claimed; before that each card
-     shows `list` with no pill and no strikethrough. */
-  const PLANS = {
-    basic: {
-      monthly: { list: "$139.900", pay: "$69.900", listValue: 139900, payValue: 69900 },
-      yearly: { list: "$122.900", pay: "$61.500", listValue: 122900, payValue: 61500 },
-      off: "50% OFF",
-    },
-    pro: {
-      monthly: { list: "$185.900", pay: "$129.900", listValue: 185900, payValue: 129900 },
-      yearly: { list: "$139.900", pay: "$97.900", listValue: 139900, payValue: 97900 },
-      off: "30% OFF",
-    },
-  } as const;
-
-  const basicPrice = PLANS.basic[billing];
-  const proPrice = PLANS.pro[billing];
+  const basicPrice = t.basic[billing];
+  const proPrice = t.pro[billing];
+  /* Pixel payloads are NOT localized: the Lead events always report the
+     peso amounts in ARS, exactly as before the English page existed (and
+     what MercadoPago actually charges). See CLAUDE.md — tracking is never
+     changed as a side effect. */
+  const basicTracked = PRICING_COPY.es.basic[billing];
+  const proTracked = PRICING_COPY.es.pro[billing];
 
   const activeCard = hoveredCard ?? "basic";
 
@@ -742,12 +856,14 @@ function PricingSection() {
           viewport={{ once: true }}
           className="font-heading text-center text-3xl font-semibold sm:text-4xl md:text-5xl"
         >
-          Precios simples
+          {t.title}
         </motion.h2>
 
         {/* Billing toggle — single pill container holding both options.
             A white-glass thumb slides between them using framer-motion's
-            shared layoutId, so toggling looks like an iOS segmented control. */}
+            shared layoutId, so toggling looks like an iOS segmented control.
+            Not rendered where there are no yearly prices (English). */}
+        {t.yearlyAvailable && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -782,12 +898,13 @@ function PricingSection() {
                       transition={{ type: "spring", stiffness: 360, damping: 30 }}
                     />
                   )}
-                  <span className="relative z-10">{option === "monthly" ? "Mensual" : "Anual"}</span>
+                  <span className="relative z-10">{option === "monthly" ? t.monthly : t.yearly}</span>
                 </button>
               );
             })}
           </div>
         </motion.div>
+        )}
 
         {/* Three cards since the Agencia plan came out (parked in
             _extras/AgencyPlanCard.tsx), which leaves Basic in the centre with no
@@ -819,14 +936,14 @@ function PricingSection() {
               transition={{ duration: 0.5 }}
               className="relative z-10 rounded-3xl border border-white/70 bg-white/55 p-[1.53rem] shadow-[0_4px_32px_rgba(0,0,0,0.06)] backdrop-blur-xl"
             >
-              <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">Gratis</h3>
+              <h3 className="font-heading text-[2rem] font-medium text-[#0D1522]">{t.free.name}</h3>
 
               <div className="mt-[2rem] flex items-baseline gap-2">
-                <span className="font-heading text-[2.55rem] font-semibold tracking-tight text-[#0D1522]">$0.00</span>
+                <span className="font-heading text-[2.55rem] font-semibold tracking-tight text-[#0D1522]">{t.free.price}</span>
               </div>
 
               <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
-                Mirá qué genera con tu marca antes de pagar nada
+                {t.free.blurb}
               </p>
 
               <a
@@ -837,15 +954,15 @@ function PricingSection() {
                 })}
                 className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
-                Probar gratis
+                {t.free.cta}
               </a>
 
               <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
-                {starterFeatures.map((feat, i) => (
+                {t.free.features.map((feat, i) => (
                   <div
                     key={feat}
                     className={`flex items-center justify-between py-[0.6rem] ${
-                      i < starterFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                      i < t.free.features.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
                     }`}
                   >
                     <span className="text-[0.78rem] font-medium text-[#0D1522]/75">{feat}</span>
@@ -904,7 +1021,7 @@ function PricingSection() {
                   className="absolute -right-1 -top-5 z-20 flex rotate-12 flex-col items-center gap-[0.3rem] rounded-2xl px-[1.05rem] sm:-right-3.5 py-[0.62rem] leading-none shadow-[0_8px_26px_rgba(181,255,0,0.55)]"
                   style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
                 >
-                  <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]">{PLANS.basic.off}</span>
+                  <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]">{t.basic.off}</span>
                   <span className="h-px w-full bg-[#0D1522]/15" aria-hidden="true" />
                   <span className="text-[#0D1522]">
                     <GiftCountdown bare />
@@ -934,12 +1051,12 @@ function PricingSection() {
                   >
                     {giftDiscountApplied ? basicPrice.pay : basicPrice.list}
                   </span>
-                  <span className="text-[0.78rem] font-medium text-white/65">/mes</span>
+                  <span className="text-[0.78rem] font-medium text-white/65">{t.perMonth}</span>
                 </div>
               </div>
 
               <p className="mt-3 text-[0.78rem] leading-relaxed text-white/85">
-                Tu e-commerce, sin agencia ni community manager
+                {t.basic.blurb}
               </p>
 
               {/* CTA — chartreuse, the only colored CTA in the grid */}
@@ -950,33 +1067,33 @@ function PricingSection() {
                   content_category: "checkout_intent",
                   content_ids: ["plan_basic"],
                   content_type: "product",
-                  value: giftDiscountApplied ? basicPrice.payValue : basicPrice.listValue,
+                  value: giftDiscountApplied ? basicTracked.payValue : basicTracked.listValue,
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:shadow-lg hover:brightness-105"
                 style={{ background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
               >
-                Empezar ahora
+                {t.basic.cta}
               </a>
 
               {/* Credits — its own glass block. No tick here: an allowance
                   is a quantity, not a yes/no feature like the bullets below. */}
               <div className="mt-6 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
-                <p className="text-center text-[0.78rem] font-medium text-white/90">{basicCredits.total}</p>
+                <p className="text-center text-[0.78rem] font-medium text-white/90">{t.basic.credits.total}</p>
                 {/* Two columns joined by a "+": the allowance is one bundle
                     the user gets in full, not a choice between two options. */}
                 <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-x-2.5">
                   <div className="flex flex-col items-center text-center text-white">
                     <VideoIcon className="size-[18px]" />
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
-                      {basicCredits.videos}
+                      {t.basic.credits.videos}
                     </p>
                   </div>
                   <span className="font-heading text-[1.1rem] font-semibold text-white/60">+</span>
                   <div className="flex flex-col items-center text-center text-white">
                     <ImageIcon className="size-[18px]" />
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
-                      {basicCredits.images}
+                      {t.basic.credits.images}
                     </p>
                   </div>
                 </div>
@@ -984,11 +1101,11 @@ function PricingSection() {
 
               {/* Feature list */}
               <div className="mt-3 rounded-2xl border border-white/15 bg-white/10 p-[0.94rem] backdrop-blur-md">
-                {basicFeatures.map((feat, i) => (
+                {t.basic.features.map((feat, i) => (
                   <div
                     key={feat}
                     className={`flex items-center justify-between py-[0.6rem] ${
-                      i < basicFeatures.length - 1 ? "border-b border-white/10" : ""
+                      i < t.basic.features.length - 1 ? "border-b border-white/10" : ""
                     }`}
                   >
                     <span className="text-[0.78rem] font-medium text-white/90">{feat}</span>
@@ -1032,7 +1149,7 @@ function PricingSection() {
                   the two discounts. */}
               {giftDiscountApplied && (
                 <div className="absolute -right-1 -top-5 z-20 flex rotate-12 flex-col items-center gap-[0.3rem] rounded-2xl border border-white/80 bg-white/90 px-[1.05rem] sm:-right-3.5 py-[0.62rem] leading-none shadow-[0_6px_20px_rgba(13,21,34,0.14)] backdrop-blur-md">
-                  <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]/70">{PLANS.pro.off}</span>
+                  <span className="font-heading text-[1.15rem] font-bold text-[#0D1522]/70">{t.pro.off}</span>
                   <span className="h-px w-full bg-[#0D1522]/12" aria-hidden="true" />
                   <span className="text-[#0D1522]/70">
                     <GiftCountdown bare />
@@ -1052,12 +1169,12 @@ function PricingSection() {
                   <span className="font-heading text-[2.55rem] font-semibold tracking-tight text-[#0D1522]">
                     {giftDiscountApplied ? proPrice.pay : proPrice.list}
                   </span>
-                  <span className="text-[0.78rem] font-medium text-[#0D1522]/50">/mes</span>
+                  <span className="text-[0.78rem] font-medium text-[#0D1522]/50">{t.perMonth}</span>
                 </div>
               </div>
 
               <p className="mt-3 text-[0.78rem] leading-relaxed text-[#0D1522]/65">
-                Para cuando necesitás el doble de volumen y los mejores modelos de video
+                {t.pro.blurb}
               </p>
 
               <a
@@ -1067,30 +1184,30 @@ function PricingSection() {
                   content_category: "checkout_intent",
                   content_ids: ["plan_pro"],
                   content_type: "product",
-                  value: giftDiscountApplied ? proPrice.payValue : proPrice.listValue,
+                  value: giftDiscountApplied ? proTracked.payValue : proTracked.listValue,
                   currency: "ARS",
                 })}
                 className="mt-6 block w-full rounded-full bg-[#0D1522]/[0.06] py-[0.66rem] text-center text-[0.78rem] font-semibold text-[#0D1522] transition hover:bg-[#0D1522]/[0.10]"
               >
-                Convertirme en Pro
+                {t.pro.cta}
               </a>
 
               {/* Credits — its own glass block. No tick here: an allowance
                   is a quantity, not a yes/no feature like the bullets below. */}
               <div className="mt-6 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
-                <p className="text-center text-[0.78rem] font-medium text-[#0D1522]/75">{proCredits.total}</p>
+                <p className="text-center text-[0.78rem] font-medium text-[#0D1522]/75">{t.pro.credits.total}</p>
                 <div className="mt-3 grid grid-cols-[1fr_auto_1fr] items-center gap-x-2.5">
                   <div className="flex flex-col items-center text-center text-[#0D1522]">
                     <VideoIcon className="size-[18px]" />
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
-                      {proCredits.videos}
+                      {t.pro.credits.videos}
                     </p>
                   </div>
                   <span className="font-heading text-[1.1rem] font-semibold text-[#0D1522]/45">+</span>
                   <div className="flex flex-col items-center text-center text-[#0D1522]">
                     <ImageIcon className="size-[18px]" />
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
-                      {proCredits.images}
+                      {t.pro.credits.images}
                     </p>
                   </div>
                 </div>
@@ -1100,13 +1217,13 @@ function PricingSection() {
                   one instead of repeating the four Basic rows. */}
               <div className="mt-3 rounded-2xl border border-white/60 bg-white/40 p-[0.94rem] backdrop-blur-md">
                 <p className="pb-[0.55rem] text-[0.78rem] font-semibold text-[#0D1522]/55">
-                  Todo lo de Basic, más:
+                  {t.pro.plus}
                 </p>
-                {proFeatures.map((feat, i) => (
+                {t.pro.features.map((feat, i) => (
                   <div
                     key={feat}
                     className={`flex items-center justify-between py-[0.6rem] ${
-                      i < proFeatures.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
+                      i < t.pro.features.length - 1 ? "border-b border-[#0D1522]/[0.06]" : ""
                     }`}
                   >
                     <span className="text-[0.78rem] font-medium text-[#0D1522]/75">{feat}</span>
@@ -1146,8 +1263,8 @@ function PricingSection() {
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347M12.05 21.785h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413" />
             </svg>
             <span>
-              ¿No sabés qué plan te conviene?{" "}
-              <span className="font-semibold">Contactanos</span>
+              {t.help}{" "}
+              <span className="font-semibold">{t.helpCta}</span>
             </span>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
           </a>
@@ -1222,7 +1339,7 @@ function BusinessTypesSection() {
   );
 }
 
-function FAQItem({ item }: { item: (typeof faqItems)[0] }) {
+function FAQItem({ item }: { item: FaqItem }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-[#0D1522]/10">
@@ -1251,7 +1368,7 @@ function FAQItem({ item }: { item: (typeof faqItems)[0] }) {
   );
 }
 
-function LegalModal({ open, onClose, title, children }: { open: boolean; onClose: () => void; title: string; children: React.ReactNode }) {
+function LegalModal({ open, onClose, title, notice, children }: { open: boolean; onClose: () => void; title: string; notice?: string | null; children: React.ReactNode }) {
   useEffect(() => {
     if (open) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
@@ -1284,6 +1401,9 @@ function LegalModal({ open, onClose, title, children }: { open: boolean; onClose
               </button>
             </div>
             <div className="overflow-y-auto px-6 py-6" style={{ maxHeight: "calc(85vh - 65px)" }}>
+              {notice && (
+                <p className="mb-6 rounded-xl bg-[#0D1522]/[0.04] px-4 py-3 text-sm text-[#0D1522]/70">{notice}</p>
+              )}
               <div className="prose prose-sm max-w-none text-[#0D1522]/80 [&_h2]:font-heading [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-[#0D1522] [&_h2]:mt-8 [&_h2]:mb-3 [&_h3]:font-heading [&_h3]:text-base [&_h3]:font-medium [&_h3]:text-[#0D1522] [&_h3]:mt-6 [&_h3]:mb-2 [&_strong]:text-[#0D1522] [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1 [&_p]:leading-relaxed [&_p]:mb-3 [&_a]:text-[#1881F1] [&_a]:underline">
                 {children}
               </div>
@@ -1295,7 +1415,64 @@ function LegalModal({ open, onClose, title, children }: { open: boolean; onClose
   );
 }
 
-export default function Home() {
+const PAGE_COPY = {
+  es: {
+    howItWorks: "Cómo funciona",
+    pricing: "Precios",
+    whatsapp: "Contactar por WhatsApp",
+    login: "Iniciar sesión",
+    whyTitle: "¿Por qué Postty?",
+    whySub: "Tu equipo",
+    linkedin: (name: string) => `LinkedIn de ${name}`,
+    faqTitle: "Preguntas frecuentes",
+    finalTitle: "¿Listo para dejar de pagar una agencia?",
+    finalCta: "Empezar gratis",
+    footer: {
+      legal: "Legal",
+      privacy: "Política de privacidad",
+      terms: "Términos de servicio",
+      company: "Empresa",
+      resources: "Recursos",
+      rights: "Todos los derechos reservados.",
+    },
+    modal: {
+      privacy: "Política de Privacidad",
+      terms: "Términos y Condiciones de Uso",
+      notice: null as string | null,
+    },
+  },
+  en: {
+    howItWorks: "How it works",
+    pricing: "Pricing",
+    whatsapp: "Contact us on WhatsApp",
+    login: "Log in",
+    whyTitle: "Why Postty?",
+    whySub: "Your team",
+    linkedin: (name: string) => `${name} on LinkedIn`,
+    faqTitle: "Frequently asked questions",
+    finalTitle: "Ready to stop paying an agency?",
+    finalCta: "Start free",
+    footer: {
+      legal: "Legal",
+      privacy: "Privacy policy",
+      terms: "Terms of service",
+      company: "Company",
+      resources: "Resources",
+      rights: "All rights reserved.",
+    },
+    modal: {
+      privacy: "Privacy Policy",
+      terms: "Terms and Conditions of Use",
+      notice:
+        "This English translation is provided for convenience only. In case of any discrepancy, the Spanish version prevails." as string | null,
+    },
+  },
+};
+
+export default function Landing() {
+  const locale = useLocale();
+  const t = useCopy(PAGE_COPY);
+  const faqItems = FAQ[locale];
   const [scrolled, setScrolled] = useState(false);
   const [legalModal, setLegalModal] = useState<"tyc" | "privacy" | null>(null);
   const [isMobile, setIsMobile] = useState<boolean | null>(null);
@@ -1398,13 +1575,13 @@ export default function Home() {
               href="#como-funciona"
               className={"whitespace-nowrap transition hover:text-[#0D1522]"}
             >
-              Cómo funciona
+              {t.howItWorks}
             </a>
             <a
               href="#pricing"
               className={"whitespace-nowrap transition hover:text-[#0D1522]"}
             >
-              Precios
+              {t.pricing}
             </a>
           </nav>
           {/* WhatsApp glass circle — moved OUT of the desktop-only nav
@@ -1415,7 +1592,7 @@ export default function Home() {
             href={WHATSAPP_URL}
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Contactar por WhatsApp"
+            aria-label={t.whatsapp}
             onClick={() => trackEvent("Lead", { content_name: "header_whatsapp", content_category: "contacto_whatsapp" })}
             className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition hover:bg-white/25"
           >
@@ -1427,7 +1604,7 @@ export default function Home() {
             href={appUrl}
             className={`inline-flex h-9 shrink-0 items-center justify-center rounded-full leading-none bg-white/15 px-5 text-sm font-medium shadow-[inset_0_1px_0_rgba(255,255,255,0.4)] backdrop-blur-xl transition-colors duration-300 hover:bg-white/25 text-[#0D1522]`}
           >
-            Iniciar sesión
+            {t.login}
           </a>
         </motion.header>
 
@@ -1471,7 +1648,7 @@ export default function Home() {
               href={WHATSAPP_URL}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Contactar por WhatsApp"
+              aria-label={t.whatsapp}
               onClick={() => trackEvent("Lead", { content_name: "header_whatsapp_scrolled", content_category: "contacto_whatsapp" })}
               className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/25 shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
             >
@@ -1483,7 +1660,7 @@ export default function Home() {
               href={appUrl}
               className="inline-flex h-9 items-center justify-center rounded-full bg-white/25 px-5 text-sm font-medium text-[#0D1522] shadow-[0_8px_32px_rgba(0,0,0,0.08),inset_0_1px_0_rgba(255,255,255,0.5)] backdrop-blur-2xl backdrop-saturate-150 transition hover:bg-white/40"
             >
-              Iniciar sesión
+              {t.login}
             </a>
           </motion.div>
         </motion.div>
@@ -1544,7 +1721,7 @@ export default function Home() {
             transition={{ duration: 0.5 }}
             className="font-heading text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl"
           >
-            ¿Por qué Postty?
+            {t.whyTitle}
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
@@ -1553,10 +1730,10 @@ export default function Home() {
             transition={{ duration: 0.4, delay: 0.1 }}
             className="mt-3 text-center text-base font-normal text-[#0D1522]/55 sm:text-lg"
           >
-            Tu equipo
+            {t.whySub}
           </motion.p>
 
-          <div className="mx-auto mt-12 grid max-w-md grid-cols-1 gap-6 md:mt-14 md:max-w-none md:grid-cols-3">
+          <div className="mx-auto mt-12 grid max-w-md grid-cols-1 gap-6 md:mt-14 md:max-w-3xl md:grid-cols-2">
             {teamMembers.map((member, i) => (
               <motion.div
                 key={member.name}
@@ -1608,20 +1785,19 @@ export default function Home() {
                     href={member.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    aria-label={`LinkedIn de ${member.name}`}
+                    aria-label={t.linkedin(member.name)}
                     className="absolute inset-0 z-10 cursor-pointer"
                   />
                 </div>
 
                 <p className="px-3 pb-3 pt-5 text-sm leading-relaxed text-[#0D1522]/85 sm:text-[15px]">
-                  &ldquo;{member.quote}&rdquo;
+                  &ldquo;{member.quote[locale]}&rdquo;
                 </p>
               </motion.div>
             ))}
           </div>
 
-          {/* Instagram handle — centred under the grid, which puts it directly
-              below Juan's card on desktop (he holds the middle column). Same
+          {/* Instagram handle — centred under the two-card grid. Same
               glass pill language as the WhatsApp one under pricing.
               Deliberately untracked: a social follow is not a Lead, and firing
               one here would dilute the Lead signal Meta optimises against. */}
@@ -1664,7 +1840,7 @@ export default function Home() {
       {/* ── FAQ ── */}
       <section id="faq" className="px-4 py-20">
         <div className="mx-auto max-w-3xl">
-          <h2 className="font-heading text-center text-3xl font-semibold sm:text-4xl">Preguntas frecuentes</h2>
+          <h2 className="font-heading text-center text-3xl font-semibold sm:text-4xl">{t.faqTitle}</h2>
           <div className="mt-10">
             {faqItems.map((item) => (
               <FAQItem key={item.q} item={item} />
@@ -1694,7 +1870,7 @@ export default function Home() {
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center px-8 text-center">
             <h2 className="font-heading text-xl font-semibold text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl lg:text-4xl">
-              ¿Listo para dejar de pagar una agencia?
+              {t.finalTitle}
             </h2>
             <div className="mt-5">
               <motion.a
@@ -1705,7 +1881,7 @@ export default function Home() {
                 whileTap={{ scale: 0.98 }}
                 transition={{ type: "spring", stiffness: 340, damping: 22 }}
               >
-                Empezar gratis
+                {t.finalCta}
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
               </motion.a>
             </div>
@@ -1768,44 +1944,44 @@ export default function Home() {
           </div>
           <div className="flex flex-wrap gap-10 text-sm">
             <div>
-              <p className="mb-2 font-medium text-[#0D1522]/40">Legal</p>
+              <p className="mb-2 font-medium text-[#0D1522]/40">{t.footer.legal}</p>
               <a
-                href="/privacy"
+                href={localePath(locale, "/privacy/")}
                 onClick={(e) => { e.preventDefault(); setLegalModal("privacy"); }}
                 className="block text-[#0D1522]/60 transition hover:text-[#0D1522]"
               >
-                Política de privacidad
+                {t.footer.privacy}
               </a>
               <a
-                href="/terms"
+                href={localePath(locale, "/terms/")}
                 onClick={(e) => { e.preventDefault(); setLegalModal("tyc"); }}
                 className="mt-1 block text-[#0D1522]/60 transition hover:text-[#0D1522]"
               >
-                Términos de servicio
+                {t.footer.terms}
               </a>
             </div>
             <div>
-              <p className="mb-2 font-medium text-[#0D1522]/40">Empresa</p>
-              <a href="#como-funciona" className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">Cómo funciona</a>
+              <p className="mb-2 font-medium text-[#0D1522]/40">{t.footer.company}</p>
+              <a href="#como-funciona" className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">{t.howItWorks}</a>
             </div>
             <div>
-              <p className="mb-2 font-medium text-[#0D1522]/40">Recursos</p>
+              <p className="mb-2 font-medium text-[#0D1522]/40">{t.footer.resources}</p>
               <a href="#faq" className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">FAQ</a>
             </div>
           </div>
         </div>
         <div className="mx-auto mt-8 max-w-6xl pt-6 text-center text-xs text-[#0D1522]/40">
-          © {new Date().getFullYear()} Postty. Todos los derechos reservados.
+          © {new Date().getFullYear()} Postty. {t.footer.rights}
         </div>
       </footer>
 
       {/* ── Legal Modals ── */}
-      <LegalModal open={legalModal === "privacy"} onClose={() => setLegalModal(null)} title="Política de Privacidad">
-        <PrivacyContent />
+      <LegalModal open={legalModal === "privacy"} onClose={() => setLegalModal(null)} title={t.modal.privacy} notice={t.modal.notice}>
+        {locale === "en" ? <PrivacyContentEn /> : <PrivacyContent />}
       </LegalModal>
 
-      <LegalModal open={legalModal === "tyc"} onClose={() => setLegalModal(null)} title="Términos y Condiciones de Uso">
-        <TermsContent />
+      <LegalModal open={legalModal === "tyc"} onClose={() => setLegalModal(null)} title={t.modal.terms} notice={t.modal.notice}>
+        {locale === "en" ? <TermsContentEn /> : <TermsContent />}
       </LegalModal>
     </div>
   );

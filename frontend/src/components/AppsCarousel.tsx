@@ -24,6 +24,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useCopy } from "@/i18n/locale";
 import { trackEvent, useAppUrl } from "@/lib/pixel";
 
 type App = {
@@ -40,7 +41,7 @@ type App = {
 
 /* Order matters: Instagram → Meta → Google Ads → TikTok leads, the rest
    follow. */
-const APPS: ReadonlyArray<App> = [
+const APPS_ES: ReadonlyArray<App> = [
   {
     logo: "instagram",
     name: "Instagram",
@@ -99,6 +100,68 @@ const APPS: ReadonlyArray<App> = [
   },
 ];
 
+/* English (US) page. Tiendanube and Mercado Libre are Latin American
+   marketplaces with no meaning for a US visitor, so they are left out. */
+const APPS_EN: ReadonlyArray<App> = [
+  {
+    logo: "instagram",
+    name: "Instagram",
+    live: true,
+    does: "Publish posts, stories and reels",
+    never: "Never lose another weekend figuring out what to post.",
+    cta: "Publish content",
+  },
+  {
+    logo: "meta",
+    name: "Meta",
+    live: true,
+    does: "Create the ads that actually sell, and optimize them while you sleep",
+    never: "No more agencies charging a fortune for the same thing.",
+    cta: "Launch a campaign",
+  },
+  {
+    logo: "google-ads",
+    name: "Google Ads",
+    live: false,
+    does: "Campaigns with AI-made images and videos",
+    never: "No more paying for clicks with generic creatives.",
+    cta: "Create my ads",
+  },
+  {
+    logo: "tiktok",
+    name: "TikTok",
+    live: false,
+    does: "UGC videos built for the fastest feed of all",
+    never: "Never get left out again because you can't film.",
+    cta: "Generate UGC videos",
+  },
+  {
+    logo: "facebook",
+    name: "Facebook",
+    live: true,
+    does: "Post to your page and launch campaigns from Postty",
+    never: "No more fighting with Ads Manager.",
+    cta: "Post to my page",
+  },
+];
+
+const COPY = {
+  es: {
+    apps: APPS_ES,
+    title: "Publicá en todos lados,",
+    titleEnd: "con 1 click",
+    sub: "Postty se conecta de forma segura,",
+    subEnd: "vos mantenés el control.",
+  },
+  en: {
+    apps: APPS_EN,
+    title: "Publish everywhere,",
+    titleEnd: "in 1 click",
+    sub: "Postty connects securely,",
+    subEnd: "you stay in control.",
+  },
+};
+
 /** How long each app holds before the deck advances on its own. */
 const AUTOPLAY_MS = 3000;
 
@@ -113,6 +176,9 @@ const RING_SCALE = [1, 0.68, 0.46];
 const RING_OPACITY = [1, 1, 0.9];
 
 export default function AppsCarousel() {
+  const t = useCopy(COPY);
+  const APPS = t.apps;
+  const count = APPS.length; // differs per locale, so the hooks below depend on it
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [inView, setInView] = useState(false);
@@ -141,21 +207,21 @@ export default function AppsCarousel() {
     if (paused || !inView) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setTimeout(
-      () => setActive((prev) => (prev + 1) % APPS.length),
+      () => setActive((prev) => (prev + 1) % count),
       AUTOPLAY_MS,
     );
     return () => window.clearTimeout(id);
-  }, [paused, inView, active]);
+  }, [paused, inView, active, count]);
 
   // Shortest signed distance from the active tile, so the deck wraps in
   // both directions instead of scrolling back through the whole list.
   const offsetOf = useCallback(
     (i: number) => {
-      const n = APPS.length;
+      const n = count;
       const d = (i - active + n) % n;
       return d > n / 2 ? d - n : d;
     },
-    [active],
+    [active, count],
   );
 
   const current = APPS[active];
@@ -170,7 +236,7 @@ export default function AppsCarousel() {
           viewport={{ once: true }}
           className="font-heading text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl"
         >
-          Publicá en todos lados,<br className="md:hidden" /> con 1 click
+          {t.title}<br className="md:hidden" /> {t.titleEnd}
         </motion.h2>
 
         <motion.p
@@ -180,7 +246,7 @@ export default function AppsCarousel() {
           transition={{ delay: 0.05 }}
           className="mx-auto mt-4 max-w-2xl text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl"
         >
-          Postty se conecta de forma segura,<br className="md:hidden" /> vos mantenés el control.
+          {t.sub}<br className="md:hidden" /> {t.subEnd}
         </motion.p>
 
         {/* A card, with a second one resting behind it (inert — it only

@@ -27,6 +27,31 @@ import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import IgStats, { type Stats } from "@/components/IgStats";
+import { numberLocale, type Locale } from "@/i18n/config";
+import { useCopy, useLocale } from "@/i18n/locale";
+
+/* `market` is Argentina-only: the English page (served to the US) drops the
+   "para el mercado argentino" part along with the flag and heart. */
+const COPY = {
+  es: {
+    title: "Contenido, Ads, Videos UGC y mucho más",
+    sub: "Hecho por Postty",
+    market: { lead: ", para el mercado", word: "argentino" } as { lead: string; word: string } | null,
+    tabs: "Formato",
+    soon: "Próximamente",
+    mute: "Silenciar video",
+    unmute: "Activar audio del video",
+  },
+  en: {
+    title: "Content, Ads, UGC Videos and much more",
+    sub: "Made by Postty",
+    market: null as { lead: string; word: string } | null,
+    tabs: "Format",
+    soon: "Coming soon",
+    mute: "Mute video",
+    unmute: "Turn on video sound",
+  },
+};
 
 type Tab = "ads" | "posts" | "videos";
 
@@ -46,7 +71,7 @@ const CREATIVES: Record<Tab, string[]> = {
 /* Small-account numbers on purpose (30–500 likes): the point is "this is
    what a normal brand posts", not viral proof. Deterministic per slot so
    server and client render the same thing. */
-function statsFor(i: number): Stats {
+function statsFor(i: number, locale: Locale): Stats {
   const r = (seed: number) => {
     const x = Math.sin(i * 97.13 + seed * 13.7) * 43758.5453;
     return x - Math.floor(x);
@@ -54,7 +79,7 @@ function statsFor(i: number): Stats {
   const likes = Math.round(30 + r(1) * 470);
   const comments = Math.max(2, Math.round(likes * (0.03 + r(2) * 0.09)));
   const views = Math.round(likes * (6 + r(3) * 8));
-  const fmt = (n: number) => n.toLocaleString("es-AR");
+  const fmt = (n: number) => n.toLocaleString(numberLocale(locale));
   return { likes: fmt(likes), comments: fmt(comments), views: fmt(views) };
 }
 
@@ -138,6 +163,7 @@ function CreativeVideo({ src, sound, active, onToggle, size }: {
   size: number;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
+  const c = useCopy(COPY);
 
   useEffect(() => {
     const v = ref.current;
@@ -152,7 +178,7 @@ function CreativeVideo({ src, sound, active, onToggle, size }: {
     <button
       type="button"
       onClick={onToggle}
-      aria-label={sound ? "Silenciar video" : "Activar audio del video"}
+      aria-label={sound ? c.mute : c.unmute}
       aria-pressed={sound}
       className="absolute inset-0 block h-full w-full cursor-pointer"
     >
@@ -192,6 +218,8 @@ function CreativeVideo({ src, sound, active, onToggle, size }: {
 
 export default function CreativeSphereSection() {
   const ref = useRef<HTMLElement>(null);
+  const locale = useLocale();
+  const c = useCopy(COPY);
   const [w, setW] = useState(1280);
   const [tab, setTab] = useState<Tab>("posts");
   const [soundSlot, setSoundSlot] = useState<number | null>(null); // the one card with audio on
@@ -341,7 +369,7 @@ export default function CreativeSphereSection() {
         viewport={{ once: true }}
         className="mx-auto max-w-5xl px-4 text-center font-heading text-3xl font-semibold tracking-tight text-[#0D1522] sm:text-4xl md:text-5xl"
       >
-        Contenido, Ads, Videos UGC y mucho más
+        {c.title}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0, y: 20 }}
@@ -350,18 +378,23 @@ export default function CreativeSphereSection() {
         transition={{ delay: 0.08 }}
         className="mt-4 px-4 text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl"
       >
-        Hecho por Postty, para el mercado{" "}
-        {/* Kept on one line with the word so the badges never wrap off on
-            their own. */}
-        <span className="whitespace-nowrap">
-          argentino
-          <GlassFlag className="ml-[0.4em] inline-block h-[0.95em] w-auto align-[-0.12em] drop-shadow-[0_2px_3px_rgba(13,21,34,0.28)]" />
-          <GlassHeart className="ml-[0.3em] inline-block h-[1.05em] w-auto align-[-0.18em] drop-shadow-[0_2px_3px_rgba(165,14,31,0.35)]" />
-        </span>
+        {c.sub}
+        {c.market && (
+          <>
+            {c.market.lead}{" "}
+            {/* Kept on one line with the word so the badges never wrap off
+                on their own. */}
+            <span className="whitespace-nowrap">
+              {c.market.word}
+              <GlassFlag className="ml-[0.4em] inline-block h-[0.95em] w-auto align-[-0.12em] drop-shadow-[0_2px_3px_rgba(13,21,34,0.28)]" />
+              <GlassHeart className="ml-[0.3em] inline-block h-[1.05em] w-auto align-[-0.18em] drop-shadow-[0_2px_3px_rgba(165,14,31,0.35)]" />
+            </span>
+          </>
+        )}
       </motion.p>
 
       {/* Format selector — underline tabs on one shared track. */}
-      <div role="tablist" aria-label="Formato" className="relative mx-auto mt-10 flex w-fit gap-10 md:mt-14 md:gap-16">
+      <div role="tablist" aria-label={c.tabs} className="relative mx-auto mt-10 flex w-fit gap-10 md:mt-14 md:gap-16">
         <div aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[3px] rounded-full bg-[#0D1522]/[0.07]" />
         {TABS.map((t) => (
           <button
@@ -452,7 +485,7 @@ export default function CreativeSphereSection() {
                         className="h-full w-full select-none object-cover"
                       />
                     )}
-                    <IgStats stats={statsFor(i)} unit={(n) => `${(n * cardH) / 64}px`} />
+                    <IgStats stats={statsFor(i, locale)} unit={(n) => `${(n * cardH) / 64}px`} />
                   </div>
                 ))}
               </div>
@@ -466,7 +499,7 @@ export default function CreativeSphereSection() {
               className="absolute inset-x-0 text-center font-heading text-xl text-[#0D1522]/45 md:text-2xl"
               style={{ top: PAD + cardH * 0.55 }}
             >
-              Próximamente
+              {c.soon}
             </motion.p>
           )}
         </AnimatePresence>

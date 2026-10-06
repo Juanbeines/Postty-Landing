@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import Script from "next/script";
-import { Suspense } from "react";
-import MetaPixel from "@/components/MetaPixel";
-import "./globals.css";
-
-const GA_ID = "G-F4E2KJ2W01";
+import RootDocument from "@/components/RootDocument";
+import "../globals.css";
 
 export const metadata: Metadata = {
   title: "Postty | Agente de Marketing con IA para Meta y Google Ads",
@@ -13,6 +9,8 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://www.posttyai.com"),
   alternates: {
     canonical: "/",
+    // The same page in English lives at /en/ (US visitors are sent there).
+    languages: { "es-AR": "/", "en-US": "/en/", "x-default": "/" },
   },
   robots: {
     index: true,
@@ -118,34 +116,8 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="es">
-      <head>
-        {/* Preconnect & DNS prefetch for Google Tag Manager (reduces TTFB of analytics) */}
-        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="" />
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${GA_ID}');
-          `}
-        </Script>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body className="antialiased">
-        <Suspense fallback={null}>
-          <MetaPixel />
-        </Suspense>
-        {children}
-      </body>
-    </html>
+    <RootDocument locale="es" jsonLd={jsonLd}>
+      {children}
+    </RootDocument>
   );
 }

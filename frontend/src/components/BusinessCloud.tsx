@@ -18,8 +18,9 @@
  */
 
 import { motion } from "framer-motion";
+import { useCopy, useLocale } from "@/i18n/locale";
 
-type Item = { src: string; label: string; x: number; y: number; size: number; desktopOnly?: boolean };
+type Item = { src: string; label: { es: string; en: string }; x: number; y: number; size: number; desktopOnly?: boolean };
 
 /* x / y: card centre as % of the stage. size: px at the 1152px desktop stage.
    Three bands — a full row above the headline, one card each side of it,
@@ -27,31 +28,38 @@ type Item = { src: string; label: string; x: number; y: number; size: number; de
    `desktopOnly` cards drop on phones, where twenty would pile up. */
 const ITEMS: Item[] = [
   // above
-  { src: "calzado", label: "Calzado", x: 10, y: 18, size: 150 },
-  { src: "indumentaria", label: "Indumentaria", x: 24, y: 9, size: 136 },
-  { src: "panaderia", label: "Panadería", x: 37, y: 19, size: 138, desktopOnly: true },
-  { src: "cafeteria", label: "Cafeterías", x: 50, y: 8, size: 150 },
-  { src: "perfumeria", label: "Perfumería", x: 63, y: 20, size: 134, desktopOnly: true },
-  { src: "joyeria", label: "Joyería", x: 76, y: 9, size: 136 },
-  { src: "optica-1", label: "Óptica", x: 90, y: 18, size: 146, desktopOnly: true },
+  { src: "calzado", label: { es: "Calzado", en: "Footwear" }, x: 10, y: 18, size: 150 },
+  { src: "indumentaria", label: { es: "Indumentaria", en: "Apparel" }, x: 24, y: 9, size: 136 },
+  { src: "panaderia", label: { es: "Panadería", en: "Bakeries" }, x: 37, y: 19, size: 138, desktopOnly: true },
+  { src: "cafeteria", label: { es: "Cafeterías", en: "Coffee shops" }, x: 50, y: 8, size: 150 },
+  { src: "perfumeria", label: { es: "Perfumería", en: "Fragrance" }, x: 63, y: 20, size: 134, desktopOnly: true },
+  { src: "joyeria", label: { es: "Joyería", en: "Jewelry" }, x: 76, y: 9, size: 136 },
+  { src: "optica-1", label: { es: "Óptica", en: "Eyewear" }, x: 90, y: 18, size: 146, desktopOnly: true },
   // beside the headline
-  { src: "gastronomia", label: "Gastronomía", x: 19, y: 48, size: 176 },
-  { src: "vinoteca", label: "Vinotecas", x: 6, y: 50, size: 126, desktopOnly: true },
-  { src: "accesorios", label: "Accesorios", x: 81, y: 50, size: 176 },
-  { src: "relojeria", label: "Relojería", x: 94, y: 48, size: 126, desktopOnly: true },
+  { src: "gastronomia", label: { es: "Gastronomía", en: "Restaurants" }, x: 19, y: 48, size: 176 },
+  { src: "vinoteca", label: { es: "Vinotecas", en: "Wine shops" }, x: 6, y: 50, size: 126, desktopOnly: true },
+  { src: "accesorios", label: { es: "Accesorios", en: "Accessories" }, x: 81, y: 50, size: 176 },
+  { src: "relojeria", label: { es: "Relojería", en: "Watches" }, x: 94, y: 48, size: 126, desktopOnly: true },
   // below
-  { src: "belleza", label: "Belleza", x: 10, y: 81, size: 140 },
-  { src: "electro", label: "Electrodomésticos", x: 24, y: 91, size: 150 },
-  { src: "bazar", label: "Bazar", x: 37, y: 80, size: 136 },
-  { src: "blanqueria", label: "Blanquería", x: 50, y: 92, size: 146, desktopOnly: true },
-  { src: "electronica", label: "Electrónica", x: 63, y: 80, size: 138 },
-  { src: "mascotas", label: "Mascotas", x: 76, y: 91, size: 136, desktopOnly: true },
-  { src: "deco", label: "Deco", x: 90, y: 81, size: 146 },
-  { src: "fitness", label: "Fitness", x: 50, y: 70, size: 118, desktopOnly: true },
-  { src: "jugueteria", label: "Juguetería", x: 50, y: 30, size: 118, desktopOnly: true },
+  { src: "belleza", label: { es: "Belleza", en: "Beauty" }, x: 10, y: 81, size: 140 },
+  { src: "electro", label: { es: "Electrodomésticos", en: "Appliances" }, x: 24, y: 91, size: 150 },
+  { src: "bazar", label: { es: "Bazar", en: "Housewares" }, x: 37, y: 80, size: 136 },
+  { src: "blanqueria", label: { es: "Blanquería", en: "Bed & bath" }, x: 50, y: 92, size: 146, desktopOnly: true },
+  { src: "electronica", label: { es: "Electrónica", en: "Electronics" }, x: 63, y: 80, size: 138 },
+  { src: "mascotas", label: { es: "Mascotas", en: "Pets" }, x: 76, y: 91, size: 136, desktopOnly: true },
+  { src: "deco", label: { es: "Deco", en: "Home decor" }, x: 90, y: 81, size: 146 },
+  { src: "fitness", label: { es: "Fitness", en: "Fitness" }, x: 50, y: 70, size: 118, desktopOnly: true },
+  { src: "jugueteria", label: { es: "Juguetería", en: "Toys" }, x: 50, y: 30, size: 118, desktopOnly: true },
 ];
 
+const COPY = {
+  es: { title: "Hecho para marcas", titleEnd: "que ya venden" },
+  en: { title: "Built for brands", titleEnd: "that already sell" },
+};
+
 export default function BusinessCloud() {
+  const t = useCopy(COPY);
+  const locale = useLocale();
   return (
     <section className="overflow-hidden px-4 py-20 md:py-28">
       <div className="relative mx-auto h-[640px] max-w-6xl md:h-[760px]">
@@ -80,14 +88,14 @@ export default function BusinessCloud() {
               <div className="aspect-square overflow-hidden rounded-[15px] bg-white">
                 <img
                   src={`/business/${it.src}.webp`}
-                  alt={it.label}
+                  alt={it.label[locale]}
                   loading="lazy"
                   draggable={false}
                   className="h-full w-full select-none object-cover"
                 />
               </div>
               <p className="px-1 pb-0.5 pt-2 text-center text-[11px] font-medium text-[#0D1522]/75 sm:text-[13px]">
-                {it.label}
+                {it.label[locale]}
               </p>
             </motion.div>
           </motion.div>
@@ -109,9 +117,9 @@ export default function BusinessCloud() {
             viewport={{ once: true }}
             className="font-heading relative text-center text-3xl font-semibold leading-tight tracking-tight text-[#0D1522] sm:text-5xl md:text-6xl"
           >
-            Hecho para marcas
+            {t.title}
             <br />
-            que ya venden
+            {t.titleEnd}
           </motion.h2>
         </div>
       </div>

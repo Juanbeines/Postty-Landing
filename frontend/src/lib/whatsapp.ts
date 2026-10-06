@@ -28,10 +28,13 @@ export const WHATSAPP_URL =
 const WA_NUMBER = (process.env.NEXT_PUBLIC_WA_NUMBER || "5491179506000").replace(/\D/g, "");
 
 /** Kept short on purpose: the longer the prefill, the likelier it gets
- *  deleted before the user hits send. */
-const GIFT_MESSAGE = "¡Hola! Quiero un super descuento";
+ *  deleted before the user hits send. One per landing locale. */
+const GIFT_MESSAGE = {
+  es: "¡Hola! Quiero un super descuento",
+  en: "Hi! I'd like a super discount",
+} as const;
 
-export function buildGiftWhatsAppUrl(): string {
+export function buildGiftWhatsAppUrl(locale: keyof typeof GIFT_MESSAGE = "es"): string {
   if (!WA_NUMBER) return WHATSAPP_URL; // env not set — fail safe, never break the CTA
-  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(GIFT_MESSAGE)}`;
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(GIFT_MESSAGE[locale])}`;
 }

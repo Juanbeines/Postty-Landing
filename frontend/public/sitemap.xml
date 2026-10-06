@@ -1,21 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://www.posttyai.com</loc>
-    <lastmod>2026-04-14</lastmod>
+    <lastmod>2026-10-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es-AR" href="https://www.posttyai.com/"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://www.posttyai.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.posttyai.com/"/>
+  </url>
+  <url>
+    <loc>https://www.posttyai.com/en/</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es-AR" href="https://www.posttyai.com/"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://www.posttyai.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.posttyai.com/"/>
   </url>
   <url>
     <loc>https://www.posttyai.com/privacy</loc>
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es-AR" href="https://www.posttyai.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://www.posttyai.com/en/privacy"/>
+  </url>
+  <url>
+    <loc>https://www.posttyai.com/en/privacy</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es-AR" href="https://www.posttyai.com/privacy"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://www.posttyai.com/en/privacy"/>
   </url>
   <url>
     <loc>https://www.posttyai.com/terms</loc>
     <lastmod>2026-04-14</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es-AR" href="https://www.posttyai.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://www.posttyai.com/en/terms"/>
+  </url>
+  <url>
+    <loc>https://www.posttyai.com/en/terms</loc>
+    <lastmod>2026-10-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es-AR" href="https://www.posttyai.com/terms"/>
+    <xhtml:link rel="alternate" hreflang="en-US" href="https://www.posttyai.com/en/terms"/>
   </url>
 </urlset>

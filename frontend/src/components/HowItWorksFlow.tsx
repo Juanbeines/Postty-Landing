@@ -26,6 +26,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { useCopy, useLocale } from "@/i18n/locale";
 
 /* ── Stage geometry (design units — everything below is in these px) ── */
 const STAGE_W = 1120;
@@ -125,12 +126,38 @@ const ICON_PATHS: Record<string, ReadonlyArray<string>> = {
   ],
 };
 
-const OUTPUTS: ReadonlyArray<{ label: string; icon: keyof typeof ICON_PATHS }> = [
-  { label: "Campañas en Meta", icon: "announcement" },
-  { label: "Posts para feed", icon: "image" },
-  { label: "Videos UGC", icon: "play" },
-  { label: "Ads profesionales", icon: "target" },
+const OUTPUTS: ReadonlyArray<{ icon: keyof typeof ICON_PATHS }> = [
+  { icon: "announcement" },
+  { icon: "image" },
+  { icon: "play" },
+  { icon: "target" },
 ];
+
+/* Mercado Libre and Tiendanube are Latin American marketplaces; on the US
+   (English) page they mean nothing, so the logo stream drops them. */
+const LATAM_ONLY = new Set(["mercadolibre", "tiendanube"]);
+
+/* `outputs` follows OUTPUTS order. */
+const COPY = {
+  es: {
+    title: "Cómo funciona",
+    sub: "De tu producto o servicio a cientos de piezas y campañas publicitarias",
+    stepIn: "Conectás Postty con tu tienda y redes",
+    stepOut: "Postty optimiza tus redes y campañas",
+    cardTitle: "Postty genera Posts, Ads, historias,",
+    cardSub: "todo con el estilo de tu marca",
+    outputs: ["Campañas en Meta", "Posts para feed", "Videos UGC", "Ads profesionales"],
+  },
+  en: {
+    title: "How it works",
+    sub: "From your product or service to hundreds of assets and ad campaigns",
+    stepIn: "Connect Postty to your store and socials",
+    stepOut: "Postty optimizes your socials and campaigns",
+    cardTitle: "Postty creates posts, ads, stories,",
+    cardSub: "all in your brand's style",
+    outputs: ["Meta campaigns", "Feed posts", "UGC videos", "Professional ads"],
+  },
+};
 
 const IN_DURATION = 13;
 const OUT_DURATION = 13;
@@ -178,16 +205,17 @@ function OutputPill({ label, icon }: { label: string; icon: keyof typeof ICON_PA
 
 /** The white glass card — no border, octopus behind it. */
 function CoreCard({ className = "", style }: { className?: string; style?: React.CSSProperties }) {
+  const t = useCopy(COPY);
   return (
     <div
       className={`flex flex-col items-center justify-center rounded-[28px] bg-white/55 px-8 py-8 text-center shadow-[0_10px_44px_rgba(13,21,34,0.08),inset_0_1px_0_rgba(255,255,255,0.85)] backdrop-blur-2xl backdrop-saturate-150 ${className}`}
       style={style}
     >
       <h3 className="font-heading text-[22px] font-semibold leading-tight tracking-tight text-[#0D1522]">
-        Postty genera Posts, Ads, historias,
+        {t.cardTitle}
       </h3>
       <p className="mt-1.5 text-[13.5px] leading-relaxed text-[#0D1522]/55">
-        todo con el estilo de tu marca
+        {t.cardSub}
       </p>
     </div>
   );
@@ -269,6 +297,9 @@ function Rail({ d, gradient, delay }: { d: string; gradient: string; delay: numb
 /* ── Section ── */
 
 export default function HowItWorksFlow() {
+  const locale = useLocale();
+  const t = useCopy(COPY);
+  const sources = locale === "en" ? SOURCES.filter((s) => !LATAM_ONLY.has(s.file)) : SOURCES;
   const { ref: deskSizer, scale: deskScale } = useStageScale(STAGE_W);
   const { ref: mobSizer, scale: mobScale } = useStageScale(M_W);
 
@@ -280,7 +311,7 @@ export default function HowItWorksFlow() {
         viewport={{ once: true }}
         className="font-heading text-center text-3xl font-semibold tracking-tight sm:text-4xl md:text-5xl"
       >
-        Cómo funciona
+        {t.title}
       </motion.h2>
       <motion.p
         initial={{ opacity: 0, y: 20 }}
@@ -289,7 +320,7 @@ export default function HowItWorksFlow() {
         transition={{ delay: 0.1 }}
         className="mx-auto mt-4 max-w-2xl text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl lg:max-w-none lg:whitespace-nowrap"
       >
-        De tu producto o servicio a cientos de piezas y campañas publicitarias
+        {t.sub}
       </motion.p>
 
       {/* ── Desktop: the full horizontal diagram ── */}
@@ -329,7 +360,7 @@ export default function HowItWorksFlow() {
             style={{ left: 30, top: 200, width: 312, height: 40 }}
           >
             <p className="whitespace-nowrap font-heading text-[15px] font-semibold tracking-tight text-[#0D1522]/75">
-              Conectás Postty con tu tienda y redes
+              {t.stepIn}
             </p>
           </div>
           <div
@@ -337,14 +368,14 @@ export default function HowItWorksFlow() {
             style={{ left: 778, top: 200, width: 312, height: 40 }}
           >
             <p className="whitespace-nowrap font-heading text-[15px] font-semibold tracking-tight text-[#0D1522]/75">
-              Postty optimiza tus redes y campañas
+              {t.stepOut}
             </p>
           </div>
 
           {/* Incoming logos — 7 logos cycling across 4 rails, evenly spaced
               in time via negative delays so the stage is already full on
               first paint. */}
-          {SOURCES.map((source, i) => {
+          {sources.map((source, i) => {
             const rail = i % RAIL_IN_TRAVEL.length;
             return (
               <div
@@ -354,7 +385,7 @@ export default function HowItWorksFlow() {
                   {
                     "--path": `path("${RAIL_IN_TRAVEL[rail]}")`,
                     "--dur": `${IN_DURATION}s`,
-                    "--delay": `-${((i * IN_DURATION) / SOURCES.length).toFixed(2)}s`,
+                    "--delay": `-${((i * IN_DURATION) / sources.length).toFixed(2)}s`,
                     "--rest": `${12 + i * 11}%`,
                     "--fx": "4px",
                     "--fy": `${OUTER_Y[rail] - 24}px`,
@@ -369,7 +400,7 @@ export default function HowItWorksFlow() {
           {/* Outgoing results — spawn behind the card and slide out. */}
           {OUTPUTS.map((output, i) => (
             <div
-              key={output.label}
+              key={output.icon}
               className="flow-chip"
               style={
                 {
@@ -382,7 +413,7 @@ export default function HowItWorksFlow() {
                 } as React.CSSProperties
               }
             >
-              <OutputPill label={output.label} icon={output.icon} />
+              <OutputPill label={t.outputs[i]} icon={output.icon} />
             </div>
           ))}
 
@@ -432,12 +463,12 @@ export default function HowItWorksFlow() {
               at this width it landed on the fold and read as clutter. */}
           <div className="absolute inset-x-0 top-0 text-center">
             <p className="font-heading text-[15px] font-semibold tracking-tight text-[#0D1522]/75">
-              Conectás Postty con tu tienda y redes
+              {t.stepIn}
             </p>
           </div>
 
           {/* Logos funnelling down into the card */}
-          {SOURCES.map((source, i) => {
+          {sources.map((source, i) => {
             const rail = i % M_RAIL_IN_TRAVEL.length;
             return (
               <div
@@ -447,7 +478,7 @@ export default function HowItWorksFlow() {
                   {
                     "--path": `path("${M_RAIL_IN_TRAVEL[rail]}")`,
                     "--dur": `${IN_DURATION}s`,
-                    "--delay": `-${((i * IN_DURATION) / SOURCES.length).toFixed(2)}s`,
+                    "--delay": `-${((i * IN_DURATION) / sources.length).toFixed(2)}s`,
                     "--rest": `${12 + i * 11}%`,
                     "--fx": `${M_OUTER_X[rail] - 24}px`,
                     "--fy": "52px",
@@ -463,7 +494,7 @@ export default function HowItWorksFlow() {
               four pills, evenly spaced in time, so they never overlap. */}
           {OUTPUTS.map((output, i) => (
             <div
-              key={output.label}
+              key={output.icon}
               className="flow-chip"
               style={
                 {
@@ -476,7 +507,7 @@ export default function HowItWorksFlow() {
                 } as React.CSSProperties
               }
             >
-              <OutputPill label={output.label} icon={output.icon} />
+              <OutputPill label={t.outputs[i]} icon={output.icon} />
             </div>
           ))}
 

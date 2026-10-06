@@ -15,6 +15,12 @@
 import { useEffect, useState } from "react";
 
 import { giftMsRemaining } from "@/lib/giftDiscount";
+import { useCopy } from "@/i18n/locale";
+
+const COPY = {
+  es: { label: "La oferta vence pronto", ends: "Vence en" },
+  en: { label: "The offer ends soon", ends: "Ends in" },
+};
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -36,6 +42,7 @@ function format(ms: number): string {
  */
 export default function GiftCountdown({ bare = false }: { bare?: boolean }) {
   const [left, setLeft] = useState<number | null>(null);
+  const t = useCopy(COPY);
 
   useEffect(() => {
     const tick = () => setLeft(giftMsRemaining());
@@ -56,7 +63,7 @@ export default function GiftCountdown({ bare = false }: { bare?: boolean }) {
       style={bare ? undefined : { background: "linear-gradient(135deg, #b5ff00, #eeff64)" }}
       // Announced once rather than on every tick — a timer read aloud every
       // second is unusable with a screen reader.
-      aria-label="La oferta vence pronto"
+      aria-label={t.label}
     >
       <svg
         width="12"
@@ -72,7 +79,7 @@ export default function GiftCountdown({ bare = false }: { bare?: boolean }) {
         <circle cx="12" cy="12" r="9" />
         <path d="M12 7v5l3 2" />
       </svg>
-      <span className="text-[0.62rem] font-semibold opacity-65">Vence en</span>
+      <span className="text-[0.62rem] font-semibold opacity-65">{t.ends}</span>
       <span
         aria-hidden="true"
         className="text-[0.68rem] font-semibold tabular-nums tracking-tight"

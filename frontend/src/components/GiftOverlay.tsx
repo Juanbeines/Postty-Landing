@@ -58,6 +58,7 @@ import {
 } from "@/lib/giftDiscount";
 import { buildGiftWhatsAppUrl } from "@/lib/whatsapp";
 import Confetti from "@/components/Confetti";
+import { useCopy, useLocale } from "@/i18n/locale";
 
 const SESSION_KEY = "postty_gift_overlay_seen";
 const TRIGGER_SELECTOR = "#pricing";
@@ -77,7 +78,44 @@ const PAGE_LOAD_DELAY_MS = 35000;
 
 type Step = 0 | 1 | 2; // 0 = hidden
 
+const COPY = {
+  es: {
+    close: "Cerrar",
+    title: "¡Te ganaste un regalo!",
+    giftAlt: "Regalo de Postty",
+    reveal: "Ver regalo",
+    off: "50% OFF",
+    plan: "en plan Basic",
+    back: "¡Volviste! Cerrá y mirá tu nuevo precio",
+    sent: "¡Listo! Ya aplicamos tu descuento al plan Basic",
+    ask: "Escribinos por WhatsApp para reclamarlo",
+    againLabel: "Abrir WhatsApp de nuevo",
+    sendLabel: "Enviar mensaje por WhatsApp",
+    again: "Abrir de nuevo",
+    send: "Enviar mensaje",
+    closeAndSee: "Cerrar y ver mi precio",
+  },
+  en: {
+    close: "Close",
+    title: "You won a gift!",
+    giftAlt: "A gift from Postty",
+    reveal: "See gift",
+    off: "50% OFF",
+    plan: "on the Basic plan",
+    back: "You're back! Close this and see your new price",
+    sent: "Done! Your discount is applied to the Basic plan",
+    ask: "Message us on WhatsApp to claim it",
+    againLabel: "Open WhatsApp again",
+    sendLabel: "Send a WhatsApp message",
+    again: "Open again",
+    send: "Send message",
+    closeAndSee: "Close and see my price",
+  },
+};
+
 export default function GiftOverlay() {
+  const t = useCopy(COPY);
+  const locale = useLocale();
   const [step, setStep] = useState<Step>(0);
   /* Set once the user taps through to WhatsApp. Not a claim that they sent
      anything — the page can't know that — just that the handoff happened. */
@@ -279,7 +317,7 @@ export default function GiftOverlay() {
       <button
         type="button"
         onClick={close}
-        aria-label="Cerrar"
+        aria-label={t.close}
         className="absolute right-5 top-5 z-20 flex h-10 w-10 cursor-pointer items-center justify-center text-2xl font-light text-[#0D1522]/35 transition hover:text-[#0D1522]/70 sm:right-8 sm:top-8"
       >
         ×
@@ -291,7 +329,7 @@ export default function GiftOverlay() {
         {/* Title — always rendered, never remounts. Stays put while content
             below grows/shrinks (parent flex centers the whole stack). */}
         <h2 className="font-heading text-center text-2xl font-semibold text-[#0D1522] sm:text-3xl">
-          ¡Te ganaste un regalo!
+          {t.title}
         </h2>
 
         {/* Gift + (Ver regalo | 50% OFF pill). Same side-by-side flex-row
@@ -313,7 +351,7 @@ export default function GiftOverlay() {
           >
             <Image
               src="/gift.webp"
-              alt="Regalo de Postty"
+              alt={t.giftAlt}
               width={420}
               height={420}
               className="h-auto w-[200px] drop-shadow-[0_20px_40px_rgba(24,129,241,0.25)] sm:w-[360px]"
@@ -334,7 +372,7 @@ export default function GiftOverlay() {
                   transition={{ duration: 0.35, delay: 0.05 }}
                   className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full border border-white/70 bg-white/35 px-8 py-3.5 text-base font-semibold text-[#0D1522] shadow-[0_8px_32px_rgba(13,21,34,0.12),inset_0_1px_0_rgba(255,255,255,0.7)] backdrop-blur-xl backdrop-saturate-150 transition hover:bg-white/55 sm:px-10 sm:py-4"
                 >
-                  Ver regalo
+                  {t.reveal}
                 </motion.button>
               )}
             </AnimatePresence>
@@ -367,7 +405,7 @@ export default function GiftOverlay() {
                     backgroundClip: "text",
                   }}
                 >
-                  50% OFF
+                  {t.off}
                 </p>
                 {/* "en plan Basic" — soft white→light-blue gradient */}
                 <p
@@ -379,7 +417,7 @@ export default function GiftOverlay() {
                     backgroundClip: "text",
                   }}
                 >
-                  en plan Basic
+                  {t.plan}
                 </p>
               </motion.div>
             )}
@@ -408,11 +446,7 @@ export default function GiftOverlay() {
                     transition={{ duration: 0.22 }}
                     className="text-center text-sm text-[#0D1522]/70 sm:text-base"
                   >
-                    {submitted
-                      ? returned
-                        ? "¡Volviste! Cerrá y mirá tu nuevo precio"
-                        : "¡Listo! Ya aplicamos tu descuento al plan Basic"
-                      : "Escribinos por WhatsApp para reclamarlo"}
+                    {submitted ? (returned ? t.back : t.sent) : t.ask}
                   </motion.p>
                 </AnimatePresence>
               </div>
@@ -422,11 +456,11 @@ export default function GiftOverlay() {
                   after the first tap: if the user bounced off WhatsApp without
                   sending, or lost the tab, tapping again just reopens it. */}
               <a
-                href={buildGiftWhatsAppUrl()}
+                href={buildGiftWhatsAppUrl(locale)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={handleWhatsAppClick}
-                aria-label={submitted ? "Abrir WhatsApp de nuevo" : "Enviar mensaje por WhatsApp"}
+                aria-label={submitted ? t.againLabel : t.sendLabel}
                 className="btn-lime-sweep is-filled group inline-flex cursor-pointer items-center justify-center gap-2 rounded-full border border-transparent px-8 py-2.5 text-sm font-medium text-[#0D1522] transition-colors"
               >
                 <span className="relative z-10 flex items-center justify-center gap-2">
@@ -443,7 +477,7 @@ export default function GiftOverlay() {
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      {submitted ? "Abrir de nuevo" : "Enviar mensaje"}
+                      {submitted ? t.again : t.send}
                     </motion.span>
                   </AnimatePresence>
                 </span>
@@ -464,7 +498,7 @@ export default function GiftOverlay() {
                         : "font-medium text-[#0D1522]/70 hover:text-[#0D1522]"
                     }`}
                   >
-                    {returned ? "Cerrar y ver mi precio" : "Cerrar"}
+                    {returned ? t.closeAndSee : t.close}
                   </motion.button>
                 )}
               </AnimatePresence>
