@@ -23,7 +23,7 @@
  * All creatives are AI-generated for fictional brands — no real brand marks.
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 import IgStats, { type Stats } from "@/components/IgStats";
@@ -70,6 +70,61 @@ const FADE = 190;           // px over which the ring dissolves at the section's
 const BELOW = 0.6;          // room under the top card for the ring's sides, in card heights
 
 const isVideo = (src: string) => src.endsWith(".mp4");
+
+/* Flag and heart as small glossy "glass" badges: a top sheen, a darker
+   foot, a bright rim and a soft drop shadow give them depth. Drawn rather
+   than emoji: Windows renders 🇦🇷 as the letters "AR". */
+function GlassFlag({ className }: { className?: string }) {
+  const id = "g" + useId().replace(/[^a-zA-Z0-9]/g, ""); // safe inside url(#…)
+  return (
+    <svg viewBox="0 0 30 21" role="img" aria-label="bandera argentina" className={className}>
+      <defs>
+        <clipPath id={`${id}c`}><rect x="0.5" y="0.5" width="29" height="20" rx="4.5" /></clipPath>
+        <linearGradient id={`${id}s`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.75" />
+          <stop offset="0.45" stopColor="#fff" stopOpacity="0.12" />
+          <stop offset="0.5" stopColor="#fff" stopOpacity="0" />
+          <stop offset="1" stopColor="#0D1522" stopOpacity="0.18" />
+        </linearGradient>
+        <radialGradient id={`${id}u`} cx="0.4" cy="0.35" r="0.7">
+          <stop offset="0" stopColor="#FFE27A" />
+          <stop offset="1" stopColor="#E9A400" />
+        </radialGradient>
+      </defs>
+      <g clipPath={`url(#${id}c)`}>
+        <rect width="30" height="21" fill="#74ACDF" />
+        <rect y="7" width="30" height="7" fill="#fff" />
+        <circle cx="15" cy="10.5" r="2.4" fill={`url(#${id}u)`} />
+        <rect width="30" height="21" fill={`url(#${id}s)`} />
+      </g>
+      <rect x="0.9" y="0.9" width="28.2" height="19.2" rx="4.1" fill="none" stroke="#fff" strokeOpacity="0.7" strokeWidth="0.8" />
+    </svg>
+  );
+}
+
+function GlassHeart({ className }: { className?: string }) {
+  const id = "g" + useId().replace(/[^a-zA-Z0-9]/g, ""); // safe inside url(#…)
+  const shape = "M12 21.2 3.9 13.4C1.6 11.1 1.5 7.3 3.8 5.1 6 3 9.5 3.2 11.5 5.5l.5.6.5-.6c2-2.3 5.5-2.5 7.7-.4 2.3 2.2 2.2 6-.1 8.3Z";
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
+      <defs>
+        <radialGradient id={`${id}b`} cx="0.38" cy="0.3" r="0.8">
+          <stop offset="0" stopColor="#FF6B7A" />
+          <stop offset="0.55" stopColor="#E11D2E" />
+          <stop offset="1" stopColor="#A50E1F" />
+        </radialGradient>
+        <linearGradient id={`${id}h`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#fff" stopOpacity="0.85" />
+          <stop offset="1" stopColor="#fff" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={shape} fill={`url(#${id}b)`} />
+      {/* Specular sheen on the left lobe — the "glass" catch-light. */}
+      <ellipse cx="8" cy="7.6" rx="3.3" ry="1.9" transform="rotate(-28 8 7.6)" fill={`url(#${id}h)`} />
+      <path d={shape} fill="none" stroke="#fff" strokeOpacity="0.45" strokeWidth="0.7" />
+    </svg>
+  );
+}
 
 /* One video card. Always starts muted — that is what lets browsers autoplay
    it — and only the card the visitor tapped gets sound. `muted` is set on
@@ -295,7 +350,14 @@ export default function CreativeSphereSection() {
         transition={{ delay: 0.08 }}
         className="mt-4 px-4 text-center text-base leading-relaxed text-[#0D1522]/65 sm:text-lg md:text-xl"
       >
-        Hecho por Postty, para el mercado argentino
+        Hecho por Postty, para el mercado{" "}
+        {/* Kept on one line with the word so the badges never wrap off on
+            their own. */}
+        <span className="whitespace-nowrap">
+          argentino
+          <GlassFlag className="ml-[0.4em] inline-block h-[0.95em] w-auto align-[-0.12em] drop-shadow-[0_2px_3px_rgba(13,21,34,0.28)]" />
+          <GlassHeart className="ml-[0.3em] inline-block h-[1.05em] w-auto align-[-0.18em] drop-shadow-[0_2px_3px_rgba(165,14,31,0.35)]" />
+        </span>
       </motion.p>
 
       {/* Format selector — underline tabs on one shared track. */}
