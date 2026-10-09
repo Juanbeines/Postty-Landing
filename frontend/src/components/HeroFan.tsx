@@ -89,7 +89,7 @@ const OVERSCAN = 0.012;
    --title-shift / --cta-shift: on phones the headline drops and the CTA rises
    once the set has receded, closing the gap it leaves. */
 const STAGE_VARS =
-  "[--u:min(0.9vh,1.35vw)] [--fan-top:59%] [--title-shift:15vh] [--cta-shift:-22vh] md:[--u:min(0.82vh,1.5vw)] md:[--fan-top:64%] md:[--title-shift:0px] md:[--cta-shift:0px]";
+  "[--u:min(0.9vh,1.35vw)] [--fan-top:59%] [--title-shift:15vh] [--cta-shift:-22vh] md:[--u:min(0.82vh,1.5vw)] md:[--fan-top:70%] md:[--title-shift:0px] md:[--cta-shift:0px]";
 const FAN_TOP = "var(--fan-top)";
 
 /* The five posts, in carousel order. Position p (-2 … 2, left to right)
@@ -296,7 +296,7 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
       transition={{ duration: 0.6, delay: 0.55 }}
       whileHover={{ y: -2, scale: 1.015 }}
       whileTap={{ scale: 0.98 }}
-      className={`group pointer-events-auto items-center gap-2.5 rounded-full bg-[#0D1522] px-9 py-4 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(13,21,34,0.45)] md:text-lg ${extra}`}
+      className={`group pointer-events-auto items-center gap-2.5 rounded-full bg-[#0D1522] px-9 py-4 text-base font-semibold text-white shadow-[0_10px_30px_-8px_rgba(13,21,34,0.45)] md:px-8 md:py-3.5 md:text-base ${extra}`}
     >
       {t.cta}
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300 ease-out group-hover:translate-x-[2px]"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
@@ -488,12 +488,12 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
         {/* Copy. Phone: headline on top, CTA under the phone. Desktop: the
             headline, subhead and CTA stacked above the phone — the CTA sits
             at the set's vanishing point. */}
-        <motion.div style={{ y: titleShift }} className="pointer-events-none absolute inset-x-0 top-[20%] z-10 flex flex-col items-center px-4 text-center md:top-[14%]">
+        <motion.div style={{ y: titleShift }} className="pointer-events-none absolute inset-x-0 top-[20%] z-10 flex flex-col items-center px-4 text-center md:top-[13%]">
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.35 }}
-            className="font-heading text-[2.2rem] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0D1522] sm:text-5xl md:text-[3.6rem]"
+            className="font-heading text-[2.2rem] font-semibold leading-[1.05] tracking-[-0.03em] text-[#0D1522] sm:text-5xl md:text-[3.15rem]"
           >
             {t.title}<br className="md:hidden" /> {t.titleEnd}
             <span className="sr-only">{t.srOnly}</span>
@@ -502,7 +502,7 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-3 font-heading text-xl font-semibold tracking-[-0.02em] text-[#0D1522] md:mt-2 md:text-[1.7rem]"
+            className="mt-3 font-heading text-xl font-semibold tracking-[-0.02em] text-[#0D1522] md:mt-2 md:text-[1.45rem]"
           >
             {t.sub}
           </motion.p>
