@@ -166,7 +166,7 @@ const FAQ: Record<"es" | "en", FaqItem[]> = { es: [
   },
   {
     q: "¿Cuántas imágenes y videos puedo hacer por mes?",
-    a: "Basic incluye 200 créditos por mes, que alcanzan para 15 videos más 30 imágenes. Pro incluye 400 créditos: 35 videos más 70 imágenes, y suma los modelos Pro de IA para video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís entre imágenes y videos como te sirva.",
+    a: "Basic incluye 300 créditos por mes: unos 45 segundos de video (alrededor de 3 videos de 15 s) más 20 imágenes. Pro incluye 650 créditos: unos 90 segundos de video (alrededor de 6 videos de 15 s) más 50 imágenes, y suma los modelos Pro de IA para video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís como te sirva. En Basic podés usarlos todos en 60 s de video o en 75 imágenes; en Pro, en 130 s de video o en 160 imágenes.",
   },
   {
     q: "¿Los créditos que no uso se acumulan para el mes siguiente?",
@@ -227,7 +227,7 @@ const FAQ: Record<"es" | "en", FaqItem[]> = { es: [
   },
   {
     q: "How many images and videos can I make per month?",
-    a: "Basic includes 200 credits a month, enough for 15 videos plus 30 images. Pro includes 400 credits: 35 videos plus 70 images, and adds the Pro AI video models. That's a reference mix, not a fixed limit: the credits are yours to split between images and videos however works for you.",
+    a: "Basic includes 300 credits a month: about 45 seconds of video (around 3 videos of 15 s) plus 20 images. Pro includes 650 credits: about 90 seconds of video (around 6 videos of 15 s) plus 50 images, and adds the Pro AI video models. That's a reference mix, not a fixed limit: the credits are yours to split however works for you. On Basic you can spend them all on 60 s of video or on 75 images; on Pro, on 130 s of video or on 160 images.",
   },
   {
     q: "Do unused credits roll over to the next month?",
@@ -642,7 +642,9 @@ function BrandTestimonialsSection() {
 
 /* Pricing copy and amounts per locale.
 
-   What the user PAYS is unchanged. The list prices are the anchor, chosen so
+   Pay prices (with the gift): Basic $80.000, Pro $170.000 (Oct 2026); list
+   prices keep the 50% / 30% gift discount. Originally the list prices were
+   chosen so
    Basic wins on both axes a buyer actually compares — the percentage (50 vs
    30) and the pesos saved ($70.000 vs $56.000). Previously Pro's 60% off
    $324.900 read as a $195.000 saving against Basic's $18.000, which is why
@@ -672,20 +674,24 @@ const PRICING_COPY = {
       features: ["6 ads o posts de prueba", "Generados con tu marca real", "Sin tarjeta de crédito"],
     },
     basic: {
-      monthly: { list: "$139.900", pay: "$69.900", listValue: 139900, payValue: 69900 },
-      yearly: { list: "$122.900", pay: "$61.500", listValue: 122900, payValue: 61500 },
+      monthly: { list: "$160.000", pay: "$80.000", listValue: 160000, payValue: 80000 },
+      // Yearly: PLACEHOLDER — keeps the old yearly/monthly ratio (×0.88) until
+      // Juan sets real yearly prices.
+      yearly: { list: "$140.800", pay: "$70.400", listValue: 140800, payValue: 70400 },
       off: "50% OFF",
       blurb: "Tu e-commerce, sin agencia ni community manager",
       cta: "Empezar ahora",
       /* The credit allowance is rendered as one bundle: the total, then the
-         two things it buys joined by a "+". Deliberately unqualified — no
-         "terminadas", no per-video duration — these are the marketing
-         figures Juan set for the e-commerce repositioning. Note they run
-         ahead of the credit table in Postty-Prod (CREDITS_PER_IMAGE=2,
-         CREDITS_PER_VIDEO_SECOND=3) and ahead of the T&C, which still declare
-         1 and 4 videos (TermsContent §4.2/§4.3), as does the FAQ entry
-         "¿Cuántas imágenes y videos puedo hacer por mes?". */
-      credits: { total: "200 créditos por mes equivalentes a:", videos: "15 videos", images: "30 imágenes" },
+         two things it buys joined by a "+", then how far the credits go if
+         spent on only one of them. Figures set by Juan (Oct 2026). The T&C
+         (TermsContent §4.2/§4.3) still declare the older allowances. */
+      credits: {
+        total: "300 créditos por mes, que equivalen a:",
+        videos: "45 segundos de video",
+        videosSub: "unos 3 videos de 15 s",
+        images: "20 imágenes",
+        mix: "Combinalos como quieras: 60 s de video, o 75 imágenes.",
+      },
       features: [
         "Publicación automática en Instagram y Meta",
         "Edición de imágenes y videos",
@@ -694,12 +700,20 @@ const PRICING_COPY = {
       ],
     },
     pro: {
-      monthly: { list: "$185.900", pay: "$129.900", listValue: 185900, payValue: 129900 },
-      yearly: { list: "$139.900", pay: "$97.900", listValue: 139900, payValue: 97900 },
+      monthly: { list: "$242.900", pay: "$170.000", listValue: 242900, payValue: 170000 },
+      // Yearly: PLACEHOLDER — old yearly/monthly ratio (×0.754) until Juan sets
+      // real yearly prices.
+      yearly: { list: "$183.000", pay: "$128.100", listValue: 183000, payValue: 128100 },
       off: "30% OFF",
       blurb: "Para cuando necesitás el doble de volumen y los mejores modelos de video",
       cta: "Convertirme en Pro",
-      credits: { total: "400 créditos por mes equivalentes a:", videos: "35 videos", images: "70 imágenes" },
+      credits: {
+        total: "650 créditos por mes, que equivalen a:",
+        videos: "90 segundos de video",
+        videosSub: "unos 6 videos de 15 s",
+        images: "50 imágenes",
+        mix: "Combinalos como quieras: 130 s de video, o 160 imágenes.",
+      },
       /* Pro reads as a delta on top of Basic (see `plus`), so it only
          carries what Basic does not. */
       plus: "Todo lo de Basic, más:",
@@ -727,7 +741,13 @@ const PRICING_COPY = {
       off: "50% OFF",
       blurb: "Your online store, without an agency or a social media manager",
       cta: "Get started",
-      credits: { total: "200 credits a month, enough for:", videos: "15 videos", images: "30 images" },
+      credits: {
+        total: "300 credits a month, enough for:",
+        videos: "45 seconds of video",
+        videosSub: "about 3 videos of 15 s",
+        images: "20 images",
+        mix: "Mix them however you like: 60 s of video, or 75 images.",
+      },
       features: [
         "Auto-publishing to Instagram and Meta",
         "Image and video editing",
@@ -741,7 +761,13 @@ const PRICING_COPY = {
       off: "30% OFF",
       blurb: "For when you need twice the volume and the best video models",
       cta: "Go Pro",
-      credits: { total: "400 credits a month, enough for:", videos: "35 videos", images: "70 images" },
+      credits: {
+        total: "650 credits a month, enough for:",
+        videos: "90 seconds of video",
+        videosSub: "about 6 videos of 15 s",
+        images: "50 images",
+        mix: "Mix them however you like: 130 s of video, or 160 images.",
+      },
       plus: "Everything in Basic, plus:",
       features: ["Pro AI video models", "Unlimited image editing", "Priority support"],
     },
@@ -1088,6 +1114,7 @@ function PricingSection() {
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
                       {t.basic.credits.videos}
                     </p>
+                    <p className="mt-0.5 text-[0.68rem] leading-snug text-white/75">{t.basic.credits.videosSub}</p>
                   </div>
                   <span className="font-heading text-[1.1rem] font-semibold text-white/60">+</span>
                   <div className="flex flex-col items-center text-center text-white">
@@ -1097,6 +1124,9 @@ function PricingSection() {
                     </p>
                   </div>
                 </div>
+                <p className="mt-3 border-t border-white/15 pt-2.5 text-center text-[0.7rem] leading-snug text-white/80">
+                  {t.basic.credits.mix}
+                </p>
               </div>
 
               {/* Feature list */}
@@ -1202,6 +1232,7 @@ function PricingSection() {
                     <p className="mt-1.5 font-heading text-[0.82rem] font-semibold leading-snug">
                       {t.pro.credits.videos}
                     </p>
+                    <p className="mt-0.5 text-[0.68rem] leading-snug text-[#0D1522]/55">{t.pro.credits.videosSub}</p>
                   </div>
                   <span className="font-heading text-[1.1rem] font-semibold text-[#0D1522]/45">+</span>
                   <div className="flex flex-col items-center text-center text-[#0D1522]">
@@ -1211,6 +1242,9 @@ function PricingSection() {
                     </p>
                   </div>
                 </div>
+                <p className="mt-3 border-t border-[#0D1522]/[0.07] pt-2.5 text-center text-[0.7rem] leading-snug text-[#0D1522]/60">
+                  {t.pro.credits.mix}
+                </p>
               </div>
 
               {/* Feature list — Pro is a delta on Basic, so it is labelled as

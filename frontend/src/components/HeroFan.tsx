@@ -244,7 +244,9 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
     const cv = canvasRef.current;
     const ctx = cv?.getContext("2d");
     const still = stillRef.current;
-    if (!cv || !ctx || !still || reduce) return;
+    // Runs for everyone, reduced motion included: it is one gentle gesture
+    // inside the phone, not a parallax or a scroll-driven move.
+    if (!cv || !ctx || !still) return;
     const showFull = (on: boolean) => { still.style.opacity = on ? "1" : "0"; };
     const { w, h } = THUMB_SEQ.frame;
     cv.width = w;
@@ -260,7 +262,10 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
     let drawn = -1;
     let pressed = false;
     const tick = (now: number) => {
-      const idle = landed && ready && !document.hidden && p.get() < 0.04;
+      // "At the top of the hero", read straight off window.scrollY: the
+      // framer scroll progress can be measured before the page settles on a
+      // reload and stay wrong until the visitor scrolls, which froze the swipe.
+      const idle = landed && ready && !document.hidden && window.scrollY < window.innerHeight * 0.05;
       if (start < 0) {
         if (idle && now >= wait) { start = now; pressed = false; }
       } else {
@@ -283,7 +288,17 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
     };
     raf = requestAnimationFrame(tick);
     return () => { window.clearTimeout(land); cancelAnimationFrame(raf); };
-  }, [reduce, p]);
+  }, []);
+
+  /* Every visit opens on the hero at the top, so the arrival and the swipe
+     always play: browsers otherwise restore the old scroll position on a
+     reload, landing the visitor mid-hero with both paused. A link to a
+     section (#pricing, …) still goes straight there. */
+  useEffect(() => {
+    if (window.location.hash) return;
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
 
   const centre = mod(base);
 
