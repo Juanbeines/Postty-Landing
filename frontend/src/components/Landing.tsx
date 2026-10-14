@@ -166,7 +166,7 @@ const FAQ: Record<"es" | "en", FaqItem[]> = { es: [
   },
   {
     q: "¿Cuántas imágenes y videos puedo hacer por mes?",
-    a: "Basic incluye 300 créditos por mes: unos 45 segundos de video (alrededor de 3 videos de 15 s) más 20 imágenes. Pro incluye 650 créditos: unos 90 segundos de video (alrededor de 6 videos de 15 s) más 50 imágenes, y suma los modelos Pro de IA para video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís como te sirva. En Basic podés usarlos todos en 60 s de video o en 75 imágenes; en Pro, en 130 s de video o en 160 imágenes.",
+    a: "Basic incluye 300 créditos por mes: unos 45 segundos de video (alrededor de 3 videos de 15 s) más 20 imágenes. Pro incluye 650 créditos: unos 100 segundos de video (alrededor de 7 videos de 14 s) más 45 imágenes, y suma los modelos Pro de IA para video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís como te sirva. En Basic podés usarlos todos en 60 s de video o en 75 imágenes; en Pro, en 130 s de video o en 160 imágenes.",
   },
   {
     q: "¿Los créditos que no uso se acumulan para el mes siguiente?",
@@ -227,7 +227,7 @@ const FAQ: Record<"es" | "en", FaqItem[]> = { es: [
   },
   {
     q: "How many images and videos can I make per month?",
-    a: "Basic includes 300 credits a month: about 45 seconds of video (around 3 videos of 15 s) plus 20 images. Pro includes 650 credits: about 90 seconds of video (around 6 videos of 15 s) plus 50 images, and adds the Pro AI video models. That's a reference mix, not a fixed limit: the credits are yours to split however works for you. On Basic you can spend them all on 60 s of video or on 75 images; on Pro, on 130 s of video or on 160 images.",
+    a: "Basic includes 300 credits a month: about 45 seconds of video (around 3 videos of 15 s) plus 20 images. Pro includes 650 credits: about 100 seconds of video (around 7 videos of 14 s) plus 45 images, and adds the Pro AI video models. That's a reference mix, not a fixed limit: the credits are yours to split however works for you. On Basic you can spend them all on 60 s of video or on 75 images; on Pro, on 130 s of video or on 160 images.",
   },
   {
     q: "Do unused credits roll over to the next month?",
@@ -642,7 +642,7 @@ function BrandTestimonialsSection() {
 
 /* Pricing copy and amounts per locale.
 
-   Pay prices (with the gift): Basic $80.000, Pro $170.000 (Oct 2026); list
+   Pay prices (with the gift): Basic $79.999, Pro $169.999 (Oct 2026); list
    prices keep the 50% / 30% gift discount. Originally the list prices were
    chosen so
    Basic wins on both axes a buyer actually compares — the percentage (50 vs
@@ -661,7 +661,7 @@ function BrandTestimonialsSection() {
    These display amounts never reach the Pixel — see `basicTracked` below. */
 const PRICING_COPY = {
   es: {
-    title: "Precios simples",
+    title: "Redes y publicidad resueltas, con precios accesibles",
     monthly: "Mensual",
     yearly: "Anual",
     perMonth: "/mes",
@@ -674,7 +674,7 @@ const PRICING_COPY = {
       features: ["6 ads o posts de prueba", "Generados con tu marca real", "Sin tarjeta de crédito"],
     },
     basic: {
-      monthly: { list: "$160.000", pay: "$80.000", listValue: 160000, payValue: 80000 },
+      monthly: { list: "$159.999", pay: "$79.999", listValue: 159999, payValue: 79999 },
       // Yearly: PLACEHOLDER — keeps the old yearly/monthly ratio (×0.88) until
       // Juan sets real yearly prices.
       yearly: { list: "$140.800", pay: "$70.400", listValue: 140800, payValue: 70400 },
@@ -700,7 +700,7 @@ const PRICING_COPY = {
       ],
     },
     pro: {
-      monthly: { list: "$242.900", pay: "$170.000", listValue: 242900, payValue: 170000 },
+      monthly: { list: "$242.899", pay: "$169.999", listValue: 242899, payValue: 169999 },
       // Yearly: PLACEHOLDER — old yearly/monthly ratio (×0.754) until Juan sets
       // real yearly prices.
       yearly: { list: "$183.000", pay: "$128.100", listValue: 183000, payValue: 128100 },
@@ -709,9 +709,9 @@ const PRICING_COPY = {
       cta: "Convertirme en Pro",
       credits: {
         total: "650 créditos por mes, que equivalen a:",
-        videos: "90 segundos de video",
-        videosSub: "unos 6 videos de 15 s",
-        images: "50 imágenes",
+        videos: "100 segundos de video",
+        videosSub: "unos 7 videos de 14 s",
+        images: "45 imágenes",
         mix: "Combinalos como quieras: 130 s de video, o 160 imágenes.",
       },
       /* Pro reads as a delta on top of Basic (see `plus`), so it only
@@ -723,7 +723,7 @@ const PRICING_COPY = {
     helpCta: "Contactanos",
   },
   en: {
-    title: "Simple pricing",
+    title: "Social media and ads handled, at affordable prices",
     monthly: "Monthly",
     yearly: "Yearly",
     perMonth: "/mo",
@@ -763,9 +763,9 @@ const PRICING_COPY = {
       cta: "Go Pro",
       credits: {
         total: "650 credits a month, enough for:",
-        videos: "90 seconds of video",
-        videosSub: "about 6 videos of 15 s",
-        images: "50 images",
+        videos: "100 seconds of video",
+        videosSub: "about 7 videos of 14 s",
+        images: "45 images",
         mix: "Mix them however you like: 130 s of video, or 160 images.",
       },
       plus: "Everything in Basic, plus:",
@@ -880,7 +880,7 @@ function PricingSection() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="font-heading text-center text-3xl font-semibold sm:text-4xl md:text-5xl"
+          className="font-heading mx-auto max-w-[22ch] text-balance text-center text-3xl font-semibold sm:text-4xl md:text-[2.6rem] lg:max-w-none lg:whitespace-nowrap lg:text-[min(3rem,3.3vw)]"
         >
           {t.title}
         </motion.h2>
