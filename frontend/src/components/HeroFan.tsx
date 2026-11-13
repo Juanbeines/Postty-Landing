@@ -122,7 +122,6 @@ const COPY = {
     title: "Contenido y Ads",
     titleEnd: "para tu marca",
     srOnly: " — Postty, agente de marketing con IA: contenido y ads para tu marca, para Meta y Google, en minutos, sin agencias ni community managers",
-    sub: "Sin agencias, sin CMs.",
     cta: "Probar gratis",
     post: "Postear",
     cards: [
@@ -137,7 +136,6 @@ const COPY = {
     title: "Content and Ads",
     titleEnd: "for your brand",
     srOnly: " — Postty, the AI marketing agent: content and ads for your brand, for Meta and Google, in minutes, without agencies or social media managers",
-    sub: "No agencies, no social media managers.",
     cta: "Try it free",
     post: "Post",
     cards: [
@@ -513,15 +511,7 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
             {t.title}<br className="md:hidden" /> {t.titleEnd}
             <span className="sr-only">{t.srOnly}</span>
           </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-3 font-heading text-xl font-semibold tracking-[-0.02em] text-[#0D1522] md:mt-2 md:text-[1.45rem]"
-          >
-            {t.sub}
-          </motion.p>
-          {cta("mt-5 hidden md:inline-flex")}
+          {cta("mt-6 hidden md:inline-flex")}
         </motion.div>
 
         {/* Phone only: the CTA sits under the phone's screen. */}
