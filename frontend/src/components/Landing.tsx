@@ -1,5 +1,6 @@
 "use client";
 
+import FounderBooking from "@/components/FounderBooking";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -133,56 +134,16 @@ const FAQ: Record<"es" | "en", FaqItem[]> = { es: [
     a: "Por volumen, velocidad y control. Una agencia te entrega unas pocas piezas por mes, con briefs, rondas de correcciones y tiempos de espera de por medio; Postty produce decenas en el mismo día y las publica sin que tengas que perseguir a nadie. Y si ya contrataste una y no te movió la aguja, acá ves el resultado antes de pagar: la prueba gratuita genera 6 piezas con tu marca real.",
   },
   {
-    q: "¿En qué se diferencia Postty de otras herramientas de IA?",
-    a: "Postty aprende tu marca una vez y después produce con ese criterio, sin briefs ni idas y vueltas. Un e-commerce que hoy paga una agencia o un community manager saca en una tarde el volumen de contenido y campañas que antes le llevaba un mes.",
-  },
-  {
     q: "¿Tengo que aprender a usar el Administrador de Meta?",
     a: "No. Postty crea las piezas, arma la campaña y la publica en tu cuenta publicitaria, y después la optimiza sola. Vos aprobás y ves los resultados; no tenés que entrar al Administrador de Anuncios ni una vez.",
-  },
-  {
-    q: "¿Qué tipo de contenido puede generar Postty?",
-    a: "Videos, posts para feed, historias, carruseles y ads para campañas pagas. El video es el formato que más pesa hoy en Meta, así que es el que Postty prioriza: Basic incluye 15 por mes y Pro 35. Todo sale con la identidad de tu marca, listo para publicar.",
   },
   {
     q: "¿Tienen prueba gratuita?",
     a: "Sí. En la prueba gratuita Postty te genera 6 ads o posts para tu perfil de Instagram y para tu perfil de Meta, sin tarjeta y sin compromiso. Para que salgan lo más personalizados posible conviene conectar tus cuentas de Instagram y Meta; si preferís no conectarlas, Postty igual genera a partir de la URL de tu página web, aunque el resultado es menos personalizado. Después podés elegir un plan y seguir creando.",
   },
   {
-    q: "¿Necesito conectar mis redes para usar Postty?",
-    a: "No es obligatorio, pero sí recomendado. Si conectás tus cuentas de Instagram y Meta, Postty genera contenido para tu perfil de Instagram y ads para tu perfil de Meta mucho más personalizados. Si preferís no conectarlas, Postty trabaja a partir de la URL de tu página web y genera igual, aunque el resultado es menos personalizado.",
-  },
-  {
-    q: "¿Es adecuado para mi tipo de negocio?",
-    a: "Donde más rinde es en e-commerce que ya venden y ya invierten en Meta, sobre todo marcas con catálogo de producto físico que necesitan volumen constante de contenido. También funciona bien en servicios y locales con presencia fuerte en redes. Lo que importa no es el rubro: es que ya tengas ventas andando, porque Postty escala lo que funciona.",
-  },
-  {
-    q: "¿Puedo editar mis Ads generados?",
-    a: "Sí, las veces que haga falta hasta que quede como querés. En Basic las ediciones usan créditos de tu plan, bastante menos que generar de cero. En Pro la edición de imágenes es sin límite: no te descuenta créditos.",
-  },
-  {
-    q: "¿Cómo funcionan los créditos?",
-    a: "Los créditos son la unidad con la que medimos todo lo que generás. Cada acción consume una cantidad distinta según lo que cuesta producirla: una imagen pesa mucho menos que un video, y editar cuesta bastante menos que generar de cero. Antes de confirmar cada generación te mostramos cuántos créditos usa, así siempre sabés en qué los estás gastando.",
-  },
-  {
     q: "¿Cuántas imágenes y videos puedo hacer por mes?",
     a: "Basic incluye 300 créditos por mes: unos 45 segundos de video (alrededor de 3 videos de 15 s) más 20 imágenes. Pro incluye 650 créditos: unos 100 segundos de video (alrededor de 7 videos de 14 s) más 45 imágenes, y suma los modelos Pro de IA para video. Esa es una combinación de referencia, no un límite fijo: los créditos son tuyos y los repartís como te sirva. En Basic podés usarlos todos en 60 s de video o en 75 imágenes; en Pro, en 130 s de video o en 160 imágenes.",
-  },
-  {
-    q: "¿Los créditos que no uso se acumulan para el mes siguiente?",
-    a: "No. Los créditos corresponden al mes en curso y se renuevan enteros al empezar cada ciclo de facturación. Por eso conviene elegir el plan que se parezca a tu ritmo real de trabajo: si no estás seguro, escribinos por WhatsApp y te ayudamos a decidir.",
-  },
-  {
-    q: "¿Qué pasa si una generación falla?",
-    a: "No te cobramos los créditos. Si una imagen o un video falla por un problema técnico nuestro o de los modelos de IA, los créditos vuelven automáticamente a tu cuenta.",
-  },
-  {
-    q: "¿Puedo cambiar de plan cuando quiera?",
-    a: "Sí. Si pasás a un plan superior te acreditamos la diferencia de créditos prorrateada por los días que queden del mes. Si bajás de plan, el cambio se aplica al empezar el ciclo siguiente y mientras tanto conservás los créditos que ya tenías.",
-  },
-  {
-    q: "¿En qué plataformas puedo publicar mis campañas?",
-    a: "Hoy Postty publica en Meta Ads (Facebook e Instagram). Estamos integrando Google Ads para publicar campañas con las imágenes y videos generados por inteligencia artificial. TikTok llegará próximamente. En todos los casos, Postty conecta con tu cuenta publicitaria a través del proceso oficial de autorización (OAuth 2.0) — nunca almacenamos ni compartimos tus credenciales, y podés revocar el acceso cuando quieras desde tu cuenta.",
   },
 ], en: [
   {
@@ -194,56 +155,16 @@ const FAQ: Record<"es" | "en", FaqItem[]> = { es: [
     a: "Volume, speed and control. An agency delivers a handful of pieces a month, with briefs, rounds of revisions and waiting in between; Postty produces dozens the same day and publishes them without you having to chase anyone. And if you already hired one and it didn't move the needle, here you see the result before you pay: the free trial generates 6 pieces with your real brand.",
   },
   {
-    q: "How is Postty different from other AI tools?",
-    a: "Postty learns your brand once and then produces with that judgment, without briefs or back-and-forth. An online store that pays an agency or a social media manager today gets, in one afternoon, the volume of content and campaigns that used to take a month.",
-  },
-  {
     q: "Do I need to learn Meta Ads Manager?",
     a: "No. Postty creates the assets, builds the campaign, publishes it to your ad account and then optimizes it on its own. You approve and see the results; you never have to open Ads Manager.",
-  },
-  {
-    q: "What kind of content can Postty create?",
-    a: "Videos, feed posts, stories, carousels and ads for paid campaigns. Video is the format that matters most on Meta today, so it's the one Postty prioritizes: Basic includes 15 a month and Pro 35. Everything comes out in your brand identity, ready to publish.",
   },
   {
     q: "Do you have a free trial?",
     a: "Yes. In the free trial Postty creates 6 ads or posts for your Instagram profile and your Meta profile, with no card and no commitment. For the most personalized results, connect your Instagram and Meta accounts; if you'd rather not, Postty still generates from your website URL, though the result is less personalized. Afterwards you can pick a plan and keep creating.",
   },
   {
-    q: "Do I need to connect my social accounts to use Postty?",
-    a: "It's not required, but it's recommended. If you connect your Instagram and Meta accounts, Postty creates much more personalized content for your Instagram profile and ads for your Meta profile. If you'd rather not connect them, Postty works from your website URL and still generates, though the result is less personalized.",
-  },
-  {
-    q: "Is it right for my type of business?",
-    a: "It performs best for online stores that already sell and already invest in Meta, especially brands with a catalog of physical products that need a steady volume of content. It also works well for services and local businesses with a strong social presence. What matters isn't the industry: it's that you already have sales going, because Postty scales what works.",
-  },
-  {
-    q: "Can I edit the ads it generates?",
-    a: "Yes, as many times as it takes until it's exactly how you want it. On Basic, edits use credits from your plan, far fewer than generating from scratch. On Pro, image editing is unlimited: it doesn't use credits.",
-  },
-  {
-    q: "How do credits work?",
-    a: "Credits are the unit we use to measure everything you generate. Each action uses a different amount depending on what it costs to produce: an image weighs much less than a video, and editing costs much less than generating from scratch. Before you confirm each generation we show you how many credits it uses, so you always know what you're spending them on.",
-  },
-  {
     q: "How many images and videos can I make per month?",
     a: "Basic includes 300 credits a month: about 45 seconds of video (around 3 videos of 15 s) plus 20 images. Pro includes 650 credits: about 100 seconds of video (around 7 videos of 14 s) plus 45 images, and adds the Pro AI video models. That's a reference mix, not a fixed limit: the credits are yours to split however works for you. On Basic you can spend them all on 60 s of video or on 75 images; on Pro, on 130 s of video or on 160 images.",
-  },
-  {
-    q: "Do unused credits roll over to the next month?",
-    a: "No. Credits belong to the current month and fully renew at the start of each billing cycle. That's why it's worth choosing the plan that matches your real pace of work: if you're not sure, message us on WhatsApp and we'll help you decide.",
-  },
-  {
-    q: "What happens if a generation fails?",
-    a: "You aren't charged the credits. If an image or a video fails because of a technical problem on our side or with the AI models, the credits go back to your account automatically.",
-  },
-  {
-    q: "Can I change plans whenever I want?",
-    a: "Yes. If you upgrade, we credit you the difference in credits, prorated for the days left in the month. If you downgrade, the change applies at the start of the next cycle, and you keep the credits you already had until then.",
-  },
-  {
-    q: "Which platforms can I publish my campaigns on?",
-    a: "Today Postty publishes to Meta Ads (Facebook and Instagram). We're integrating Google Ads to publish campaigns with AI-generated images and videos. TikTok is coming soon. In every case, Postty connects to your ad account through the official authorization process (OAuth 2.0) — we never store or share your credentials, and you can revoke access from your account whenever you want.",
   },
 ] };
 
@@ -1380,7 +1301,7 @@ function FAQItem({ item }: { item: FaqItem }) {
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="font-heading flex w-full items-center justify-between py-5 text-left text-base font-semibold text-[#0D1522] sm:text-lg"
+        className="font-heading flex w-full items-center justify-between py-4 text-left text-[15px] font-semibold text-[#0D1522] sm:text-base"
       >
         {item.q}
         <span className="ml-4 shrink-0 text-xl text-[#1881F1]">{open ? "−" : "+"}</span>
@@ -1871,10 +1792,13 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ── Agenda con el fundador ── */}
+      <FounderBooking />
+
       {/* ── FAQ ── */}
       <section id="faq" className="px-4 py-20">
-        <div className="mx-auto max-w-3xl">
-          <h2 className="font-heading text-center text-3xl font-semibold sm:text-4xl">{t.faqTitle}</h2>
+        <div className="mx-auto max-w-2xl">
+          <h2 className="font-heading text-center text-2xl font-semibold sm:text-3xl">{t.faqTitle}</h2>
           <div className="mt-10">
             {faqItems.map((item) => (
               <FAQItem key={item.q} item={item} />
