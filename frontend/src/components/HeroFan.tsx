@@ -501,7 +501,7 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
         {/* Copy. Phone: headline on top, CTA under the phone. Desktop: the
             headline, subhead and CTA stacked above the phone — the CTA sits
             at the set's vanishing point. */}
-        <motion.div style={{ y: titleShift }} className="pointer-events-none absolute inset-x-0 top-[20%] z-10 flex flex-col items-center px-4 text-center md:top-[13%]">
+        <motion.div style={{ y: titleShift }} className="pointer-events-none absolute inset-x-0 top-[20%] z-10 flex flex-col items-center px-4 text-center md:top-[calc((70%_-_35*var(--u)_-_75px)/2)]">
           <motion.h1
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
