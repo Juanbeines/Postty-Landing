@@ -18,7 +18,7 @@ import HowItWorksFlow from "@/components/HowItWorksFlow";
 import HeroFan from "@/components/HeroFan";
 import StudioBackdrop from "@/components/StudioBackdrop";
 import BusinessCloud from "@/components/BusinessCloud";
-import AppsCarousel from "@/components/AppsCarousel";
+import AppsBento from "@/components/AppsBento";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { onGiftJustClosed, useGiftDiscount } from "@/lib/giftDiscount";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -1651,7 +1651,7 @@ export default function Landing() {
           integrations are live vs "Próximamente". Sits above Pricing so it's
           visible without excessive scroll (a review gate). The previous
           4-card grid is archived at _extras/PlatformCardsSection.tsx. */}
-      <AppsCarousel />
+      <AppsBento />
 
       {/* ── Pricing ── */}
       <PricingSection />
