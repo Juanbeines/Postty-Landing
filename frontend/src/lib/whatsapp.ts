@@ -6,13 +6,12 @@
  * Two shapes, and the difference matters:
  *
  * - `WHATSAPP_URL` is the WhatsApp Business short-link. It hides the number
- *   and the greeting is configured on WhatsApp's side — it does NOT accept a
- *   `?text=` param. This is what the header, hero and footer CTAs use.
+ *   and does NOT accept a `?text=` param. It is only the fallback now.
  *
- * - `buildGiftWhatsAppUrl()` needs a custom prefilled message so a gift lead
- *   is distinguishable from a hero click once it lands in the inbox, which
- *   forces the `wa.me/<number>` form. That requires the raw number, so it
- *   comes from an env var and degrades back to the short-link when unset.
+ * - `buildWhatsAppUrl()` (header, pricing and footer CTAs) and
+ *   `buildGiftWhatsAppUrl()` (the gift overlay) each prefill their own
+ *   message, so a gift lead is distinguishable from a general one once it
+ *   lands in the inbox. A prefilled message forces the `wa.me/<number>` form.
  */
 
 export const WHATSAPP_URL =
@@ -27,12 +26,24 @@ export const WHATSAPP_URL =
  *  set, so the number can be swapped without a code change. */
 const WA_NUMBER = (process.env.NEXT_PUBLIC_WA_NUMBER || "5491179506000").replace(/\D/g, "");
 
+/** One per landing locale. The bracket is left for the user to replace
+ *  with their store or Instagram link. */
+const GENERAL_MESSAGE = {
+  es: "Hola Postty, quiero dejar de preocuparme por las redes y pauta, ¿me ayudan? Esta es mi marca [insertar link de tienda o instagram].",
+  en: "Hi Postty, I want to stop worrying about social media and ads, can you help me? This is my brand [insert store or Instagram link].",
+} as const;
+
 /** Kept short on purpose: the longer the prefill, the likelier it gets
  *  deleted before the user hits send. One per landing locale. */
 const GIFT_MESSAGE = {
-  es: "¡Hola! Quiero un super descuento",
-  en: "Hi! I'd like a super discount",
+  es: "Hola Postty, quiero un super descuento para mi plan",
+  en: "Hi Postty, I'd like a super discount for my plan",
 } as const;
+
+export function buildWhatsAppUrl(locale: keyof typeof GENERAL_MESSAGE = "es"): string {
+  if (!WA_NUMBER) return WHATSAPP_URL; // env not set — fail safe, never break the CTA
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(GENERAL_MESSAGE[locale])}`;
+}
 
 export function buildGiftWhatsAppUrl(locale: keyof typeof GIFT_MESSAGE = "es"): string {
   if (!WA_NUMBER) return WHATSAPP_URL; // env not set — fail safe, never break the CTA

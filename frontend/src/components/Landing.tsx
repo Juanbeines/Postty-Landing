@@ -21,7 +21,7 @@ import BusinessCloud from "@/components/BusinessCloud";
 import AppsCarousel from "@/components/AppsCarousel";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { onGiftJustClosed, useGiftDiscount } from "@/lib/giftDiscount";
-import { WHATSAPP_URL } from "@/lib/whatsapp";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import { localePath } from "@/i18n/config";
 import { useCopy, useLocale } from "@/i18n/locale";
 // Untitled UI icons (MIT) — the credit allowance lines.
@@ -699,6 +699,7 @@ const PRICING_COPY = {
 
 function PricingSection() {
   const t = useCopy(PRICING_COPY);
+  const locale = useLocale();
   const [hoveredCard, setHoveredCard] = useState<"starter" | "basic" | "pro" | null>("basic");
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   // Whether the user already claimed their gift via the GiftOverlay.
@@ -1208,7 +1209,7 @@ function PricingSection() {
             className="hidden h-px flex-1 bg-gradient-to-r from-transparent to-[#0D1522]/[0.11] sm:block"
           />
           <a
-            href={WHATSAPP_URL}
+            href={buildWhatsAppUrl(locale)}
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => trackEvent("Lead", { content_name: "pricing_whatsapp_help", content_category: "contacto_whatsapp" })}
@@ -1544,7 +1545,7 @@ export default function Landing() {
               and the Iniciar sesión pill. Icon is dark (matches the
               neutral pill copy); hero CTA keeps the green brand color. */}
           <a
-            href={WHATSAPP_URL}
+            href={buildWhatsAppUrl(locale)}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={t.whatsapp}
@@ -1600,7 +1601,7 @@ export default function Landing() {
             className="flex items-center gap-2"
           >
             <a
-              href={WHATSAPP_URL}
+              href={buildWhatsAppUrl(locale)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={t.whatsapp}
@@ -1862,7 +1863,7 @@ export default function Landing() {
                 stretching to the column width. */}
             <div className="mt-3 flex flex-col items-start gap-2">
               <a
-                href={WHATSAPP_URL}
+                href={buildWhatsAppUrl(locale)}
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={() => trackEvent("Lead", { content_name: "footer_whatsapp", content_category: "contacto_whatsapp" })}
