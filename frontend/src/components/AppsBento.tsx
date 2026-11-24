@@ -34,7 +34,7 @@ import {
   type MotionValue,
 } from "framer-motion";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowRight, BarChart07, CheckCircle, CreditCard01, Eye, EyeOff, Key01, ShieldTick, ShoppingBag01, X } from "@untitledui/icons";
+import { ArrowRight, BarChart07, LinkBroken01, Lock01, CheckCircle, CreditCard01, Eye, EyeOff, Key01, ShieldTick, ShoppingBag01, X } from "@untitledui/icons";
 import { useCopy } from "@/i18n/locale";
 import { trackEvent, useAppUrl } from "@/lib/pixel";
 
@@ -74,20 +74,20 @@ type App = {
    arriba al medio) y 4 x 6 en celular (sin T: ahí las apps van arriba).
    Cada letra es un bloque y tiene que quedar rectangular. */
 /* Los bloques grandes son siempre las piezas reales (S = historia/video,
-   P = la otra pieza); los chicos, los detalles. Cada fila de 12 letras. */
+   P = la otra pieza) y la seguridad (A); los chicos, los detalles. Cada fila de 12 letras. */
 const DESK = {
-  ig: "AAATTTTTTHHH AAASSSPPPHHH WWWSSSPPPHHH WWWSSSPPPFFF WWWSSSPPPFFF WWWSSSPPPFFF",
-  meta: "PPPTTTTTTSSS PPPHHHAAASSS PPPHHHAAASSS PPPWWWFFFSSS PPPWWWFFFSSS PPPWWWFFFSSS",
-  tt: "SSSTTTTTTPPP SSSAAAHHHPPP SSSAAAHHHPPP SSSFFFWWWPPP SSSFFFWWWPPP SSSFFFWWWPPP",
-  gads: "SSSTTTTTTAAA SSSPPPHHHAAA SSSPPPHHHWWW SSSPPPFFFWWW SSSPPPFFFWWW SSSPPPFFFWWW",
-  fb: "HHHTTTTTTSSS HHHPPPAAASSS HHHPPPAAASSS WWWPPPFFFSSS WWWPPPFFFSSS WWWPPPFFFSSS",
-  tn: "AAATTTTTTSSS AAAHHHPPPSSS WWWHHHPPPSSS WWWFFFPPPSSS WWWFFFPPPSSS WWWFFFPPPSSS",
-  ml: "HHHTTTTTTPPP HHHSSSAAAPPP HHHSSSAAAPPP FFFSSSWWWPPP FFFSSSWWWPPP FFFSSSWWWPPP",
+  ig: "SSSTTTTTTHHH SSSAAAPPPHHH SSSAAAPPPWWW SSSAAAPPPWWW SSSAAAPPPFFF SSSAAAPPPFFF",
+  meta: "HHHTTTTTTSSS HHHPPPAAASSS WWWPPPAAASSS WWWPPPAAASSS FFFPPPAAASSS FFFPPPAAASSS",
+  tt: "AAATTTTTTHHH AAASSSPPPHHH AAASSSPPPWWW AAASSSPPPWWW AAASSSPPPFFF AAASSSPPPFFF",
+  gads: "SSSTTTTTTHHH SSSPPPAAAHHH SSSPPPAAAWWW SSSPPPAAAWWW SSSPPPAAAFFF SSSPPPAAAFFF",
+  fb: "WWWTTTTTTAAA WWWSSSPPPAAA HHHSSSPPPAAA HHHSSSPPPAAA FFFSSSPPPAAA FFFSSSPPPAAA",
+  tn: "PPPTTTTTTFFF PPPAAASSSFFF PPPAAASSSHHH PPPAAASSSHHH PPPAAASSSWWW PPPAAASSSWWW",
+  ml: "HHHTTTTTTAAA HHHPPPSSSAAA WWWPPPSSSAAA WWWPPPSSSAAA FFFPPPSSSAAA FFFPPPSSSAAA",
 };
 const MOB = {
-  a: "SSPP SSPP SSPP HHAA HHAA WWFF WWFF",
-  b: "PPSS PPSS PPSS AAHH AAHH FFWW FFWW",
-  c: "HHAA HHAA SSPP SSPP SSPP WWFF WWFF",
+  a: "SSPP SSPP SSPP AAAA AAAA HHWW HHFF",
+  b: "AAAA AAAA PPSS PPSS PPSS WWHH FFHH",
+  c: "SSPP SSPP SSPP HHAA WWAA WWAA FFAA",
 };
 
 const AREA: Record<string, string> = {
@@ -312,6 +312,8 @@ const COPY = {
     sub: "Conexiones oficiales, con permisos que aprobás vos.",
     pick: "Elegí una app",
     connection: "Conexión segura",
+    badges: ["OAuth oficial", "Sin contraseñas", "Vos tenés el control"],
+    revoke: "Lo desconectás cuando quieras, en un clic.",
     product: "Hecho con Postty",
     secure: "Seguro",
   },
@@ -322,6 +324,8 @@ const COPY = {
     sub: "Official connections, with permissions you approve.",
     pick: "Pick an app",
     connection: "Secure connection",
+    badges: ["Official OAuth", "No passwords", "You stay in control"],
+    revoke: "Disconnect anytime, in one click.",
     product: "Made with Postty",
     secure: "Secure",
   },
@@ -600,7 +604,7 @@ export default function AppsBento() {
           {mobile && <div className="relative -mx-4 mb-3 overflow-x-auto px-4 py-1 [scrollbar-width:none]">{tabs}</div>}
 
           <div
-            className="relative grid h-[920px] gap-3 md:h-[600px] md:gap-3.5"
+            className="relative grid h-[1000px] gap-3 md:h-[600px] md:gap-3.5"
             style={{
               gridTemplateAreas: areasOf(mobile ? app.mob : app.desk),
               gridTemplateColumns: mobile ? "repeat(4,minmax(0,1fr))" : "repeat(12,minmax(0,1fr))",
@@ -753,59 +757,101 @@ function HeroBlock({ app, still, sx, sy }: { app: App; still: boolean; sx: Motio
 /** La ficha de seguridad (el "tipografías" de la referencia). */
 function AuthBlock({ app, t, still }: { app: App; t: Copy; still: boolean }) {
   return (
-    <div className="flex h-full w-full flex-col p-5 @[260px]:p-6">
-      <div className="flex items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#1881F1]">{t.connection}</p>
-          <p className="font-heading mt-1 text-base font-semibold leading-tight tracking-tight text-[#0D1522] @[240px]:text-lg">
-            <Words text={app.authTitle} delay={0.1} />
-          </p>
-          <p className="mt-0.5 truncate text-[11px] text-[#0D1522]/45">{app.authSub}</p>
-        </div>
-        <span className="relative grid h-10 w-10 shrink-0 place-items-center">
-          {!still && (
-            <motion.span
-              className="absolute inset-0 rounded-full bg-[#1881F1]/20"
-              animate={{ scale: [1, 1.6], opacity: [0.7, 0] }}
-              transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
-            />
-          )}
+    <div className="relative flex h-full w-full flex-col overflow-hidden p-5 @[260px]:p-6" style={{ background: "linear-gradient(170deg,#F2F8FF 0%,#FFFFFF 55%)" }}>
+      <Bubbles color="rgba(73,211,248,0.20)" n={2} still={still} />
+
+      <span className="relative inline-flex w-fit items-center gap-1.5 rounded-full bg-[#1881F1] px-2.5 py-1 text-[11px] font-semibold text-white shadow-[0_6px_16px_rgba(24,129,241,0.30)]">
+        <Lock01 className="h-3.5 w-3.5" />
+        {t.connection}
+      </span>
+
+      {/* El escudo: late, y a su alrededor gira la órbita de la conexión. */}
+      <div className="relative flex min-h-0 flex-1 items-center justify-center py-3">
+        <div className="relative aspect-square h-full max-h-[150px]">
+          {!still &&
+            [0, 1].map((k) => (
+              <motion.span
+                key={k}
+                className="absolute inset-0 rounded-full border border-[#1881F1]/30"
+                animate={{ scale: [0.7, 1.35], opacity: [0.8, 0] }}
+                transition={{ duration: 2.4, repeat: Infinity, delay: k * 1.2, ease: "easeOut" }}
+              />
+            ))}
           <motion.span
-            initial={{ scale: 0, rotate: -40 }}
-            animate={{ scale: 1, rotate: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 14, delay: 0.2 }}
-            className="relative grid h-10 w-10 place-items-center rounded-full bg-gradient-to-br from-[#1881F1] to-[#49D3F8] text-white shadow-[0_8px_18px_rgba(24,129,241,0.35)]"
+            className="absolute inset-[6%] rounded-full border border-dashed border-[#1881F1]/25"
+            animate={still ? undefined : { rotate: 360 }}
+            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
           >
-            <ShieldTick className="h-5 w-5" />
+            <span className="absolute -top-1.5 left-1/2 grid h-3 w-3 -translate-x-1/2 place-items-center rounded-full bg-[#49D3F8] shadow-[0_0_10px_rgba(73,211,248,0.8)]" />
           </motion.span>
-        </span>
+          <motion.span
+            initial={{ scale: 0, rotate: -30 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", stiffness: 260, damping: 14, delay: 0.15 }}
+            className="absolute inset-[24%] grid place-items-center rounded-[30%] bg-gradient-to-br from-[#1881F1] to-[#49D3F8] text-white shadow-[0_16px_36px_rgba(24,129,241,0.40)]"
+          >
+            <ShieldTick className="h-1/2 w-1/2" />
+          </motion.span>
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 420, damping: 15, delay: 0.45 }}
+            className="absolute bottom-[16%] right-[16%] grid h-[24%] w-[24%] place-items-center rounded-full border-2 border-white bg-white shadow-[0_6px_14px_rgba(13,21,34,0.15)]"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={`/logos/${app.logo}.svg`} alt="" className="h-[62%] w-[62%] object-contain" />
+          </motion.span>
+        </div>
       </div>
 
-      <ul className="mt-auto space-y-1.5 pt-2">
+      <p className="font-heading relative text-xl font-semibold leading-tight tracking-tight text-[#0D1522] @[300px]:text-2xl">
+        <Words text={app.authTitle} delay={0.1} />
+      </p>
+      <p className="relative mt-0.5 text-[12px] text-[#0D1522]/50">{app.authSub}</p>
+
+      <div className="relative mt-3 flex flex-wrap gap-1.5">
+        {t.badges.map((b, k) => (
+          <motion.span
+            key={b}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 + k * 0.07, type: "spring", stiffness: 400, damping: 18 }}
+            className="rounded-full border border-[#1881F1]/15 bg-[#EAF4FF] px-2.5 py-1 text-[11px] font-semibold text-[#1881F1]"
+          >
+            {b}
+          </motion.span>
+        ))}
+      </div>
+
+      <ul className="relative mt-3 space-y-2">
         {app.perms.map((p, k) => {
           const Icon = PERM_ICONS[p.i];
-          const it = p.t;
           return (
             <motion.li
-              key={it}
+              key={p.t}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 + k * 0.09 }}
-              className="flex items-start gap-1.5 text-[12px] leading-snug text-[#0D1522]/70"
+              transition={{ delay: 0.45 + k * 0.09 }}
+              className="flex items-start gap-2 text-[13px] leading-snug text-[#0D1522]/75"
             >
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                transition={{ delay: 0.4 + k * 0.09, type: "spring", stiffness: 500, damping: 15 }}
-                className="mt-px grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-[#EAF4FF]"
+                transition={{ delay: 0.55 + k * 0.09, type: "spring", stiffness: 500, damping: 15 }}
+                className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[#EAF4FF]"
               >
                 <Icon className="h-3 w-3 text-[#1881F1]" />
               </motion.span>
-              <span className="min-w-0">{it}</span>
+              <span className="min-w-0">{p.t}</span>
             </motion.li>
           );
         })}
       </ul>
+
+      <p className="relative mt-3 flex items-center gap-1.5 border-t border-[#0D1522]/8 pt-3 text-[11px] font-medium text-[#0D1522]/50">
+        <LinkBroken01 className="h-3.5 w-3.5 shrink-0" />
+        {t.revoke}
+      </p>
     </div>
   );
 }
