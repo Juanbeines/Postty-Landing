@@ -271,3 +271,28 @@ input:-webkit-autofill:active {
   transition: background-color 9999s ease-in-out 0s;
 }
 
+/* BusinessCloud ribbons (phones and tablets) */
+@keyframes ribbon-drift {
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+.ribbon-track {
+  animation: ribbon-drift 46s linear infinite;
+  will-change: transform;
+}
+.ribbon-track-reverse {
+  animation-direction: reverse;
+}
+.ribbon-mask {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ribbon-track {
+    animation: none;
+  }
+  .ribbon-mask {
+    overflow-x: auto;
+  }
+}
