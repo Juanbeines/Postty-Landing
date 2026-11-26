@@ -85,6 +85,14 @@ const PERSPECTIVE = 760;
    wobble in the footage never opens a gap at the bezel. */
 const OVERSCAN = 0.012;
 
+/* The posts are 9:16 and the screen is narrower, so a post cropped to fill it
+   loses its sides and the headlines touch the bezel. POST_FIT is the post's
+   width as a fraction of the screen's: just over 1, so the copy keeps a margin
+   and the bands left above and below stay thin. POST_MASK fades those edges
+   into the blurred fill. */
+const POST_FIT = 1.04;
+const POST_MASK = "linear-gradient(to bottom, transparent 0%, #000 3.5%, #000 96.5%, transparent 100%)";
+
 /* Where the middle of the set sits, and the copy offsets, per breakpoint.
    --title-shift / --cta-shift: on phones the headline drops and the CTA rises
    once the set has receded, closing the gap it leaves. */
@@ -401,16 +409,30 @@ export default function HeroFan({ appUrl }: { appUrl: string }) {
                 style={{ width: "200%" }}
               >
                 {[mod(centre - 1), centre].map((i, k) => (
-                  <img
-                    key={k}
-                    src={POSTS[i]}
-                    alt={k === 1 ? t.cards[i].alt : ""}
-                    aria-hidden={k === 0 ? true : undefined}
-                    loading="eager"
-                    fetchPriority={k === 1 ? "high" : "auto"}
-                    draggable={false}
-                    className="h-full w-1/2 select-none object-cover"
-                  />
+                  <div key={k} className="relative h-full w-1/2 shrink-0 overflow-hidden">
+                    {/* The screen is narrower than a 9:16 post: cropped to
+                        fill it, the headlines ran into the bezel. The post is
+                        drawn at POST_FIT of the screen's width instead, and a
+                        blurred copy of itself fills the bands above and below. */}
+                    <img
+                      src={POSTS[i]}
+                      alt=""
+                      aria-hidden="true"
+                      loading="eager"
+                      draggable={false}
+                      className="absolute inset-0 h-full w-full scale-110 select-none object-cover blur-[14px]"
+                    />
+                    <img
+                      src={POSTS[i]}
+                      alt={k === 1 ? t.cards[i].alt : ""}
+                      aria-hidden={k === 0 ? true : undefined}
+                      loading="eager"
+                      fetchPriority={k === 1 ? "high" : "auto"}
+                      draggable={false}
+                      className="absolute left-1/2 top-1/2 h-auto max-w-none -translate-x-1/2 -translate-y-1/2 select-none"
+                      style={{ width: `${POST_FIT * 100}%`, maskImage: POST_MASK, WebkitMaskImage: POST_MASK }}
+                    />
+                  </div>
                 ))}
               </motion.div>
 
