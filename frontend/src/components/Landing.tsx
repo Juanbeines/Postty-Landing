@@ -604,14 +604,17 @@ const PRICING_COPY = {
       cta: "Empezar ahora",
       /* The credit allowance is rendered as one bundle: the total, then the
          two things it buys joined by a "+", then how far the credits go if
-         spent on only one of them. Figures set by Juan (Oct 2026). The T&C
+         spent on only one of them. Videos are counted as videos, with their length
+         underneath (a count reads at a glance; seconds make you do the maths).
+         Figures set by Juan (Nov 2026): 5 credits per second of video, 4 per
+         image. The T&C
          (TermsContent §4.2/§4.3) still declare the older allowances. */
       credits: {
         total: "300 créditos por mes, que equivalen a:",
-        videos: "45 segundos de video",
-        videosSub: "unos 3 videos de 15 s",
-        images: "20 imágenes",
-        mix: "Combinalos como quieras: 60 s de video, o 75 imágenes.",
+        videos: "5 videos",
+        videosSub: "de 8 segundos cada uno",
+        images: "25 imágenes",
+        mix: "Combinalos como quieras: 7 videos o 75 imágenes.",
       },
       features: [
         "Publicación automática en Instagram y Meta",
@@ -630,10 +633,10 @@ const PRICING_COPY = {
       cta: "Convertirme en Pro",
       credits: {
         total: "650 créditos por mes, que equivalen a:",
-        videos: "100 segundos de video",
-        videosSub: "unos 7 videos de 14 s",
-        images: "45 imágenes",
-        mix: "Combinalos como quieras: 130 s de video, o 160 imágenes.",
+        videos: "12 videos",
+        videosSub: "de 8 segundos cada uno",
+        images: "42 imágenes",
+        mix: "Combinalos como quieras: 16 videos o 160 imágenes.",
       },
       /* Pro reads as a delta on top of Basic (see `plus`), so it only
          carries what Basic does not. */
@@ -664,10 +667,10 @@ const PRICING_COPY = {
       cta: "Get started",
       credits: {
         total: "300 credits a month, enough for:",
-        videos: "45 seconds of video",
-        videosSub: "about 3 videos of 15 s",
-        images: "20 images",
-        mix: "Mix them however you like: 60 s of video, or 75 images.",
+        videos: "5 videos",
+        videosSub: "8 seconds each",
+        images: "25 images",
+        mix: "Mix them however you like: 7 videos or 75 images.",
       },
       features: [
         "Auto-publishing to Instagram and Meta",
@@ -684,10 +687,10 @@ const PRICING_COPY = {
       cta: "Go Pro",
       credits: {
         total: "650 credits a month, enough for:",
-        videos: "100 seconds of video",
-        videosSub: "about 7 videos of 14 s",
-        images: "45 images",
-        mix: "Mix them however you like: 130 s of video, or 160 images.",
+        videos: "12 videos",
+        videosSub: "8 seconds each",
+        images: "42 images",
+        mix: "Mix them however you like: 16 videos or 160 images.",
       },
       plus: "Everything in Basic, plus:",
       features: ["Pro AI video models", "Unlimited image editing", "Priority support"],
