@@ -1,14 +1,14 @@
 export default function TermsContent() {
   return (
     <>
-      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 13 de agosto de 2026</p>
+      <p className="text-xs text-[#0D1522]/50 mb-4">Última actualización: 27 de noviembre de 2026</p>
 
       <h2>1. Introducción</h2>
-      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una plataforma de generación de campañas publicitarias multi-canal asistida por inteligencia artificial, con soporte para Meta Ads y Google Ads (integración con TikTok Ads planificada), operada bajo la marca registrada &quot;Postty&quot;, titularidad de Darío Soria (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;el Operador&quot;), con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
+      <p>Bienvenido/a a Postty (en adelante, &quot;la Plataforma&quot;, &quot;el Servicio&quot; o &quot;Postty&quot;), una aplicación de marketing asistida por inteligencia artificial para comercios y empresas, que permite crear publicaciones, anuncios y videos y publicarlos en las cuentas propias del Usuario de Instagram, TikTok, YouTube, Meta Ads y Google Ads, operada bajo la marca registrada &quot;Postty&quot;, titularidad de Darío Soria (en adelante, &quot;nosotros&quot;, &quot;nuestro&quot; o &quot;el Operador&quot;), con domicilio en Manuel Basavilbaso 4103, Olivos (CP 1636), Partido de Vicente López, Provincia de Buenos Aires, Argentina.</p>
       <p>Al acceder, registrarse o utilizar Postty, usted (en adelante, &quot;el Usuario&quot;) acepta estos Términos y Condiciones (en adelante, &quot;los Términos&quot;). Si no está de acuerdo con alguna de estas condiciones, le solicitamos que no utilice el Servicio.</p>
 
       <h2>2. Descripción del Servicio</h2>
-      <p>Postty es una herramienta de marketing digital que permite a emprendedores y dueños de tiendas online:</p>
+      <p>Postty es una herramienta de marketing digital que permite a comercios, emprendedores y empresas que venden productos o servicios:</p>
       <ul>
         <li>Extraer productos de su tienda online (Shopify, Tiendanube y otras plataformas de e-commerce) mediante análisis automatizado de su sitio web.</li>
         <li>Analizar la identidad de marca (Brand DNA), incluyendo colores, tipografías, tono de comunicación e identidad visual, a partir de la URL de su tienda.</li>
@@ -17,11 +17,14 @@ export default function TermsContent() {
         <li>Crear piezas publicitarias (imágenes estáticas, carruseles, creativos estilo UGC) utilizando generación de imágenes con IA.</li>
         <li>Editar y redimensionar las piezas publicitarias generadas.</li>
         <li>Publicar campañas directamente en Meta Ads Manager y en Google Ads (funcionalidades sujetas a disponibilidad y a la autorización previa del Usuario mediante OAuth 2.0 sobre su cuenta publicitaria correspondiente). El soporte de TikTok Ads está planificado en el roadmap del Servicio.</li>
+        <li>Publicar o programar publicaciones y videos en las cuentas de Instagram y TikTok y en el canal de YouTube que el Usuario conecte, siempre con su confirmación previa del contenido, el texto y la fecha de publicación.</li>
       </ul>
+      <h3>2.1. Plataformas conectadas</h3>
+      <p>Al conectar una cuenta de Meta, Google Ads, TikTok o YouTube, el Usuario acepta además los términos y políticas de esa plataforma. En particular, al conectar un canal de YouTube o publicar en él desde Postty, el Usuario acepta quedar obligado por los <a href="https://www.youtube.com/t/terms">Términos de Servicio de YouTube</a> (https://www.youtube.com/t/terms).</p>
 
       <h2>3. Registro y Cuenta de Usuario</h2>
       <h3>3.1. Registro</h3>
-      <p>Para utilizar Postty, el Usuario debe registrarse mediante su cuenta de Google a través de Firebase Authentication. Al registrarse, el Usuario autoriza a Postty a acceder a su nombre, dirección de correo electrónico y foto de perfil de Google.</p>
+      <p>Para utilizar Postty, el Usuario debe registrarse mediante el inicio de sesión con su cuenta de Google. Al registrarse, el Usuario autoriza a Postty a acceder a su nombre, dirección de correo electrónico y foto de perfil de Google.</p>
       <h3>3.2. Veracidad de la información</h3>
       <p>El Usuario garantiza que la información proporcionada durante el registro es verídica, completa y actualizada. Postty no se responsabiliza por información falsa o desactualizada provista por el Usuario.</p>
       <h3>3.3. Seguridad de la cuenta</h3>
@@ -95,6 +98,8 @@ export default function TermsContent() {
         <li>No utilizar bots, scripts automatizados o métodos similares para acceder al Servicio más allá de las interfaces proporcionadas.</li>
         <li>No revender, sublicenciar ni redistribuir el acceso al Servicio sin autorización expresa.</li>
       </ul>
+      <h3>5.1. Contenido prohibido</h3>
+      <p>El Usuario no puede usar Postty para crear, subir o publicar contenido sexual o íntimo, real o generado con inteligencia artificial, ni la imagen o la voz de una persona sin su consentimiento, ni contenido que infrinja la ley o los términos de las plataformas conectadas. Postty puede quitar ese contenido y suspender o cancelar la cuenta del Usuario.</p>
 
       <h2>6. Propiedad Intelectual</h2>
       <h3>6.1. Propiedad de Postty</h3>
@@ -104,7 +109,7 @@ export default function TermsContent() {
       <ul>
         <li>Postty no garantiza que el contenido generado sea original ni que no infrinja derechos de terceros.</li>
         <li>El Usuario es el único responsable de verificar la idoneidad, legalidad y originalidad del contenido antes de publicarlo.</li>
-        <li>Postty se reserva el derecho de utilizar el contenido generado de forma anonimizada con fines de mejora del Servicio y entrenamiento de modelos.</li>
+        <li>Postty se reserva el derecho de utilizar el contenido generado de forma anonimizada con fines de mejora del Servicio y entrenamiento de modelos. Esto no incluye los datos obtenidos de las API de Google ni de YouTube, que nunca se usan para entrenar modelos.</li>
       </ul>
       <h3>6.3. Contenido del Usuario</h3>
       <p>El Usuario retiene la propiedad sobre los datos que proporciona (URL de su tienda, productos, identidad de marca). Al utilizar el Servicio, el Usuario otorga a Postty una licencia limitada, no exclusiva y revocable para procesar dicho contenido con el fin de prestar el Servicio.</p>
@@ -113,11 +118,12 @@ export default function TermsContent() {
       <h3>7.1. Datos recopilados</h3>
       <p>Postty recopila y procesa los siguientes datos:</p>
       <ul>
-        <li><strong>Datos de autenticación:</strong> UID de Firebase, correo electrónico, nombre y foto de perfil de Google.</li>
+        <li><strong>Datos de autenticación:</strong> identificador de la cuenta de Google, correo electrónico, nombre y foto de perfil de Google.</li>
         <li><strong>Datos de uso:</strong> URL de tienda, productos extraídos, identidad de marca, borradores de campañas, historial de conversaciones con el agente de IA, piezas publicitarias generadas.</li>
         <li><strong>Datos de suscripción:</strong> ID de suscripción de MercadoPago, plan contratado, estado del pago.</li>
         <li><strong>Datos de uso del servicio:</strong> contadores de uso, retroalimentación del Usuario (calificaciones y comentarios).</li>
         <li><strong>Datos de cuentas publicitarias conectadas (opcional):</strong> tokens OAuth cifrados, identificadores de cuentas publicitarias (Meta ad account IDs, Google Ads customer IDs), estructura y métricas de las campañas gestionadas desde Postty.</li>
+        <li><strong>Datos de cuentas de TikTok y canales de YouTube conectados (opcional):</strong> permisos de acceso cifrados y los datos del perfil o del canal necesarios para publicar los videos que el Usuario elige, según se detalla en la Política de Privacidad.</li>
       </ul>
       <h3>7.2. Finalidad del tratamiento</h3>
       <p>Los datos se utilizan para:</p>
@@ -131,13 +137,15 @@ export default function TermsContent() {
       <h3>7.3. Servicios de terceros</h3>
       <p>Postty utiliza los siguientes servicios de terceros que pueden procesar datos del Usuario:</p>
       <ul>
-        <li><strong>Firebase (Google)</strong> — Autenticación de usuarios.</li>
+        <li><strong>Google</strong> — Inicio de sesión con la cuenta de Google.</li>
         <li><strong>Gemini (Google)</strong> — IA conversacional, análisis multimodal y generación de scripts.</li>
         <li><strong>Nano Banana (Google)</strong> — Generación de imágenes publicitarias.</li>
         <li><strong>ElevenLabs</strong> — Generación de voz para videos.</li>
         <li><strong>MercadoPago</strong> — Procesamiento de pagos y suscripciones.</li>
         <li><strong>Meta (Facebook e Instagram)</strong> — Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta).</li>
         <li><strong>Google Ads</strong> — Publicación de campañas publicitarias (opcional, solo si conectás tu cuenta).</li>
+        <li><strong>YouTube (Google)</strong> — Publicación de videos en el canal del Usuario mediante los servicios de la API de YouTube (opcional, solo si conectás tu canal).</li>
+        <li><strong>TikTok</strong> — Publicación de videos en la cuenta del Usuario (opcional, solo si conectás tu cuenta).</li>
       </ul>
       <h3>7.4. Almacenamiento</h3>
       <p>Los datos se almacenan en bases de datos PostgreSQL. Postty implementa medidas de seguridad razonables para proteger los datos, pero no puede garantizar una seguridad absoluta.</p>
@@ -191,6 +199,7 @@ export default function TermsContent() {
       <p>Postty se reserva el derecho de suspender o cancelar la cuenta de cualquier Usuario que:</p>
       <ul>
         <li>Viole estos Términos o el uso aceptable del Servicio.</li>
+        <li>Cree, suba o publique contenido prohibido según la cláusula 5.1.</li>
         <li>Realice actividades fraudulentas o ilegales.</li>
         <li>Abuse de los límites de uso o intente eludirlos.</li>
       </ul>

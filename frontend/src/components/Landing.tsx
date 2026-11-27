@@ -19,6 +19,7 @@ import HeroFan from "@/components/HeroFan";
 import StudioBackdrop from "@/components/StudioBackdrop";
 import BusinessCloud from "@/components/BusinessCloud";
 import AppsBento from "@/components/AppsBento";
+import AboutPostty from "@/components/AboutPostty";
 import { trackEvent, useAppUrl, useCheckoutUrl } from "@/lib/pixel";
 import { onGiftJustClosed, useGiftDiscount } from "@/lib/giftDiscount";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
@@ -1391,6 +1392,7 @@ const PAGE_COPY = {
       privacy: "Política de privacidad",
       terms: "Términos de servicio",
       company: "Empresa",
+      about: "Qué es Postty",
       resources: "Recursos",
       rights: "Todos los derechos reservados.",
     },
@@ -1416,6 +1418,7 @@ const PAGE_COPY = {
       privacy: "Privacy policy",
       terms: "Terms of service",
       company: "Company",
+      about: "What is Postty",
       resources: "Resources",
       rights: "All rights reserved.",
     },
@@ -1799,6 +1802,9 @@ export default function Landing() {
       {/* ── Agenda con el fundador ── */}
       <FounderBooking />
 
+      {/* ── Qué es Postty · YouTube · uso responsable (Google lo pide a la vista) ── */}
+      <AboutPostty />
+
       {/* ── FAQ ── */}
       <section id="faq" className="px-4 py-20">
         <div className="mx-auto max-w-2xl">
@@ -1925,6 +1931,7 @@ export default function Landing() {
             <div>
               <p className="mb-2 font-medium text-[#0D1522]/40">{t.footer.company}</p>
               <a href="#como-funciona" className="block text-[#0D1522]/60 transition hover:text-[#0D1522]">{t.howItWorks}</a>
+              <a href="#sobre-postty" className="mt-1 block text-[#0D1522]/60 transition hover:text-[#0D1522]">{t.footer.about}</a>
             </div>
             <div>
               <p className="mb-2 font-medium text-[#0D1522]/40">{t.footer.resources}</p>

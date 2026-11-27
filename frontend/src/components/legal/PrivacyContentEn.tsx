@@ -4,7 +4,7 @@
 export default function PrivacyContentEn() {
   return (
     <>
-      <p className="text-xs text-[#0D1522]/50 mb-4">Last updated: July 21, 2026</p>
+      <p className="text-xs text-[#0D1522]/50 mb-4">Last updated: November 27, 2026</p>
 
       <h2>Data controller</h2>
       <p>Postty is a registered trademark owned by Darío Soria, domiciled at Manuel Basavilbaso 4103, Olivos (ZIP 1636), Vicente López, Province of Buenos Aires, Argentina. The controller of your personal data is Darío Soria (Postty), whom you can contact with any question at the email address below.</p>
@@ -12,7 +12,7 @@ export default function PrivacyContentEn() {
 
       <h2>Data we collect</h2>
       <ul>
-        <li><strong>Authentication:</strong> Firebase UID, email, name, photo (via Google Sign-In)</li>
+        <li><strong>Authentication:</strong> your Google account identifier, email, name and photo (Sign in with Google)</li>
         <li><strong>Store:</strong> URL, products, prices, images (automated scraping)</li>
         <li><strong>Brand:</strong> Colors, typefaces, tone, logo (analysis of your website)</li>
         <li><strong>Campaigns:</strong> Drafts, conversations with the AI, generated assets</li>
@@ -20,12 +20,13 @@ export default function PrivacyContentEn() {
         <li><strong>Usage:</strong> Counters, feedback, ratings</li>
         <li><strong>WhatsApp contact (optional):</strong> if you message us on WhatsApp, we receive your phone number and profile name in our WhatsApp Business inbox. We do not export this data to any CRM or keep it beyond the conversation.</li>
         <li><strong>Connected ad accounts (optional):</strong> when you connect your Meta Ads or Google Ads account, we store the access tokens (encrypted with AES-256), the IDs of the authorized ad accounts, and metadata about the campaigns you manage from Postty (structure, budget, performance metrics). This data is processed only for operations you start from the platform.</li>
+        <li><strong>Connected TikTok and YouTube accounts (optional):</strong> when you connect your TikTok account or your YouTube channel, we store the access permissions, encrypted, and the profile or channel data needed to show you which account you connected and to publish the videos you choose. What we do with YouTube data is detailed in the YouTube integration section.</li>
         <li><strong>Connected Instagram and Meta profiles (optional):</strong> if you connect your Instagram and Meta accounts to personalize content and ads, we access the profile information needed for that purpose (account data and posts). If you prefer not to connect them, Postty generates from your website URL, with a lower degree of personalization.</li>
       </ul>
 
       <h2>Purposes of processing</h2>
       <ul>
-        <li>Providing the campaign generation service</li>
+        <li>Providing the service for creating and publishing content, ads and videos</li>
         <li>Managing your account and subscription</li>
         <li>Applying limits according to your plan</li>
         <li>Improving the service and fixing errors</li>
@@ -41,13 +42,15 @@ export default function PrivacyContentEn() {
 
       <h2>Third-party services</h2>
       <ul>
-        <li><strong>Firebase (Google):</strong> User authentication</li>
+        <li><strong>Google:</strong> Sign in with your Google account</li>
         <li><strong>Gemini (Google):</strong> Conversational AI, multimodal analysis and script generation</li>
         <li><strong>Nano Banana (Google):</strong> Ad image generation</li>
         <li><strong>ElevenLabs:</strong> Voice generation for videos</li>
         <li><strong>MercadoPago:</strong> Payment and subscription processing</li>
         <li><strong>Meta (Facebook and Instagram):</strong> Publishing ad campaigns (optional, only if you connect your account)</li>
         <li><strong>Google Ads:</strong> Publishing ad campaigns (optional, only if you connect your account)</li>
+        <li><strong>YouTube (Google):</strong> Publishing videos to your channel through the YouTube API Services (optional, only if you connect your channel)</li>
+        <li><strong>TikTok:</strong> Publishing videos to your account (optional, only if you connect your account)</li>
         <li><strong>Amazon Web Services (AWS):</strong> Hosting and infrastructure for the service</li>
         <li><strong>Google Analytics (Google):</strong> Website usage analytics (cookies)</li>
         <li><strong>Meta Pixel (Meta):</strong> Ad conversion measurement (cookies)</li>
@@ -64,6 +67,17 @@ export default function PrivacyContentEn() {
       <p><strong>Sole purpose:</strong> data accessed through the Google Ads API is used only to carry out the actions you authorize from the Postty interface. We do not read data from other accounts, we do not combine data between different users, and we do not share or sell this information to third parties.</p>
       <p><strong>Revoking access:</strong> you can revoke the authorization at any time from (a) your account settings in Postty, or (b) directly from your Google account at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>. Revocation takes effect immediately: we can no longer call the API on your behalf and the stored tokens are invalidated.</p>
       <p>Postty&apos;s use of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+
+      <h2>YouTube integration</h2>
+      <p>Postty uses the YouTube API Services. This integration is optional and is only active if you connect your channel.</p>
+      <ul>
+        <li><strong>Data we access (read):</strong> when you connect your channel, we access its name, its picture and its identifier, and the processing status of the videos Postty uploaded, to let you know whether YouTube accepted them. We do not read your metrics, comments, subscribers or the other videos on your channel.</li>
+        <li><strong>Data we write:</strong> we upload the videos you choose, with the title, description, privacy setting and disclosures you confirm. We do not delete or change your videos.</li>
+        <li><strong>Data we store:</strong> the access permissions, encrypted; the channel data, which we refresh at least every 30 days; and, for each video we upload, its identifier and its link.</li>
+      </ul>
+      <p><strong>Use of the data:</strong> we do not share this data with third parties or use it for advertising or to train artificial intelligence models. We use it only to show you which channel you connected and to publish the videos you confirm.</p>
+      <p><strong>Disconnection and deletion:</strong> when you disconnect your channel from Postty, we immediately delete the permissions, the channel data and the identifier and link of each video; your videos stay on YouTube. You can also remove Postty&apos;s access from your Google account security settings (<a href="https://security.google.com/settings/security/permissions">https://security.google.com/settings/security/permissions</a>): in that case we delete the data within 30 days. To ask us to delete your data, write to <a href="mailto:soporte@posttyai.com">soporte@posttyai.com</a> and we will delete it within 7 days.</p>
+      <p>By using this integration you agree to the <a href="https://www.youtube.com/t/terms">YouTube Terms of Service</a> and the <a href="https://www.google.com/policies/privacy">Google Privacy Policy</a>. Postty&apos;s use of information received from the YouTube API Services adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
 
       <h2>Cookies and tracking technologies</h2>
       <p>Our website uses cookies and similar technologies for analytics and ad measurement:</p>
@@ -83,12 +97,12 @@ export default function PrivacyContentEn() {
       <h2>Retention</h2>
       <ul>
         <li>For as long as your account is active</li>
-        <li>30 days after you request deletion (for backup)</li>
+        <li>30 days after you request deletion (for backup), except data obtained from YouTube, which is deleted within the periods stated in the YouTube integration section</li>
         <li>Anonymized data may be kept indefinitely for aggregate analysis</li>
       </ul>
 
       <h2>International transfer</h2>
-      <p>Your data may be processed on servers of our providers located in the United States, the European Union and other jurisdictions where Google (Firebase, Gemini, Nano Banana, Google Ads), Meta (Facebook, Instagram), ElevenLabs, MercadoPago and AWS operate. All of these providers comply with recognized data-protection standards, and we have the appropriate legal bases for international transfer under Argentina&apos;s Law 25,326.</p>
+      <p>Your data may be processed on servers of our providers located in the United States, the European Union and other jurisdictions where Google (Gemini, Nano Banana, Google Ads, YouTube), Meta (Facebook, Instagram), TikTok, ElevenLabs, MercadoPago and AWS operate. All of these providers comply with recognized data-protection standards, and we have the appropriate legal bases for international transfer under Argentina&apos;s Law 25,326.</p>
 
       <h2>Your rights (ARCO)</h2>
       <p>You have the right to access, rectify, delete and object to the processing of your data.</p>
